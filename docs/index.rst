@@ -30,7 +30,7 @@ If you have any suggestions or questions about **Jukebox Core** feel free to ema
 at zuber.david@gmx.de.
 
 If you encounter any errors or problems with **Jukebox Core**, please let me know!
-Open an Issue at the GitHub https://github.com/storax/jukebox-core main repository.
+Open an Issue at the GitHub https://github.com/JukeboxPipeline/jukebox-core main repository.
 
 Indices and tables
 ==================

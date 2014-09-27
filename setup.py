@@ -50,7 +50,7 @@ setup(
     long_description=long_description,
     author=about['__author__'],
     author_email=about['__email__'],
-    url='https://github.com/storax/jukebox-core',
+    url='https://github.com/JukeboxPipeline/jukebox-core',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=True,
