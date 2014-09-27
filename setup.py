@@ -39,8 +39,8 @@ with open(initfile) as fp:
     exec(fp.read(), about)
 
 long_description = read('README.rst', 'HISTORY.rst')
-install_requires = []
-tests_require = ['pytest']
+install_requires = ['pyside', 'configobj']
+tests_require = ['pytest', 'nose']
 
 
 setup(
