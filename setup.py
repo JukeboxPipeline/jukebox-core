@@ -34,7 +34,7 @@ class PyTest(TestCommand):
         sys.exit(errcode)
 
 about={}
-initfile = os.path.join(here, 'src', 'jukebox-core', '__init__.py')
+initfile = os.path.join(here, 'src', 'jukeboxcore', '__init__.py')
 with open(initfile) as fp:
     exec(fp.read(), about)
 
@@ -60,7 +60,6 @@ setup(
     license='BSD',
     zip_safe=False,
     keywords='jukebox-core',
-    test_suite='jukebox-core.test.jukebox-core',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

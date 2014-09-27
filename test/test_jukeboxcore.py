@@ -1,5 +1,5 @@
 """
-Tests for `jukebox-core` module.
+Tests for `jukeboxcore` module.
 """
 
 

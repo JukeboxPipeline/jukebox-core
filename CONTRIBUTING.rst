@@ -106,4 +106,4 @@ Tips
 
 To run a subset of tests::
 
-	 $ py.test test/test_jukebox-core.py
+	 $ py.test test/test_jukeboxcore.py
