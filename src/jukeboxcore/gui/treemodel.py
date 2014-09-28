@@ -19,7 +19,7 @@ import abc
 from PySide import QtCore
 
 
-class ItemData(object):
+class ItemData(object):  # pragma: no cover
     """An abstract class that holds data and is used as an interface for TreeItems
 
     When subclassing implement :meth:`ItemData.data` and :meth:`ItemData.column_count`.
@@ -70,6 +70,8 @@ class ItemData(object):
 
     def flags(self, ):
         """Return the item flags for the item
+
+        Default is QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
         :returns: the item flags
         :rtype: QtCore.Qt.ItemFlags
@@ -319,7 +321,9 @@ class TreeModel(QtCore.QAbstractItemModel):
         return self.createIndex(parentItem.row(), 0, parentItem)
 
     def rowCount(self, parent):
-        """Returns the number of rows under the given parent. When the parent is valid it means that rowCount is returning the number of children of parent.
+        """Returns the number of rows under the given parent.
+        When the parent is valid it means that rowCount is returning the number
+        of children of parent.
 
         :param parent: the parent index
         :type parent: :class:`QtCore.QModelIndex`:
@@ -390,7 +394,8 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         :param row: the index where the rows get inserted
         :type row: int
-        :param item: the item to insert. When creating the item, make sure it's parent is None. If not it will defeat the purpose of this function.
+        :param item: the item to insert. When creating the item, make sure it's parent is None.
+                     If not it will defeat the purpose of this function.
         :type item: :class:`TreeItem`
         :param parent: the parent
         :type parent: class:`QtCore.QModelIndex`
@@ -401,9 +406,9 @@ class TreeModel(QtCore.QAbstractItemModel):
         parentitem = parent.internalPointer()
         self.beginInsertRows(parent, row, row)
         item._parent = parentitem
-        parentitem.childItems.append(item)
+        parentitem.childItems.insert(row, item)
         self.endInsertRows()
-        #self.insertRows(len(parentitem.childItems), 1, parent)
+        # self.insertRows(len(parentitem.childItems), 1, parent)
         return True
 
     @property
