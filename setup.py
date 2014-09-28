@@ -39,7 +39,7 @@ with open(initfile) as fp:
     exec(fp.read(), about)
 
 long_description = read('README.rst', 'HISTORY.rst')
-install_requires = ['pyside', 'configobj']
+install_requires = ['pyside', 'configobj', 'django>=1.7']
 tests_require = ['pytest', 'nose']
 
 

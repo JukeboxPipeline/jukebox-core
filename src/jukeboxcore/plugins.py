@@ -7,9 +7,10 @@ import abc
 import inspect
 import os
 import sys
+import traceback
 from collections import OrderedDict
 
-from jukebox.core.log import get_logger
+from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 from jukeboxcore import errors
 from jukeboxcore.constants import PLUGIN_CONFIG_DIR, CONFIG_EXT, BUILTIN_PLUGIN_PATH
@@ -228,7 +229,8 @@ class PluginManager(object):
             try:
                 mod = self.__import_file(f)
             except Exception:
-                log.debug("Importing plugin from %s failed!" % f)
+                tb = traceback.format_exc()
+                log.debug("Importing plugin from %s failed!\n%s" % (f, tb))
                 continue
             # get all classes in the imported file
             members = inspect.getmembers(mod, lambda x: inspect.isclass(x))
@@ -253,7 +255,7 @@ class PluginManager(object):
         builtin = self.find_plugins(BUILTIN_PLUGIN_PATH)
         plugins.extend(builtin)
         pathenv = os.environ.get('JUKEBOX_PLUGIN_PATH', '')
-        paths = pathenv.split(';')
+        paths = pathenv.split(os.pathsep)
         for p in reversed(paths):
             if p:  # in case of an empty string, we do not search!
                 plugins.extend(self.find_plugins(p))

@@ -1,6 +1,6 @@
 from nose.tools import eq_
 
-from jukebox.core.plugins import JB_CorePlugin
+from jukeboxcore.plugins import JB_CorePlugin
 
 
 class DummyPlugin(JB_CorePlugin):

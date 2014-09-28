@@ -1,4 +1,4 @@
-from jukebox.core import main
+from jukeboxcore import main
 
 
 def test_pipeline_init():

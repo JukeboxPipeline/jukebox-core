@@ -1,4 +1,4 @@
-from jukebox.core.plugins import JB_CorePlugin
+from jukeboxcore.plugins import JB_CorePlugin
 
 
 class DummyReqPlugin(JB_CorePlugin):
