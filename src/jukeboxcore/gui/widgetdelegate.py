@@ -16,10 +16,10 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
 
         This delegate only works ListViews that are not in IconMode. Maybe also in other views.
 
-        :param widget: the widget to draw. If None, it behaves like a QStyledItemDelegate
-        :type widget: QtGui.QWidget | None
+        :param widget: the widget to draw. If None, it behaves like a :class:`QtGui.QStyledItemDelegate`
+        :type widget: :class:`QtGui.QWidget` | None
         :param parent: the parent object
-        :type parent: QObject
+        :type parent: :class:`QtCore.QObject`
         :raises: None
         """
         super(WidgetDelegate, self).__init__(parent)
@@ -30,7 +30,7 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         """Return the widget that is used by the delegate for drawing
 
         :returns: widget
-        :rtype: QtGui.QWidget
+        :rtype: :class:`QtGui.QWidget`
         :raises: None
         """
         return self._widget
@@ -40,7 +40,7 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         """Set the widget
 
         :param widget: The widget to set
-        :type widget: QtGui.QWidget
+        :type widget: :class:`QtGui.QWidget`
         :raises: None
         """
         if self._widget:
@@ -53,11 +53,11 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         """Use the painter and style option to render the item specified by the item index.
 
         :param painter: the painter to paint
-        :type painter: QtGui.QPainter
+        :type painter: :class:`QtGui.QPainter`
         :param option: the options for painting
-        :type option: QtGui.QStyleOptionViewItem
+        :type option: :class:`QtGui.QStyleOptionViewItem`
         :param index: the index to paint
-        :type index: QtCore.QModelIndex
+        :type index: :class:`QtCore.QModelIndex`
         :returns: None
         :rtype: None
         :raises: None
@@ -78,9 +78,9 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         The widget will always be expanded to at least the size of the viewport.
 
         :param option: the options for painting
-        :type option: QtGui.QStyleOptionViewItem
+        :type option: :class:`QtGui.QStyleOptionViewItem`
         :param index: the index to paint
-        :type index: QtCore.QModelIndex
+        :type index: :class:`QtCore.QModelIndex`
         :returns: None
         :rtype: None
         :raises: None
@@ -99,7 +99,7 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         You might want use the same function as for :meth:`WidgetDelegate.setEditorData`.
 
         :param index: the index to paint
-        :type index: QtCore.QModelIndex
+        :type index: :class:`QtCore.QModelIndex`
         :returns: None
         :rtype: None
         :raises: None
@@ -112,9 +112,9 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         You might want to use this in :meth:`WidgetDelegate.createEditor`
 
         :param parent: the parent widget
-        :type parent: QtGui.QWidget | None
+        :type parent: :class:`QtGui.QWidget` | None
         :returns: The created widget | None
-        :rtype: QtGui.QWidget | None
+        :rtype: :class:`QtGui.QWidget` | None
         :raises: None
         """
         return None
@@ -125,9 +125,9 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         Call this method whenever the user finished editing.
 
         :param editor: The editor to close
-        :type editor: QtGui.QWidget
+        :type editor: :class:`QtGui.QWidget`
         :param endedithint: Hints that the delegate can give the model and view to make editing data comfortable for the user
-        :type endedithint: QtGui.QAbstractItemDelegate.EndEditHint
+        :type endedithint: :data:`QtGui.QAbstractItemDelegate.EndEditHint`
         :returns: None
         :rtype: None
         :raises: None
