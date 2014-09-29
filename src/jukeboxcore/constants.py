@@ -42,9 +42,7 @@ STYLESHEET_PATH = _norm(os.path.join(here, 'gui', 'stylesheets'))
 MAIN_STYLESHEET = _norm(os.path.join(STYLESHEET_PATH, 'main.qss'))
 """The default or main stylesheet that should be used by all our guis. Usually :func:`jukebox.core.gui.main.set_main_style` will do that for standalone apps."""
 
-#TODO
-DJSETTINGS = 'jukedj.settings'
-"""The django settings module that can be set for the env var DJANGO_SETTINGS_MODULE"""
 
+#TODO PUT IN USERCONV
 TEST_PROJECTS_DIR = _norm(os.path.join('//ca-fs-01/ca-script/pipeline/testprojectdir', os.environ['USERNAME']))
 """A path to a location where a developer can put his test project."""

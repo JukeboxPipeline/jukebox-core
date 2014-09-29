@@ -5,14 +5,14 @@ With its help, we can read and write **ini**-files.
 We are also able to validate it against a specification ini, so there are
 always correct values after loading.
 
-Use the :ref:`jukebox.core.iniconf` module for loading the core config file.
-As a plugin developer, use :func:`jukebox.core.plugins.JB_Plugin.get_config` to obtain the ConfigObj.
+Use the :ref:`jukeboxcore.iniconf` module for loading the core config file.
+As a plugin developer, use :func:`jukeboxcore.plugins.JB_Plugin.get_config` to obtain the ConfigObj.
 The ConfigObj behaves like a dictionary. It will have all keys, that you specified in your
 spec file.
 
 .. important:: Make sure that every value in your config specification has a valid default value!
 
-For editing a configfile there is the :class:`jukebox.addons.coreplugins.configer.configer.Configer` plugin.
+For editing a configfile there is the Configer plugin.
 
 """
 import os
@@ -133,7 +133,7 @@ def clean_config(config):
     config.configspec.walk(check_default_values, validator=vld)
     fix_errors(config, validation)
     validation = config.validate(vld, copy=True)
-    if not (validation == True):  # seems unpythonic but this validation evaluates that way only
+    if not (validation == True):  # NOQA seems unpythonic but this validation evaluates that way only
         msg = 'The config could not be fixed. Make sure that all default values have the right type!'
         log.debug(msg)
         raise ConfigError(msg)

@@ -3,19 +3,10 @@
 There are different init functions to initialize jukebox. Usually the launcher executes a script/software.
 Then in your script/software you call one of these inits. Some softwares have special inits.
 """
+import os
 import sys
 
 from jukeboxcore.plugins import PluginManager
-
-
-def init():
-    """Initialize the pipeline so everything works
-
-    Include third party libs and load plugins
-    """
-    # load plugins
-    pmanager = PluginManager.get()
-    pmanager.load_plugins()
 
 
 def init_environment():
@@ -25,7 +16,18 @@ def init_environment():
     :rtype: None
     :raises: None
     """
-    pass
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'jukecore.djsettings'
+
+
+def init():
+    """Initialize the pipeline so everything works
+
+    Include third party libs and load plugins
+    """
+    init_environment()
+    # load plugins
+    pmanager = PluginManager.get()
+    pmanager.load_plugins()
 
 
 def unload_modules():

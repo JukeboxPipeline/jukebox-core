@@ -8,7 +8,6 @@ Welcome to the developer's documenation. All necessary information for contribut
 
    git
    python
-   dependency
    unittest
    documenting
    launcher

@@ -25,21 +25,10 @@ import os
 import logging
 
 import django
-import django.conf
 
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
-import jukedj.settings
-from jukeboxcore.constants import DJSETTINGS, TEST_PROJECTS_DIR
 
-#TODO
-# SETUP DJANGO
-os.environ['DJANGO_SETTINGS_MODULE'] = DJSETTINGS
-# if we are testing, and there is already a test db, use it as default
-# this is the case when we run a second python instance inside our tests
-# e.g. mayatests
-if os.environ.get('TEST_DB', False):
-    jukedj.settings.DATABASES['default']['NAME'] = os.environ['TEST_DB']
 django.setup()
 
 
@@ -61,12 +50,11 @@ def setup_testdatabase():
     logging.disable(logging.NOTSET)
 
 # only setup a testdb if we are testing and if there isnt a test db already
-if os.environ.get('TESTING', None) and not os.environ.get('TEST_DB', False):
+if os.environ.get('TESTING', None):
     setup_testdatabase()
 
 # now we can import the models
-from muke import models
-from muke import validators
+from jukedj import models
 
 #==========
 # Constants
