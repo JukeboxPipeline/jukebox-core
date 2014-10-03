@@ -22,7 +22,7 @@ BUILTIN_PLUGIN_PATH = _norm(os.path.join(here, 'addons'))
 """Path to all builtin plugins. The pluginmanager will load these by default."""
 
 user_home = os.path.expanduser('~')
-USERDIR = _norm(os.path.join(user_home, 'pipeline'))
+USERDIR = _norm(os.path.join(user_home, '.jukebox'))
 """The pipeline userdirectory. Here the pipeline can store or load userpreferences etc."""
 
 CONFIG_EXT = 'ini'
@@ -37,11 +37,12 @@ PLUGIN_CONFIG_DIR = _norm(os.path.join(CONFIG_DIR, 'plugins'))
 CORE_CONFIG_PATH = _norm(os.path.join(CONFIG_DIR, 'core.ini'))
 """The filepath of the core config."""
 
-CORE_CONFIG_SPEC_PATH =_norm(os.path.join(here, 'corespec.ini'))
-"""The filepath to the configspec of core.ini"""
-
 DATA_DIR = 'data'
 """Location of the data directory of this package."""
+
+_core_config_speq_data_path = os.path.join(DATA_DIR, 'corespec.ini')
+CORE_CONFIG_SPEC_PATH = resource_filename('jukeboxcore', _core_config_speq_data_path)
+"""The filepath to the configspec of core.ini"""
 
 ICON_PATH = os.path.join(DATA_DIR, 'icons')
 """Data path to the icons."""
@@ -49,11 +50,10 @@ ICON_PATH = os.path.join(DATA_DIR, 'icons')
 STYLESHEET_PATH = os.path.join(DATA_DIR, 'stylesheets')
 """Data path to the stylesheet directory"""
 
-_main_stylesheet_path = os.path.join(STYLESHEET_PATH, 'main.qss')
-MAIN_STYLESHEET = resource_filename('jukeboxcore', _main_stylesheet_path)
+_main_stylesheet_data_path = os.path.join(STYLESHEET_PATH, 'main.qss')
+MAIN_STYLESHEET = resource_filename('jukeboxcore', _main_stylesheet_data_path)
 """The default or main stylesheet that should be used by all our guis. Usually :func:`jukebox.core.gui.main.set_main_style` will do that for standalone apps."""
 
-
-#TODO PUT IN USERCONV
+#TODO GET RID OF THIS!
 TEST_PROJECTS_DIR = _norm(os.path.join('//ca-fs-01/ca-script/pipeline/testprojectdir', os.environ['USERNAME']))
 """A path to a location where a developer can put his test project."""
