@@ -11,4 +11,5 @@ This is easier, when running multiple python instances simultaniously.
 """
 import os
 
+
 os.environ['JUKEBOX_TESTING'] = 'True'

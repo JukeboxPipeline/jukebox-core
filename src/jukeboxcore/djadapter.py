@@ -44,14 +44,15 @@ def setup_testdatabase():
     # create a test db. django somehow logs a lot of debug stuff
     # because the log config does not say different
     # so we disable it for the moment
+    from django.conf import settings
     logging.disable(logging.INFO)
     # autoclobber ignores if a test db with the same name already exists
-    db = django.db.connection.creation.create_test_db(autoclobber=True)
-    os.environ['TEST_DB'] = db
+    django.db.connection.creation.create_test_db(autoclobber=True)
+    os.environ['OLD_DB'] = settings.DATABASES['default']['NAME']
     logging.disable(logging.NOTSET)
 
 # only setup a testdb if we are testing and if there isnt a test db already
-if os.environ.get('TESTING', None):
+if os.environ.get('JUKEBOX_TESTING', None):
     setup_testdatabase()
 
 # now we can import the models
