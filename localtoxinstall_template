@@ -1,0 +1,12 @@
+#!/usr/bin/sh
+# This is a template for a local tox install script.
+# The script is used to install local repositories in developmode before
+# the rest of the dependencies are installed.
+# That way we can test without the need of having a dependency on PyPI.
+# This is useful if you are developing for example on jukebox-core but make changes to
+# a dependency of jukebox-core (jukedj for example).
+# To test against the local version of jukedj put a pip install -e command with the path
+# of your local jukedj project in this file.
+# Insert pip install commands below
+# e.g.
+# pip install -e <path to project>
