@@ -16,7 +16,7 @@ def init_environment():
     :rtype: None
     :raises: None
     """
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'jukecore.djsettings'
+    pass
 
 
 def init():

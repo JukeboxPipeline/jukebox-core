@@ -1,7 +1,15 @@
-""" Define constant values that matter for the whole pipeline here """
+""" Define constant values that matter for the whole pipeline here
+
+The paths for data are relative paths from the package dir. To get the path to the actual data
+that is installed use::
+
+   pgk_resources.resource_filename('jukeboxcore', <data_path>)
+"""
 
 import os
 import logging
+
+from pkg_resources import resource_filename
 
 _norm = os.path.normpath  # make it shorter
 
@@ -32,14 +40,17 @@ CORE_CONFIG_PATH = _norm(os.path.join(CONFIG_DIR, 'core.ini'))
 CORE_CONFIG_SPEC_PATH =_norm(os.path.join(here, 'corespec.ini'))
 """The filepath to the configspec of core.ini"""
 
-#TODO
-#ICON_PATH = _norm(os.path.join(SOURCE_PATH, 'images/icons'))
-#"""Path to the icons"""
+DATA_DIR = 'data'
+"""Location of the data directory of this package."""
 
-STYLESHEET_PATH = _norm(os.path.join(here, 'gui', 'stylesheets'))
-"""Inside this dir is a colleciton of stylesheets."""
+ICON_PATH = os.path.join(DATA_DIR, 'icons')
+"""Data path to the icons."""
 
-MAIN_STYLESHEET = _norm(os.path.join(STYLESHEET_PATH, 'main.qss'))
+STYLESHEET_PATH = os.path.join(DATA_DIR, 'stylesheets')
+"""Data path to the stylesheet directory"""
+
+_main_stylesheet_path = os.path.join(STYLESHEET_PATH, 'main.qss')
+MAIN_STYLESHEET = resource_filename('jukeboxcore', _main_stylesheet_path)
 """The default or main stylesheet that should be used by all our guis. Usually :func:`jukebox.core.gui.main.set_main_style` will do that for standalone apps."""
 
 

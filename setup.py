@@ -53,6 +53,7 @@ setup(
     url='https://github.com/JukeboxPipeline/jukebox-core',
     packages=find_packages('src'),
     package_dir={'': 'src'},
+    package_data={'jukeboxcore': ['data/*.*']},
     include_package_data=True,
     tests_require=tests_require,
     install_requires=install_requires,
