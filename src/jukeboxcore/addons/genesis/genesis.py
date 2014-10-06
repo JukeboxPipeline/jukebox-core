@@ -5,17 +5,17 @@ from PySide import QtCore
 from PySide import QtGui
 from django.core.exceptions import ValidationError
 
-from jukebox.core.log import get_logger
+from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 
-from jukebox.core import djadapter
-from jukebox.core.constants import ICON_PATH
-from jukebox.core.filesys import JB_File, TaskFileInfo
-from jukebox.core.plugins import JB_CorePlugin
-from jukebox.core.gui.main import JB_MainWindow
-from jukebox.core.gui import treemodel, djitemdata
-from jukebox.core.gui.widgets.browser import ComboBoxBrowser, ListBrowser, CommentBrowser
-from jukebox.core.gui.widgets.textedit import JB_PlainTextEdit
+from jukeboxcore import djadapter
+from jukeboxcore.constants import ICON_PATH
+from jukeboxcore.filesys import JB_File, TaskFileInfo
+from jukeboxcore.plugins import JB_CorePlugin
+from jukeboxcore.gui.main import JB_MainWindow
+from jukeboxcore.gui import treemodel, djitemdata
+from jukeboxcore.gui.widgets.browser import ComboBoxBrowser, ListBrowser, CommentBrowser
+from jukeboxcore.gui.widgets.textedit import JB_PlainTextEdit
 import genesis_ui
 
 

@@ -3,14 +3,14 @@ import fnmatch
 
 from PySide import QtGui
 
-from jukebox.core.log import get_logger
+from jukeboxcore.log import get_logger
 log = get_logger(__name__)
-from jukebox.core import iniconf
-from jukebox.core.constants import PLUGIN_CONFIG_DIR
-from jukebox.core.errors import ConfigError
-from jukebox.core.plugins import JB_CorePlugin
-from jukebox.core.gui.configeditor import ConfigObjModel, InifilesModel
-from jukebox.core.gui.main import JB_MainWindow
+from jukeboxcore import iniconf
+from jukeboxcore.constants import PLUGIN_CONFIG_DIR
+from jukeboxcore.errors import ConfigError
+from jukeboxcore.plugins import JB_CorePlugin
+from jukeboxcore.gui.configeditor import ConfigObjModel, InifilesModel
+from jukeboxcore.gui.main import JB_MainWindow
 from configer_ui import Ui_configer_mwin
 
 

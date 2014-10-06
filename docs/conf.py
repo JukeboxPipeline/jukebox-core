@@ -271,7 +271,7 @@ autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']
 
 
 # -- Intersphinx Config ---------------------------------------------------
-intersphinx_mapping = {'python': ('http://docs.python.org/2.7', None),
+intersphinx_mapping = {'python': ('https://docs.python.org/2.7', None),
                        'pyside': ('https://deptinfo-ensip.univ-poitiers.fr/ENS/pyside-docs/', None)}
 
 
@@ -280,19 +280,3 @@ if 'sphinx-build' in sys.argv[0].lower():
     sys.path.append(os.path.dirname(__file__))
     import updatedoc
     updatedoc.main([])
-
-
-# Mocking out PySide for Autodoc
-try:
-    from unittest.mock import MagicMock
-except ImportError:
-    from mock import Mock as MagicMock
-
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls,name):
-        return Mock()
-
-MOCK_MODULES = ['PySide', 'django']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)

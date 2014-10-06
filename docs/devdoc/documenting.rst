@@ -129,9 +129,9 @@ Sphinx allows for quite a few ways to deploy links in your documentation. One wa
 
   text paragraph or section after a label. this will be shown if you click on the 'sometext'-link in the documentation
 
-All modules automatically get a label at when using the advanced building process. To reference to :ref:`jukebox.core.constants` use::
+All modules automatically get a label at when using the advanced building process. To reference to :ref:`jukeboxcore.constants` use::
 
-  :ref:`jukebox.core.constants`
+  :ref:`jukeboxcore.constants`
 
 Hyperlinks to websites like this `one <https://www.python.org/>`_ work like this::
 
@@ -139,10 +139,10 @@ Hyperlinks to websites like this `one <https://www.python.org/>`_ work like this
 
 Viewdoc is an extension for sphinx that allows a link to a python object in the source code::
 
-  this will link to a python function in my source :func:`jukebox.core.main.init`
-  this will link to a module :mod:`jukebox.core.main`
-  this will link to a variable :data:`jukebox.core.constants.DEFAULT_LOGGING_LEVEL`
-  this will link to a class :class:`jukebox.core.plugins.JB_Plugin`
+  this will link to a python function in my source :func:`jukeboxcore.main.init`
+  this will link to a module :mod:`jukeboxcore.main`
+  this will link to a variable :data:`jukeboxcore.constants.DEFAULT_LOGGING_LEVEL`
+  this will link to a class :class:`jukeboxcore.plugins.JB_Plugin`
 
 .. _docstrings:
 
