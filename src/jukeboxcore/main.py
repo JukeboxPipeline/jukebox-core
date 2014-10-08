@@ -3,7 +3,6 @@
 There are different init functions to initialize jukebox. Usually the launcher executes a script/software.
 Then in your script/software you call one of these inits. Some softwares have special inits.
 """
-import os
 import sys
 
 from jukeboxcore.plugins import PluginManager
