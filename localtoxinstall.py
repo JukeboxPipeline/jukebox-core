@@ -25,9 +25,12 @@ in the project dir. Have a look at the template for more information. \
 Do not put the localtoxinstall script under version control!')
     sys.exit(1)
 
-args = ['sh', script]
-start_process(args)
+print(sys.argv)
+if '--no-deps' not in sys.argv:
+    args = ['sh', script]
+    start_process(args)
 
 args = ['pip', 'install', '--pre']
 args.extend(sys.argv[1:])
+print(args)
 start_process(args)
