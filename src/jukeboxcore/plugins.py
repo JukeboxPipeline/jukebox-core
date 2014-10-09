@@ -184,6 +184,9 @@ class PluginManager(object):
     e.g. plugins that are meant for a specific software.
     """
 
+    builtinpluginpath = BUILTIN_PLUGIN_PATH
+    """String of Paths for builtin plugins, seperated by os.pathsep"""
+
     @classmethod
     def get(cls):
         """ Return a PluginManager Instance.
@@ -252,9 +255,8 @@ class PluginManager(object):
         :raises:
         """
         plugins = []
-        builtin = self.find_plugins(BUILTIN_PLUGIN_PATH)
-        plugins.extend(builtin)
         pathenv = os.environ.get('JUKEBOX_PLUGIN_PATH', '')
+        os.pathsep.join((pathenv, BUILTIN_PLUGIN_PATH))
         paths = pathenv.split(os.pathsep)
         for p in reversed(paths):
             if p:  # in case of an empty string, we do not search!
