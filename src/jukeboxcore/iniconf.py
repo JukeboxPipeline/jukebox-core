@@ -5,7 +5,7 @@ With its help, we can read and write **ini**-files.
 We are also able to validate it against a specification ini, so there are
 always correct values after loading.
 
-Use the :ref:`jukeboxcore.iniconf` module for loading the core config file.
+Use the :mod:`jukeboxcore.iniconf` module for loading the core config file.
 As a plugin developer, use :func:`jukeboxcore.plugins.JB_Plugin.get_config` to obtain the ConfigObj.
 The ConfigObj behaves like a dictionary. It will have all keys, that you specified in your
 spec file.

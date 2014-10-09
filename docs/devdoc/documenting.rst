@@ -129,9 +129,9 @@ Sphinx allows for quite a few ways to deploy links in your documentation. One wa
 
   text paragraph or section after a label. this will be shown if you click on the 'sometext'-link in the documentation
 
-All modules automatically get a label at when using the advanced building process. To reference to :ref:`jukeboxcore.constants` use::
+Python objects like modules can be referenced as well. To reference to :mod:`jukeboxcore.constants` use::
 
-  :ref:`jukeboxcore.constants`
+  :mod:`jukeboxcore.constants`
 
 Hyperlinks to websites like this `one <https://www.python.org/>`_ work like this::
 

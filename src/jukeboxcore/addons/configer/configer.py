@@ -247,7 +247,7 @@ class Configer(JB_CorePlugin):
 
     This can be used as a standalone plugin.
     Before you call run, make sure that there is a running
-    QApplication running. See :ref:`jukebox.core.gui.main` for helpful functions.
+    QApplication running. See :mod:`jukeboxcore.gui.main` for helpful functions.
 
     """
 
