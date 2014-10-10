@@ -69,6 +69,16 @@ class PlatformInterface(object):
         pass
 
     @abc.abstractmethod
+    def get_maya_bin(self):
+        """Return the path to the maya bin dir
+
+        :returns: path to maya bin dir
+        :rtype: str
+        :raises: errors.SoftwareNotFoundError
+        """
+        pass
+
+    @abc.abstractmethod
     def get_maya_python(self, ):
         """ Return the path to the mayapy executable
 
@@ -124,6 +134,16 @@ class WindowsInterface(PlatformInterface):
         mayaloc = self.get_maya_location()
         return os.path.join(mayaloc, 'Python', 'Lib', 'site-packages')
 
+    def get_maya_bin(self):
+        """Return the path to the maya bin dir
+
+        :returns: path to maya bin dir
+        :rtype: str
+        :raises: errors.SoftwareNotFoundError
+        """
+        mayaloc = self.get_maya_location()
+        return os.path.join(mayaloc, 'bin')
+
     def get_maya_python(self, ):
         """ Return the path to the mayapy executable
 
@@ -131,8 +151,8 @@ class WindowsInterface(PlatformInterface):
         :rtype: str
         :raises: errors.SoftwareNotFoundError
         """
-        mayaloc = self.get_maya_location()
-        return os.path.join(mayaloc, 'bin', 'mayapy.exe')
+        mayabin = self.get_maya_bin()
+        return os.path.join(mayabin, 'mayapy.exe')
 
     def get_maya_exe(self, ):
         """ Return the path to the maya executable
@@ -141,8 +161,8 @@ class WindowsInterface(PlatformInterface):
         :rtype: str
         :raises: errors.SoftwareNotFoundError
         """
-        mayaloc = self.get_maya_location()
-        return os.path.join(mayaloc, 'bin', 'maya.exe')
+        mayabin = self.get_maya_bin()
+        return os.path.join(mayabin, 'maya.exe')
 
 
 interfaces = {'Windows': WindowsInterface}
