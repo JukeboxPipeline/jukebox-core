@@ -54,6 +54,12 @@ _main_stylesheet_data_path = os.path.join(STYLESHEET_PATH, 'main.qss')
 MAIN_STYLESHEET = resource_filename('jukeboxcore', _main_stylesheet_data_path)
 """The default or main stylesheet that should be used by all our guis. Usually :func:`jukebox.core.gui.main.set_main_style` will do that for standalone apps."""
 
+MAYA_VERSION = "2015"
+"""The supported maya version for jukebox."""
+
+MAYA_REG_KEY = "Software\\Autodesk\\Maya\\%s\\Setup\\InstallPath" % MAYA_VERSION
+"""Registry key on windows to access maya install path"""
+
 #TODO GET RID OF THIS!
 TEST_PROJECTS_DIR = _norm(os.path.join('//ca-fs-01/ca-script/pipeline/testprojectdir', os.environ['USERNAME']))
 """A path to a location where a developer can put his test project."""
