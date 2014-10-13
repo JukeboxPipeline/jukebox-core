@@ -98,6 +98,16 @@ class PlatformInterface(object):
         """
         pass
 
+    @abc.abstractmethod
+    def get_maya_envpath(self):
+        """Return the PYTHONPATH neccessary for running mayapy
+
+        :returns: the PYTHONPATH that is used for running mayapy
+        :rtype: str
+        :raises: None
+        """
+        pass
+
 
 class WindowsInterface(PlatformInterface):
     """ Interface for all windows related operations
@@ -163,6 +173,28 @@ class WindowsInterface(PlatformInterface):
         """
         mayabin = self.get_maya_bin()
         return os.path.join(mayabin, 'maya.exe')
+
+    def get_maya_envpath(self):
+        """Return the PYTHONPATH neccessary for running mayapy
+
+        If you start native mayapy, it will setup these paths.
+
+        :returns: the PYTHONPATH that is used for running mayapy
+        :rtype: str
+        :raises: None
+        """
+        opj = os.path.join
+        ml = self.get_maya_location()
+        mb = self.get_maya_bin()
+        msp = self.get_maya_sitepackage_dir()
+        pyzip = opj(mb, "python27.zip")
+        pydir = opj(ml, "Python")
+        pydll = opj(pydir, "DLLs")
+        pylib = opj(pydir, "lib")
+        pyplat = opj(pylib, "plat-win")
+        pytk = opj(pylib, "lib-tk")
+        path = os.pathsep.join((pyzip, pydll, pylib, pyplat, pytk, mb, pydir, msp))
+        return path
 
 
 interfaces = {'Windows': WindowsInterface}
