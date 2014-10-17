@@ -214,7 +214,7 @@ class PluginManager(object):
     instance = None
     """ PluginManager instance when using PluginManager.get() """
 
-    supportedTypes = (JB_CorePlugin, JB_CoreStandalonePlugin, JB_CoreStandaloneGuiPlugin)
+    supportedTypes = [JB_CorePlugin, JB_CoreStandalonePlugin, JB_CoreStandaloneGuiPlugin]
     """ A list of plugin classes, the manager can load.
     Override this list in a subclass if you want to support more than just core plugins,
     e.g. plugins that are meant for a specific software.
@@ -295,9 +295,9 @@ class PluginManager(object):
         """
         plugins = []
         pathenv = os.environ.get('JUKEBOX_PLUGIN_PATH', '')
-        pathenv = os.pathsep.join((pathenv, BUILTIN_PLUGIN_PATH))
+        pathenv = os.pathsep.join((pathenv, self.builtinpluginpath))
         paths = pathenv.split(os.pathsep)
-        for p in reversed(paths):
+        for p in paths:
             if p:  # in case of an empty string, we do not search!
                 plugins.extend(self.find_plugins(p))
         return plugins
