@@ -22,7 +22,7 @@ def init_environment():
 def init():
     """Initialize the pipeline so everything works
 
-    Include third party libs and load plugins
+    Initiealizes environment variables and loads the plugins
     """
     init_environment()
     # load plugins

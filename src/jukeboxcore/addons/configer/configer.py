@@ -8,7 +8,7 @@ log = get_logger(__name__)
 from jukeboxcore import iniconf
 from jukeboxcore.constants import PLUGIN_CONFIG_DIR
 from jukeboxcore.errors import ConfigError
-from jukeboxcore.plugins import JB_CorePlugin
+from jukeboxcore.plugins import JB_CoreStandaloneGuiPlugin
 from jukeboxcore.gui.configeditor import ConfigObjModel, InifilesModel
 from jukeboxcore.gui.main import JB_MainWindow
 from configer_ui import Ui_configer_mwin
@@ -242,7 +242,7 @@ class ConfigerWin(JB_MainWindow, Ui_configer_mwin):
         self.inimodel.set_index_edited(current, False)
 
 
-class Configer(JB_CorePlugin):
+class Configer(JB_CoreStandaloneGuiPlugin):
     """A plugin that can run a ConfigEditor
 
     This can be used as a standalone plugin.

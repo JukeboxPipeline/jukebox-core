@@ -8,7 +8,7 @@ It's duty is to initialize the pipeline and then launch whatever plugin is reque
 import argparse
 import sys
 
-from jukeboxcore import main
+from jukeboxcore import main, plugins, gui
 from jukeboxcore.gui import compile_ui
 
 
@@ -26,10 +26,13 @@ class Launcher(object):
         self.subparsers = self.setup_cmd_subparsers(self.parser)
         launchp = self.subparsers.add_parser("launch",
                                              help="Launches addons for jukebox.")
+        listp = self.subparsers.add_parser("list",
+                                           help="List all addons that can be launched with the launch command.")
         managep = self.subparsers.add_parser("manage", add_help=False,
                                              help="Manage django command")
         compileuip = self.subparsers.add_parser("compileui", help="Compile Qt Designer Files")
         self.setup_launch_parser(launchp)
+        self.setup_list_parser(listp)
         self.setup_manage_parser(managep)
         self.setup_compile_ui_parser(compileuip)
 
@@ -77,9 +80,50 @@ class Launcher(object):
         :type unknown: list
         :returns: None
         :rtype: None
+        :raises: SystemExit
+        """
+        pm = plugins.PluginManager.get()
+        addon = pm.get_plugin(args.addon)
+        isgui = isinstance(addon, plugins.JB_CoreStandaloneGuiPlugin)
+        if isgui:
+            gui.main.init_gui()
+        print "Launching %s..." % args.addon
+        addon.run()
+        if isgui:
+            app = gui.main.get_qapp()
+            sys.exit(app.exec_())
+
+    def setup_list_parser(self, parser):
+        """Setup the given parser for the list command
+
+        :param parser: the argument parser to setup
+        :type parser: :class:`argparse.ArgumentParser`
+        :returns: None
+        :rtype: None
         :raises: None
         """
-        print "launching with %s" % args
+        parser.set_defaults(func=self.list)
+
+    def list(self, args, unknown):
+        """List all addons that can be launched
+
+        :param args: arguments from the launch parser
+        :type args: Namespace
+        :param unknown: list of unknown arguments
+        :type unknown: list
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        pm = plugins.PluginManager.get()
+        plugs = pm.get_all_plugins()
+        if not plugs:
+            print "No standalone addons found!"
+            return
+        print "Addons:"
+        for p in plugs:
+            if isinstance(p, plugins.JB_CoreStandalonePlugin):
+                print "\t%s" % p.__class__.__name__
 
     def setup_manage_parser(self, parser):
         """Setup the given parser for manage command

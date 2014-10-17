@@ -50,6 +50,17 @@ def set_main_style(widget):
     widget.setStyleSheet(sheet)
 
 
+def init_gui():
+    """Initialize a QApplication and apply the main style to it
+
+    :returns: None
+    :rtype: None
+    :raises: None
+    """
+    app = get_qapp()
+    set_main_style(app)
+
+
 def wrap(ptr, base=None):
     """Wrap the given pointer with shiboken and return the appropriate QObject
 
