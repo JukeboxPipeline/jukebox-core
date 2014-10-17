@@ -61,6 +61,11 @@ setup(
     license='BSD',
     zip_safe=False,
     keywords='jukebox-core',
+    entry_points={
+        'console_scripts': [
+            'jukebox = jukeboxcore.launcher:main_func',
+        ]
+    },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

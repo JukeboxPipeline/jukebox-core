@@ -161,6 +161,42 @@ class JB_CorePlugin(JB_Plugin):
     pass
 
 
+class JB_CoreStandalonePlugin(JB_CorePlugin):
+    """Core plugin for standalone addons.
+
+    Standalone addons feature a special run method an
+    can be run with the jukebox launcher.
+    The launcher will first initialize the plugin and then
+    call the run method.
+
+    For subclassing: you have to implement **init**, **unit** and **run**!
+    """
+
+    @abc.abstractmethod
+    def run(self, ):
+        """Start the plugin. This method is also called by
+        the jukebox launcher.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        pass
+
+
+class JB_CoreStandaloneGuiPlugin(JB_CoreStandalonePlugin):
+    """Core plugin for standalone addons that also need a gui.
+
+    Standalone addons feature a special run method an
+    can be run with the jukebox launcher.
+    The launcher will first initialize the plugin and then
+    call the run method.
+
+    For subclassing: you have to implement **init**, **unit** and **run**!
+    """
+    pass
+
+
 class PluginManager(object):
     """ Loads and unloads core plugins.
 
@@ -178,7 +214,7 @@ class PluginManager(object):
     instance = None
     """ PluginManager instance when using PluginManager.get() """
 
-    supportedTypes = (JB_CorePlugin,)
+    supportedTypes = (JB_CorePlugin, JB_CoreStandalonePlugin, JB_CoreStandaloneGuiPlugin)
     """ A list of plugin classes, the manager can load.
     Override this list in a subclass if you want to support more than just core plugins,
     e.g. plugins that are meant for a specific software.
@@ -240,7 +276,10 @@ class PluginManager(object):
             classes = [m[1] for m in members]  # get the classes
             for c in classes:
                 # if the class is derived from a supported type append it
-                if any(base in self.supportedTypes for base in c.__bases__):
+                # we test if it is a subclass of a supported type but not a supported type itself
+                # because that might be the abstract class
+                if any(issubclass(c, supported) for supported in self.supportedTypes)\
+                   and c not in self.supportedTypes:
                     plugins.append(c)
         return plugins
 
@@ -256,7 +295,7 @@ class PluginManager(object):
         """
         plugins = []
         pathenv = os.environ.get('JUKEBOX_PLUGIN_PATH', '')
-        os.pathsep.join((pathenv, BUILTIN_PLUGIN_PATH))
+        pathenv = os.pathsep.join((pathenv, BUILTIN_PLUGIN_PATH))
         paths = pathenv.split(os.pathsep)
         for p in reversed(paths):
             if p:  # in case of an empty string, we do not search!
@@ -272,11 +311,11 @@ class PluginManager(object):
         """
         for p in self.__plugins.values():
             try:
-                self._load_plugin(p)
+                self.load_plugin(p)
             except errors.PluginInitError:
                 log.exception('Initializing the plugin: %s failed.' % p)
 
-    def _load_plugin(self, p):
+    def load_plugin(self, p):
         """ Load the specified plugin
 
         :param p: The plugin to load
@@ -298,7 +337,7 @@ class PluginManager(object):
                 raise errors.PluginInitError('Required Plugin %s not found. Cannot load %s. Reason: %s' % (name, p, e))
         for plug in reqplugins:
             try:
-                self._load_plugin(plug)
+                self.load_plugin(plug)
             except errors.PluginInitError as e:
                 log.error("Required Plugin %s could not be loaded. Cannot load %s" % (plug, p))
                 raise errors.PluginInitError('Required Plugin %s could not be loaded. Cannot load %s. Reason: %s' % (plug,p, e))
