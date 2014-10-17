@@ -6,10 +6,10 @@ It is used for all commandline actions of the pipeline.
 It's duty is to initialize the pipeline and then launch whatever plugin is requested.
 """
 import argparse
-import os
 import sys
 
 from jukeboxcore import main
+from jukeboxcore.gui import compile_ui
 
 
 class Launcher(object):
@@ -28,8 +28,10 @@ class Launcher(object):
                                              help="Launches addons for jukebox.")
         managep = self.subparsers.add_parser("manage", add_help=False,
                                              help="Manage django command")
+        compileuip = self.subparsers.add_parser("compileui", help="Compile Qt Designer Files")
         self.setup_launch_parser(launchp)
         self.setup_manage_parser(managep)
+        self.setup_compile_ui_parser(compileuip)
 
     def setup_core_parser(self, ):
         """Setup the core parser
@@ -80,7 +82,7 @@ class Launcher(object):
         print "launching with %s" % args
 
     def setup_manage_parser(self, parser):
-        """Setup the given parser for manage command to
+        """Setup the given parser for manage command
 
         :param parser: the argument parser to setup
         :type parser: :class:`argparse.ArgumentParser`
@@ -106,9 +108,36 @@ class Launcher(object):
         # first argument is usually manage.py so we do this
         args = ['jukebox manage']
         args.extend(unknown)
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "jukeboxcore.djsettings")
         from django.core.management import execute_from_command_line
         execute_from_command_line(args)
+
+    def setup_compile_ui_parser(self, parser):
+        """Setup the given parser for the compile command
+
+        :param parser: the argument parser to setup
+        :type parser: :class:`argparse.ArgumentParser`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        parser.set_defaults(func=self.compile_ui)
+        parser.add_argument('uifile',
+                        help='the uifile that will be compiled. The compiled file will be in the same directory but ends with _ui.py',
+                        type=argparse.FileType('r'))
+
+    def compile_ui(self, namespace, unknown):
+        """Compile qt designer files
+
+        :param args: arguments from the launch parser
+        :type args: Namespace
+        :param unknown: list of unknown arguments
+        :type unknown: list
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        uifile = namespace.uifile.name
+        compile_ui.compile(uifile)
 
     def parse_args(self, args=None):
         """Parse the given arguments

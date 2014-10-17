@@ -29,7 +29,6 @@ import django
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'jukeboxcore.djsettings'
 django.setup()
 
 
