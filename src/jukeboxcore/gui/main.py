@@ -125,6 +125,17 @@ class JB_Gui(object):
         JB_Gui._allinstances.add(self)
 
     @classmethod
+    def allinstances(cls):
+        """Return all instances that inherit from JB_Gui
+
+        :returns: all instances that inherit from JB_Gui
+        :rtype: list
+        :raises: None
+        """
+        JB_Gui._allinstances = weakref.WeakSet([i for i in cls._allinstances if shiboken.isValid(i)])
+        return list(cls._allinstances)
+
+    @classmethod
     def classinstances(cls):
         """Return all instances of the current class
 
@@ -136,7 +147,7 @@ class JB_Gui(object):
         :rtype: list
         :raises: None
         """
-        l = [i for i in cls._allinstances if type(i) == cls]
+        l = [i for i in cls.allinstances() if type(i) == cls]
         return l
 
     @classmethod
@@ -147,18 +158,8 @@ class JB_Gui(object):
         :rtype: list
         :raises: None
         """
-        l = [i for i in cls._allinstances if isinstance(i, cls)]
+        l = [i for i in cls.allinstances() if isinstance(i, cls)]
         return l
-
-    @classmethod
-    def allinstances(cls):
-        """Return all instances that inherit from JB_Gui
-
-        :returns: all instances that inherit from JB_Gui
-        :rtype: list
-        :raises: None
-        """
-        return list(cls._allinstances)
 
 
 class JB_MainWindow(JB_Gui, QtGui.QMainWindow):
@@ -175,3 +176,4 @@ class JB_MainWindow(JB_Gui, QtGui.QMainWindow):
         """
         super(JB_MainWindow, self).__init__(*args, **kwargs)
         set_main_style(self)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose, on=True)

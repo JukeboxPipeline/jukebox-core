@@ -405,9 +405,6 @@ class JB_WindowToolTip(WidgetToolTip):
         """
         wins = set(JB_MainWindow.instances())
         widgets = set(self.get_widgets())
-
-        for w in widgets - wins:
-            self.remove_widget(w)
         for w in wins - widgets:
             self.add_widget(w)
         super(JB_WindowToolTip, self).show()
