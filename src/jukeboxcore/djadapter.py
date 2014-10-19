@@ -1,9 +1,8 @@
 """This module provides a adapter for django to use in your tools
 
 On import django will be setup to work. This might take 1-5 seconds! From there on you have access to the database.
-If we are testing, this means the env var ``TESTING`` is set, then the import will create a test database automatically!
-Creating a test db will set the env var \'TEST_DB\' to the name of the test db. When running a second instance inside
-our tests, we can check if there is already a test db. If there is, use it. If not, create one.
+If we are testing, this means the env var ``JUKEBOX_TESTING`` is set, then the import will create a test database automatically!
+Creating a test db will set the env var \'TEST_DB\' to the name of the test db, so we can destroy it later.
 
 The djadapter has shotcuts to the manger objects for each model.
 To make a query, use these managers. See the documentation of
@@ -14,7 +13,7 @@ Just instead of ``<Model>.objects`` use a manager of djadapter as shortcut.
 
 For example to query projects use::
 
-  from jukebox.core import djadapter
+  from jukeboxcore import djadapter
   djadapter.projects.all() # returns a QuerySet that can be used similar to a list
   djadapter.projects.get(name=\'Some Project\') # returns an instance of project if
                                               # there is one but only one project with this name
@@ -23,6 +22,7 @@ For example to query projects use::
 """
 import os
 import logging
+import getpass
 
 import django
 
@@ -37,8 +37,6 @@ def setup_testdatabase():
 
     We have to do some setup manually. ``manage.py test`` does that usually.
     Writes the db in the env var ``TEST_DB``. This can be torn down afterwards.
-    When testing with nose, the fixture :func:`jukebox.tests.teardown_packagen` will do the teardown
-    automatically.
     """
     # create a test db. django somehow logs a lot of debug stuff
     # because the log config does not say different
@@ -46,8 +44,8 @@ def setup_testdatabase():
     from django.conf import settings
     logging.disable(logging.INFO)
     # autoclobber ignores if a test db with the same name already exists
-    django.db.connection.creation.create_test_db(autoclobber=True)
-    os.environ['OLD_DB'] = settings.DATABASES['default']['NAME']
+    django.db.connection.creation.create_test_db(autoclobber=False)
+    os.environ['TEST_DB'] = settings.DATABASES['default']['NAME']
     logging.disable(logging.NOTSET)
 
 # only setup a testdb if we are testing and if there isnt a test db already
@@ -75,13 +73,19 @@ Asset flag indicates if it is a department for assets or for shots.
 Every project will get these departments by default.
 """
 
-RELEASETYPES = dict((x[0], x[1][0]) for x in models.RTYP_CHOICES.items())
+RELEASETYPES = {
+    'release': 'release',
+    'work': 'work',
+    'handoff': 'handoff',
+}
 """Releasetype values for the different releasetypes
 
-the value is the actual value that will be stored in the database.
+the values consist of tuples with the actual name and a description.
 """
 
-FILETYPES = models.FILETYPES
+FILETYPES = {
+    'mayamainscene': 'mayamainscene'
+}
 """A dict for file types that can be used in a TaskFile
 
 the values are the actual data that gets stored in the database.
@@ -93,6 +97,7 @@ Explanations:
                   Main scenes hold the main information, not just extracted parts.
                   If you export shader or maybe some blendshapes in a scene, do not use this one.
 """
+
 
 #=========
 # Managers
@@ -142,4 +147,5 @@ def get_current_user():
     :rtype: :class:`models.User`
     :raises: DoesNotExist
     """
-    return users.get(username=os.environ['USERNAME'])
+    name = getpass.getuser()
+    return users.get(username=name)
