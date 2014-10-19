@@ -6,6 +6,8 @@ https://docs.djangoproject.com/en/1.6/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
+
+Note that some of the settings are pulled out of the user config.
 """
 
 from jukeboxcore.iniconf import get_core_config

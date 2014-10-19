@@ -51,7 +51,7 @@ class ConfigerWin(JB_MainWindow, Ui_configer_mwin):
         self.save_pb.clicked.connect(self.save_current_config)
 
     def reset_current_row(self, *args, **kwargs):
-        """ Reset the selected rows value to its default value
+        """Reset the selected rows value to its default value
 
         :returns: None
         :rtype: None
@@ -275,7 +275,7 @@ class Configer(JB_CoreStandaloneGuiPlugin):
         pass
 
     def run(self, ):
-        """ Start the configeditor
+        """Start the configeditor
 
         :returns: None
         :rtype: None

@@ -198,7 +198,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         and adds it to the ui
 
         :returns: the created combo box browser
-        :rtype: :class:`jukebox.core.gui.widgets.browser.ComboBoxBrowser`
+        :rtype: :class:`jukeboxcore.gui.widgets.browser.ComboBoxBrowser`
         :raises: None
         """
         prjbrws = ComboBoxBrowser(1, headers=['Project:'])
@@ -212,7 +212,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         and adds it to the ui
 
         :returns: the created borwser
-        :rtype: :class:`jukebox.core.gui.widgets.browser.ListBrowser`
+        :rtype: :class:`jukeboxcore.gui.widgets.browser.ListBrowser`
         :raises: None
         """
         shotbrws = ListBrowser(4, headers=['Sequence', 'Shot', 'Task', 'Descriptor'])
@@ -226,7 +226,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         and adds it to the ui
 
         :returns: the created borwser
-        :rtype: :class:`jukebox.core.gui.widgets.browser.ListBrowser`
+        :rtype: :class:`jukeboxcore.gui.widgets.browser.ListBrowser`
         :raises: None
         """
         assetbrws = ListBrowser(4, headers=['Assettype', 'Asset', 'Task', 'Descriptor'])
@@ -239,7 +239,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :param layout: the layout to insert the browser into
         :type layout: QLayout
         :returns: the created browser
-        :rtype: :class:`jukebox.core.gui.widgets.browser.ComboBoxBrowser`
+        :rtype: :class:`jukeboxcore.gui.widgets.browser.ComboBoxBrowser`
         :raises: None
         """
         brws = ComboBoxBrowser(1, headers=['Version:'])
@@ -252,7 +252,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :param layout: the layout to insert the browser into
         :type layout: QLayout
         :returns: the created browser
-        :rtype: :class:`jukebox.core.gui.widgets.browser.ListBrowser`
+        :rtype: :class:`jukeboxcore.gui.widgets.browser.ListBrowser`
         :raises: None
         """
         brws = CommentBrowser(1, headers=['Comments:'])
@@ -274,7 +274,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """Create and return a tree model that represents a list of projects
 
         :returns: the creeated model
-        :rtype: :class:`jukebox.core.gui.treemodel.TreeModel`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
         prjs = djadapter.projects.all()
@@ -296,7 +296,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :param project: the project of the shots
         :type project: :class:`djadapter.models.Project`
         :returns: the created tree model
-        :rtype: :class:`jukebox.core.gui.treemodel.TreeModel`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
         rootdata = treemodel.ListItemData(['Name'])
@@ -323,7 +323,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """Create a text edit for comments
 
         :returns: the created text edit
-        :rtype: :class:`jukebox.core.gui.widgets.textedit.JB_PlainTextEdit`
+        :rtype: :class:`jukeboxcore.gui.widgets.textedit.JB_PlainTextEdit`
         :raises: None
         """
         pte = JB_PlainTextEdit(parent=self)
@@ -341,7 +341,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :param project: the project of the assets
         :type project: :class:`djadapter.models.Project`
         :returns: the created tree model
-        :rtype: :class:`jukebox.core.gui.treemodel.TreeModel`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
         rootdata = treemodel.ListItemData(['Name'])
@@ -373,7 +373,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :param descriptor: the descirptor
         :type descriptor: str|None
         :returns: the created tree model
-        :rtype: :class:`jukebox.core.gui.treemodel.TreeModel`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
         rootdata = treemodel.ListItemData(['Version', 'Releasetype', 'Path'])
@@ -442,7 +442,8 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         self.update_shot_browser(prj, releasetype)
         self.update_asset_browser(prj, releasetype)
 
-    def update_version_descriptor(self, task, releasetype, descriptor, verbrowser, commentbrowser):
+    def update_version_descriptor(self, task, releasetype, descriptor,
+                                  verbrowser, commentbrowser):
         """Update the versions in the given browser
 
         :param task: the task of the taskfiles
@@ -452,9 +453,9 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :param descriptor: the descirptor
         :type descriptor: str|None
         :param verbrowser: the browser to update (the version browser)
-        :type verbrowser: :class:`jukebox.core.gui.widgets.browser.AbstractTreeBrowser`
+        :type verbrowser: :class:`jukeboxcore.gui.widgets.browser.AbstractTreeBrowser`
         :param commentbrowser: the comment browser to update
-        :type commentbrowser: :class:`jukebox.core.gui.widgets.browser.AbstractTreeBrowser`
+        :type commentbrowser: :class:`jukeboxcore.gui.widgets.browser.AbstractTreeBrowser`
         :returns: None
         :rtype: None
         :raises: None
@@ -473,11 +474,11 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :param index: the modelindex with the descriptor tree item as internal data
         :type index: QtCore.QModelIndex
         :param source: the shot or asset browser to that changed its selection
-        :type source: :class:`jukebox.core.gui.widgets.browser.AbstractTreeBrowser`
+        :type source: :class:`jukeboxcore.gui.widgets.browser.AbstractTreeBrowser`
         :param update: the browser to update
-        :type update: :class:`jukebox.core.gui.widgets.browser.AbstractTreeBrowser`
+        :type update: :class:`jukeboxcore.gui.widgets.browser.AbstractTreeBrowser`
         :param browser: the comment browser to update
-        :type browser: :class:`jukebox.core.gui.widgets.browser.AbstractTreeBrowser`
+        :type browser: :class:`jukeboxcore.gui.widgets.browser.AbstractTreeBrowser`
         :param mapper: the data widget mapper to update
         :type mapper: :class:`QtGui.QDataWidgetMapper`
         :returns: None
@@ -906,7 +907,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """Save the shot to the location of jbfile
 
         :param jbfile: the jbfile that can be used to query the location
-        :type jbfile: :class:`jukebox.core.filesys.JB_File`
+        :type jbfile: :class:`jukeboxcore.filesys.JB_File`
         :returns: None
         :rtype: None
         :raises: NotImplementedError
@@ -928,7 +929,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """Save the shot to the location of jbfile
 
         :param jbfile: the jbfile that can be used to query the location
-        :type jbfile: :class:`jukebox.core.filesys.JB_File`
+        :type jbfile: :class:`jukeboxcore.filesys.JB_File`
         :returns: None
         :rtype: None
         :raises: NotImplementedError
@@ -965,7 +966,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """Create a db entry for the given task file info
 
         :param tfi: the info for a TaskFile entry in the db
-        :type tfi: :class:`jukebox.core.filesys.TaskFileInfo`
+        :type tfi: :class:`jukeboxcore.filesys.TaskFileInfo`
         :returns: the created taskfile and note
         :rtype: tuple
         :raises: ValidationError
