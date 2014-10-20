@@ -158,6 +158,7 @@ class Launcher(object):
         """
         # first argument is usually manage.py. This will also adapt the help messages
         args = ['jukebox manage']
+        args.extend(namespace.args)
         args.extend(unknown)
         from django.core.management import execute_from_command_line
         execute_from_command_line(args)

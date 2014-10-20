@@ -21,7 +21,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 loglvl_mapping = {'NOTSET': logging.NOTSET, 'DEBUG': logging.DEBUG,
                   'INFO': logging.INFO, 'WARNING': logging.WARNING,
-                  'ERROR': logging.ERROR, 'CIRITCAL': logging.CIRTICAL}
+                  'ERROR': logging.ERROR, 'CRITCAL': logging.CRITICAL}
 """Mapping of for the environment variable ``JUKEBOX_LOG_LEVEL``"""
 
 DEFAULT_LOGGING_LEVEL = loglvl_mapping.get(os.environ.get('JUKEBOX_LOG_LEVEL', 'DEBUG'), logging.DEBUG)
