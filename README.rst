@@ -2,28 +2,19 @@
 Jukebox Core
 =========================================================
 
-.. image:: http://img.shields.io/pypi/v/jukebox-core.png
-    :target: https://pypi.python.org/pypi/jukebox-core
-
-.. image:: http://img.shields.io/pypi/dm/jukebox-core.png
-    :target: https://pypi.python.org/pypi/jukebox-core
-
-.. image:: http://img.shields.io/pypi/l/jukebox-core.svg
-    :target: https://pypi.python.org/pypi/jukebox-core
-
-
-
-
-Core package for the jukebox pipeline.
+This is the core package for the jukebox cg-pipeline.
+It is a framework for developing pipeline tools for different softwares in python.
 
 
 Documentation
 -------------
 
-The full documentation is at http://jukebox-core.rtfd.org.
+There is currently no documentation available on the internet.
 
+  1. Clone the repository.
+  2. Check docs/requirements.txt and install missing dependencies
+  3. Install this project in edit mode via::
 
-Features
---------
-
-* TODO
+       pip install -e path/to/repo
+  4. Execute docs/make or docs/make.bat
+  5. The documentation will be under docs/_build
