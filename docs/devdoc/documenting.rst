@@ -44,7 +44,7 @@ After the succesful installation you are able to run the ``make.bat`` on windows
    $ make.bat html
 
 This will also run ``updatedoc.py`` automatically. This is a modification of the sphinx extension ``apidoc``.
-It will collect the source code and create rst-files for each module.
+It will collect the source code and create rst-files for each module. See :ref:`Advanced Building <advanced_building>` for more information.
 
 .. Warning:: The content of the ``docs/reference`` dir will be deleted.
 
@@ -67,20 +67,7 @@ You should run the script like this::
 
   python gendoc.py -Tfe -o devdoc/source/ ../jukebox/
 
-For your convenience, there is also a pythonscript that runs gendoc and invokes the make.bat. Just call or doubleclick the script and the doc is updated::
-
-  user@mypc /path/to/Jukebox/docs
-  $ updatedoc.py
-
-**Running ``updatedoc.py`` is the usual way of building the doc!**
-
-Gendoc lets you reference your modules in an rst files like in this example::
-
-  :ref:`jukebox.launcher.baselauncher`
-
-But you can also use ``:mod:`` instead of ``:ref:``
-
-The labels for the reference are automatically created by gendoc.
+For your convenience, there is also a pythonscript that runs ``gendoc``. The script can be found under ``docs/updatedoc.py``. The config file for sphinx invokes ``updatedoc.py`` on every sphinx build. So you should not worry about that in most cases. 
 
 .. Warning:: Using the ``updatedoc.py`` script does delete the content of the apidoc folder. You might loose data! Because we use updatedoc frequently, there is no point in altering files inside the apidoc folder.
 
@@ -152,6 +139,7 @@ Viewdoc is an extension for sphinx that allows a link to a python object in the 
   this will link to a module :mod:`jukeboxcore.main`
   this will link to a variable :data:`jukeboxcore.constants.DEFAULT_LOGGING_LEVEL`
   this will link to a class :class:`jukeboxcore.plugins.JB_Plugin`
+  this will link to a method :meth:`jukeboxcore.JB_Plugin.init`
 
 .. _docstrings:
 
@@ -181,5 +169,7 @@ The most common docstring you will write is for a function or method. Here is a 
       """
       pass
 
-This structure can be adapted for the rest of python objects. Always start with a very short one-line description, an emptyline and then a detailed description. To make the creation of parameter docstrings faster there are also yasnippets for emacs, which create them automatically.
+This structure can be adapted for the rest of python objects.
+Always start with a very short one-line description, an emptyline and then a detailed description.
+To make the creation of parameter docstrings faster there are also yasnippets for emacs, which create them automatically.
 For more information have a look at these `examples <https://pythonhosted.org/an_example_pypi_project/sphinx.html#full-code-example>`_ and the official syntax `markup documentation <http://sphinx-doc.org/markup/desc.html>`_.
