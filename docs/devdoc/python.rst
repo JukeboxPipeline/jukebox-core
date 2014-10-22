@@ -2,36 +2,19 @@ Python
 ======
 
 We use almost only python code for our pipeline. So here are a few infos to you should know.
+I recommend python 2.7 64-bit because it compatible with the jukebox-maya package.
 
-Third Party Packages
+--------------------
+Virtual Environments
 --------------------
 
-For 'Users'
-+++++++++++
+I recommend using `virtualenv <https://pypi.python.org/pypi/virtualenv>`_ or even better `virtualenvwrapper <https://pypi.python.org/pypi/virtualenvwrapper>`_. To install `virtualenvwrapper <https://pypi.python.org/pypi/virtualenvwrapper>`_ on Windows might be a little hard to do. It is possible by downloading several dependencies and putting them in your Git bin directory. But for that you also need ``msys`` and edit your ``.bashrc``. It might be easier to try `virtualenvwrapper for Windows <https://pypi.python.org/pypi/virtualenvwrapper-win>`_.
 
-Third party python packages that are needed for every pipeline user, not just devs, are located in a directory described by :data:`jukebox.core.constants.THIRD_PARTY_PATH`. In this directory is a whole subtree of dirs for the different platform and python versions. You can generate yourself a path with::
+Create a new virtual environment for jukecore. Then install `tox <https://pypi.python.org/pypi/tox>`_ for unittesting.
+I also recommend to install jukebox-core in edit mode::
 
-  import jukebox.loaders.thirdparty as tp
-  tp.make_third_party_path()
+  $ pip install -e path/to/jukeboxcorerepository
 
-You can also include this path automatically by just calling::
-
-  tp.include_libs()
-
-.. seealso:: :mod:`jukebox.core.thirdparty`
-
-For 'Devs'
-++++++++++
-
-Third party python packages that are only needed for development (Sphinx, Nose, Lettuce etc.) have to be installed for your python distribution. To make things easy, I recommend to install these packages on your lokal python distribution. Here is a little guide on how to use a special setup.py, that will install all required libs automatically with only one command.
-
-First of all: you need setuptools! Setuptools should be already installed on the computers in the CA-Pool. Unfortunately you have to add the script path manually to your ``PATH`` environment variable.
-
-Then you can use the ``esay_install`` command to install the packages. There is a premade package for your convinience that installs all required packages. So just call::
-
-  easy_install /L/pipeline/dev/Installation/jukebox_env-1.0.zip
-
-and you are setup!
 
 Coding Conventions
 ------------------

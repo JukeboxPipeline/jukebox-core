@@ -13,7 +13,9 @@ Project Structure
 The sphinx project is located in the ``/docs`` folder of our project. In there are several important components:
 
   ``conf.py``
-    Contains the configuration of our documentation. You should change the versions variables in there for every release!
+    Contains the configuration of our documentation.
+    There are some modifications at the end of conf.py. Most notably: updatedoc ist automatically invoked when
+    building the documentation.
   ``index.rst``
     This is the root document. It is the top-level document and the first page of our documentation.
   ``make.bat``
@@ -23,9 +25,9 @@ The sphinx project is located in the ``/docs`` folder of our project. In there a
   ``_templates``
     Contains templates that can be rendered out to e.g. html-pages
   ``userdoc``
-    The usermanual for non-developer. Explains how to use the pipeline in production. This folder contains the rst-files
+    The usermanual for non-developer. Explains how to use the pipeline in production. This folder contains the rst-files.
   ``devdoc``
-    A manual for developers. Information for developing and source code documentation. This folder contains the rst-files
+    A manual for developers. Information for developing and source code documentation. This folder contains the rst-files.
   ``_build``
     Contains the built documentation. So here are the rendered html-pages. This should not be version controlled.
     So you should rebuild your documentation at appropriate times.
@@ -33,16 +35,23 @@ The sphinx project is located in the ``/docs`` folder of our project. In there a
 Building the documentation
 --------------------------
 
-This requires you to install the sphinx package. Just run setuptools::
+This requires you to install the sphinx package. Just run setuptools or pip::
 
-  easy_install -U Sphinx
+  $ pip install sphinx
 
 After the succesful installation you are able to run the ``make.bat`` on windows. Run it with html as argument to render the html-pages in ``_build``::
 
-  make.bat html
+   $ make.bat html
 
-The autodoc module will import all modules it documents. Side-effects will be imported as well! Everytime you change the sourcecode, you should run the command again to update the documentation. This is especially important after releases.
-Check the :ref:`Advanced Building <advanced_building>` section for apidoc autogeneration and helpful tools. In production you should always follow the advanced building guide.
+This will also run ``updatedoc.py`` automatically. This is a modification of the sphinx extension ``apidoc``.
+It will collect the source code and create rst-files for each module.
+
+.. Warning:: The content of the ``docs/reference`` dir will be deleted.
+
+Please note that all modules will be imported.
+So your code has to be importable. If not, the reference part of the documentation will be empty.
+If importing is not possible for some reason, try to mock the modules with this `guide <http://read-the-docs.readthedocs.org/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules>`_.
+I noticed that the order of mocking the modules is important.
 
 .. _advanced_building:
 

@@ -4,6 +4,7 @@ Database
 
 Jukebox core depends on a PostgreSQL database.
 If you do not have a configured PostgreSQL database, see section :ref:`Installing the Database <installdb>`.
+If you already have an existing, configured PostgeSQL database, see section :ref:`Connect to an existing Database <connect_db>`.
 
 
 .. _installdb:
@@ -13,7 +14,7 @@ Installing and Configuring the Database
 ---------------------------------------
 
 To install a postgresql database, you first need postgresql itself.
-Chose the right binary for your OS from `PostgreSQL Binaries <http://www.postgresql.org/download/>`_.
+Choose the right binary for your OS from `PostgreSQL Binaries <http://www.postgresql.org/download/>`_.
 
 Start PgAdmin:
 
@@ -24,7 +25,7 @@ Start PgAdmin:
      You should only have a PostgreSQL Server on localhost.
 
 It is recommended to create a new login role for all users of the new database we create.
-Right click on the PostgreSQL Server and chose New Object -> New login role:
+Right click on the PostgreSQL Server and choose New Object -> New login role:
 
   .. figure:: ../images/pgadmin_newlogin.png
      :alt: Creating a new login role.
@@ -47,7 +48,7 @@ Switch to the role privileges tab and check ``Can create databases``
 
 Then click on ``OK``.
 
-This is your new user for the database. To create a new database, rightclick on ``Databases`` under the server and chose ``New database``:
+This is your new user for the database. To create a new database, rightclick on ``Databases`` under the server and choose ``New database``:
 
   .. figure:: ../images/pgadmin_newdb.png
      :alt: Create a new database
