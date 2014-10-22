@@ -67,3 +67,64 @@ Here is a list for the most common widgets and layouts:
 .. Note:: This list is in alpha stadium and can change!
 
 Some widgets in the designer have internal layouts. These layouts can often be renamed directly in the designer. Especially the ones under ``container``.
+
+
+--------------------------
+Project Structure Overview
+--------------------------
+
+All jukebox projects are python packages. So there are a couple of files worth mentioning.
+
++++++++++
+rst-files
++++++++++
+
+There are some rst-files in the root folder (``AUTHORS.rst``, ``README.rst``, ``CONTRIBUTING.rst``, etc.). These are standard files
+and should not be removed. They are the first files a developer might read. Feel free to edit them and make them look nicer.
+
++++++++
+License
++++++++
+
+The current license is a `BSD License <http://opensource.org/licenses/bsd-license.php>`_. The license file is very important, so do not
+delete or move it.
+
++++++++++++
+MANIFEST.in
++++++++++++
+
+This file declares which files to include when distributing the package.
+
+++++++++
+setup.py
+++++++++
+
+A very important file! It is responsible for all the distribution and packaging.
+If you add dependencies to the project, include them here.
+The setup.py also creates the jukebox launcher scripts. Have a look at it's entry points.
+
+
+++++++++++
+.gitignore
+++++++++++
+
+Do not ignore the gitignore. A file that describes which files not to ignore for version control.
+Every developer should have the same gitignore.
+
+++++
+docs
+++++
+
+This directory is for the documentation. See documenting_ for more information.
+
++++
+src
++++
+
+Contains the source code with all the packages.
+
+++++
+test
+++++
+
+Directory for unittests
