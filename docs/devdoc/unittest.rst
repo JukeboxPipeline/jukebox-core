@@ -4,8 +4,8 @@
 Unittests
 =========
 
-We use nose for unittesting. There is a executable ``runtest.py`` file inside the source root. Just execute it and the test will run.
-Please write unittests whenever possible. It makes the code much easier to maintain.
+Unittesting is a way to automatically test the functionality of your code.
+There are numerous ways for unittesting. This is a description of the current test setup
 
   "Something that is always appropriate, regardless of general style, is when you get a bug report. ALWAYS create a test case first & run your tests. Make sure it demonstrates the failure, THEN go fix the bug. If your fix is correct, that new test should pass! It's an excellent way to sanity check yourself & is a great way to get started with testing to boot."
 
@@ -14,27 +14,30 @@ Please write unittests whenever possible. It makes the code much easier to maint
 Organisation
 ------------
 
-Here is a short description of what happens when you execute ``runtest.py``.
+We use `tox <https://pypi.python.org/pypi/tox>`_ for running a whole array of unittests.
+Tox as is a generic virtualenv management and test command line tool you can use for:
 
-:mod:`jukebox.tests` has several lists of arguments. :data:`jukebox.tests.ALL_TEST_ARGS` gets loaded here. Then we call :func:`jukebox.core.main.init_test_env` to initialize some Environment Variables. This will set the environment variable ``TESTING`` to ``'True'``. This might have impact on some functions in the souce code. An example would be :class:`jukebox.maya3d.menu.Menu` that will not call the commands to create the gui, because while we are testing, maya does not support those commands. See :ref:`mayatests` for more information.
-Now we can run ``nose``.
-Nose will look for all tests inside the testdirectory and runs them. There are also tests for maya inside this directory, which leads to a problem. Mayatests depend on ``maya.cmds`` which is not available at the moment, except you execute the test in maya. But what happens if we add tests for Nuke etc.
+    - checking your package installs correctly with different Python versions and interpreters
+    - running your tests in each of the environments, configuring your test tool of choice
+    - acting as a frontend to Continuous Integration servers, greatly reducing boilerplate and merging CI and shell-based testing.
 
-.. _mayatests:
+Because all jukebox products are packages it is important to test them in their installed configuration and not in your development environment.
+Tox lets you configure multiple environments with different dependencies and executes the tests in these environments. So you could test your code
+with python 2.7, 3.3, 3.4, pypy etc. There are numerous environments already configured. Some have special usecases, e.g. they test building the documentation.
 
-Mayatests
-+++++++++
+Tox itselfs basically invokes any command you tell it to. So for the unittesting itself we use `pytest <http://pytest.org/latest/>`_.
+Pytest is a tool for testing in python. It helps you with writing your tests, collects them, executes them and reports the results.
+So for testing our package, tox invokes the pytest command.
+If you are familiar with other test frameworks like nose or unittest, pytest is really easy. Pytest even understands a good amount of nose,
+and unittest. So some tests are already portable.
 
-To work around that, the :data:`jukebox.tests.ALL_TEST_ARGS` exclude these directories. The tests will not run by this nose process.
-Instead there is a test :mod:`jukebox.tests.test_mayatests`. This function will test maya in a seperate nose process. To test maya functions correctly we need to find the maya installation and execute nose via the special python intepreter of maya. This can be easily done by getting ``mayapy.exe`` via :meth:`jukebox.core.ostool.PlatformInterface.get_maya_python`. 
+All tests for the jukebox-core package are inside the ``test`` directory. So in most cases it might be enough to just throw your tests in there and
+execute the tox command. The next sections will teach you more in depth about the purpose of every file involved in the testsetup, how to
+setup environments, how to have a special local test system and some tips when using tox.
 
-So again, we execute a file similar to ``runtest.py`` only this time via ``mayapy.exe`` and this time we initialize a maya standalone.
-With this maya standalone we can execute almost every ``maya.cmds`` command except for the ones that handle the GUI. Thats the reason for why we need a ``TESTING`` env variable. Without that we could not test the MenuManager for example. So all ``maya.cmds`` commands regarding GUIs should be handled with care.
 
-.. _djangotests:
+--------
+Overview
+--------
 
-Djangotests
-+++++++++++
-
-When a test requires access to a database, that means it requires django, then we use a test database. The :mod:`jukebox.tests.test_django` is responsible for these tests. Put Django tests inside here. The jukedj-django project is also tested that way.
-The testdatabase is only temorary for the unittest. When chaning models it is required to call ``manage.py makemigrations <appname>`` so migrationfiles get generated. These are applied to the testdb. If you forget to do that, the testdb does not represent your current models.
+This is a little overview for every file and directory involved in the testing process:
