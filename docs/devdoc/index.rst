@@ -10,4 +10,3 @@ Welcome to the developer's documenation. All necessary information for contribut
    python
    unittest
    documenting
-   launcher

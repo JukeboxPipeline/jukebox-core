@@ -1,3 +1,4 @@
+======
 Python
 ======
 
@@ -15,7 +16,7 @@ I also recommend to install jukebox-core in edit mode::
 
   $ pip install -e path/to/jukeboxcorerepository
 
-
+------------------
 Coding Conventions
 ------------------
 
@@ -28,6 +29,7 @@ Organize your imports should be in the following order:
   2. related third party imports
   3. local application/library specific imports
 
+++++++
 PySide
 ++++++
 
@@ -115,7 +117,7 @@ Every developer should have the same gitignore.
 docs
 ++++
 
-This directory is for the documentation. See documenting_ for more information.
+This directory is for the documentation. See :ref:`documenting` for more information.
 
 +++
 src
