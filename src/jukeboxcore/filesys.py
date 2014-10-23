@@ -320,7 +320,7 @@ class TaskFileInfo(FileInfo):
     Can get the latest or the next version if you provide a task, releasetype (and a descriptor).
     """
 
-    TYPES = dj.models.FILETYPES
+    TYPES = dj.FILETYPES
     """A dict for file types that can be used in a TaskFile
 
     the values are the actual data that gets stored in the database.
@@ -337,11 +337,11 @@ class TaskFileInfo(FileInfo):
         """Constructs a new TaskFileInfo
 
         :param task: the task of the taskfile
-        :type task: :class:`jukebox.core.djadapter.models.Task`
+        :type task: :class:`jukeboxcore.djadapter.models.Task`
         :param version: the version of the TaskFile
         :type version: int
         :param releasetype: the releasetype
-        :type releasetype: str - :data:`jukebox.core.djadapter.RELEASETYPES`
+        :type releasetype: str - :data:`jukeboxcore.djadapter.RELEASETYPES`
         :param typ: the file type, see :data:`TYPES`
         :type typ: str
         :param descriptor: the descriptor, if the taskfile has one.
@@ -360,9 +360,9 @@ class TaskFileInfo(FileInfo):
         """Returns a TaskFileInfo that with the latest existing version and the provided info
 
         :param task: the task of the taskfile
-        :type task: :class:`jukebox.core.djadapter.models.Task`
+        :type task: :class:`jukeboxcore.djadapter.models.Task`
         :param releasetype: the releasetype
-        :type releasetype: str - :data:`jukebox.core.djadapter.RELEASETYPES`
+        :type releasetype: str - :data:`jukeboxcore.djadapter.RELEASETYPES`
         :param typ: the file type, see :data:`TYPES`
         :type typ: str
         :param descriptor: the descriptor, if the taskfile has one.
@@ -384,9 +384,9 @@ class TaskFileInfo(FileInfo):
         """Returns a TaskFileInfo that with the next available version and the provided info
 
         :param task: the task of the taskfile
-        :type task: :class:`jukebox.core.djadapter.models.Task`
+        :type task: :class:`jukeboxcore.djadapter.models.Task`
         :param releasetype: the releasetype
-        :type releasetype: str - :data:`jukebox.core.djadapter.RELEASETYPES`
+        :type releasetype: str - :data:`jukeboxcore.djadapter.RELEASETYPES`
         :param typ: the file type, see :data:`TYPES`
         :type typ: str
         :param descriptor: the descriptor, if the taskfile has one.

@@ -1,4 +1,4 @@
-"""This module holds :class:`jukebox.core.gui.treemodel.ItemData` subclasses that represent data in our database, e.g. a Project, Sequence etc"""
+"""This module holds :class:`jukeboxcore.gui.treemodel.ItemData` subclasses that represent data in our database, e.g. a Project, Sequence etc"""
 from PySide import QtCore
 
 from jukeboxcore.gui.main import dt_to_qdatetime
@@ -9,7 +9,7 @@ def prj_name_data(project, role):
     """Return the data for name
 
     :param project: the project that holds the data
-    :type project: :class:`jukebox.core.djadapter.models.Project`
+    :type project: :class:`jukeboxcore.djadapter.models.Project`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the name
@@ -24,7 +24,7 @@ def prj_short_data(project, role):
     """Return the data for short
 
     :param project: the project that holds the data
-    :type project: :class:`jukebox.core.djadapter.models.Project`
+    :type project: :class:`jukeboxcore.djadapter.models.Project`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the short
@@ -39,7 +39,7 @@ def prj_path_data(project, role):
     """Return the data for path
 
     :param project: the project that holds the data
-    :type project: :class:`jukebox.core.djadapter.models.Project`
+    :type project: :class:`jukeboxcore.djadapter.models.Project`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the path
@@ -54,7 +54,7 @@ def prj_created_data(project, role):
     """Return the data for created
 
     :param project: the project that holds the data
-    :type project: :class:`jukebox.core.djadapter.models.Project`
+    :type project: :class:`jukeboxcore.djadapter.models.Project`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the created
@@ -69,7 +69,7 @@ def prj_semester_data(project, role):
     """Return the data for semester
 
     :param project: the project that holds the data
-    :type project: :class:`jukebox.core.djadapter.models.Project`
+    :type project: :class:`jukeboxcore.djadapter.models.Project`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the semester
@@ -84,7 +84,7 @@ def prj_fps_data(project, role):
     """Return the data for fps
 
     :param project: the project that holds the data
-    :type project: :class:`jukebox.core.djadapter.models.Project`
+    :type project: :class:`jukeboxcore.djadapter.models.Project`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the fps
@@ -99,7 +99,7 @@ def prj_resolution_data(project, role):
     """Return the data for resolution
 
     :param project: the project that holds the data
-    :type project: :class:`jukebox.core.djadapter.models.Project`
+    :type project: :class:`jukeboxcore.djadapter.models.Project`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the resolution
@@ -114,7 +114,7 @@ def prj_scale_data(project, role):
     """Return the data for scale
 
     :param project: the project that holds the data
-    :type project: :class:`jukebox.core.djadapter.models.Project`
+    :type project: :class:`jukeboxcore.djadapter.models.Project`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the scale
@@ -129,7 +129,7 @@ def prj_status_data(project, role):
     """Return the data for status
 
     :param project: the project that holds the data
-    :type project: :class:`jukebox.core.djadapter.models.Project`
+    :type project: :class:`jukeboxcore.djadapter.models.Project`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the status
@@ -141,20 +141,20 @@ def prj_status_data(project, role):
 
 
 class ProjectItemData(ItemData):
-    """Item Data for :class:`jukebox.core.gui.treemodel.TreeItem` that represents a project
+    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a project
     """
 
     def __init__(self, project):
         """Constructs a new item data for the project
 
         :param project: the project to represent
-        :type project: :class:`jukebox.core.djadapter.models.Project`
+        :type project: :class:`jukeboxcore.djadapter.models.Project`
         :raises: None
         """
         super(ProjectItemData, self).__init__()
         self._project = project
 
-    _columns = [prj_name_data,
+    columns = [prj_name_data,
                prj_short_data,
                prj_path_data,
                prj_created_data,
@@ -171,7 +171,7 @@ class ProjectItemData(ItemData):
         :rtype: int
         :raises: None
         """
-        return len(self._columns)
+        return len(self.columns)
 
     def data(self, column, role):
         """Return the data for the specified column and role
@@ -186,13 +186,13 @@ class ProjectItemData(ItemData):
         :rtype:
         :raises: None
         """
-        return self._columns[column](self._project, role)
+        return self.columns[column](self._project, role)
 
     def internal_data(self, ):
         """Return the project
 
         :returns: the project
-        :rtype: :class:`jukebox.core.djadapter.models.Project`
+        :rtype: :class:`jukeboxcore.djadapter.models.Project`
         :raises: None
         """
         return self._project
@@ -202,7 +202,7 @@ def seq_name_data(seq, role):
     """Return the data for name
 
     :param seq: the sequence that holds the data
-    :type seq: :class:`jukebox.core.djadapter.models.Sequence`
+    :type seq: :class:`jukeboxcore.djadapter.models.Sequence`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the name
@@ -217,7 +217,7 @@ def seq_description_data(seq, role):
     """Return the data for description
 
     :param seq: the sequence that holds the data
-    :type seq: :class:`jukebox.core.djadapter.models.Sequence`
+    :type seq: :class:`jukeboxcore.djadapter.models.Sequence`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the description
@@ -229,14 +229,14 @@ def seq_description_data(seq, role):
 
 
 class SequenceItemData(ItemData):
-    """Item Data for :class:`jukebox.core.gui.treemodel.TreeItem` that represents a sequence
+    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a sequence
     """
 
     def __init__(self, sequence):
         """Constructs a new item data for the sequence
 
         :param sequence: the sequence to represent
-        :type sequence: :class:`jukebox.core.djadapter.models.Sequence`
+        :type sequence: :class:`jukeboxcore.djadapter.models.Sequence`
         :raises: None
         """
         super(SequenceItemData, self).__init__()
@@ -273,7 +273,7 @@ class SequenceItemData(ItemData):
         """Return the sequence
 
         :returns: the sequence
-        :rtype: :class:`jukebox.core.djadapter.models.Sequence`
+        :rtype: :class:`jukeboxcore.djadapter.models.Sequence`
         :raises: None
         """
         return self._sequence
@@ -283,7 +283,7 @@ def shot_name_data(shot, role):
     """Return the data for name
 
     :param shot: the shot that holds the data
-    :type shot: :class:`jukebox.core.djadapter.models.Shot`
+    :type shot: :class:`jukeboxcore.djadapter.models.Shot`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the name
@@ -298,7 +298,7 @@ def shot_description_data(shot, role):
     """Return the data for description
 
     :param shot: the shot that holds the data
-    :type shot: :class:`jukebox.core.djadapter.models.Shot`
+    :type shot: :class:`jukeboxcore.djadapter.models.Shot`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the description
@@ -313,7 +313,7 @@ def shot_duration_data(shot, role):
     """Return the data for duration
 
     :param shot: the shot that holds the data
-    :type shot: :class:`jukebox.core.djadapter.models.Shot`
+    :type shot: :class:`jukeboxcore.djadapter.models.Shot`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the duration
@@ -328,7 +328,7 @@ def shot_start_data(shot, role):
     """Return the data for startframe
 
     :param shot: the shot that holds the data
-    :type shot: :class:`jukebox.core.djadapter.models.Shot`
+    :type shot: :class:`jukeboxcore.djadapter.models.Shot`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the start
@@ -343,7 +343,7 @@ def shot_end_data(shot, role):
     """Return the data for endframe
 
     :param shot: the shot that holds the data
-    :type shot: :class:`jukebox.core.djadapter.models.Shot`
+    :type shot: :class:`jukeboxcore.djadapter.models.Shot`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the end
@@ -355,14 +355,14 @@ def shot_end_data(shot, role):
 
 
 class ShotItemData(ItemData):
-    """Item Data for :class:`jukebox.core.gui.treemodel.TreeItem` that represents a shot
+    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a shot
     """
 
     def __init__(self, shot):
         """Constructs a new item data for the shot
 
         :param shot: the shot to represent
-        :type shot: :class:`jukebox.core.djadapter.models.Shot`
+        :type shot: :class:`jukeboxcore.djadapter.models.Shot`
         :raises: None
         """
         super(ShotItemData, self).__init__()
@@ -402,7 +402,7 @@ class ShotItemData(ItemData):
         """Return the shot
 
         :returns: the shot
-        :rtype: :class:`jukebox.core.djadapter.models.Shot`
+        :rtype: :class:`jukeboxcore.djadapter.models.Shot`
         :raises: None
         """
         return self._shot
@@ -412,7 +412,7 @@ def task_name_data(task, role):
     """Return the data for name
 
     :param task: the task that holds the data
-    :type task: :class:`jukebox.core.djadapter.models.Task`
+    :type task: :class:`jukeboxcore.djadapter.models.Task`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the name
@@ -427,7 +427,7 @@ def task_short_data(task, role):
     """Return the data for short name
 
     :param task: the task that holds the data
-    :type task: :class:`jukebox.core.djadapter.models.Task`
+    :type task: :class:`jukeboxcore.djadapter.models.Task`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the short name
@@ -439,14 +439,14 @@ def task_short_data(task, role):
 
 
 class TaskItemData(ItemData):
-    """Item Data for :class:`jukebox.core.gui.treemodel.TreeItem` that represents a task
+    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a task
     """
 
     def __init__(self, task):
         """Constructs a new item data for the task
 
         :param task: the task to represent
-        :type task: :class:`jukebox.core.djadapter.models.Task`
+        :type task: :class:`jukeboxcore.djadapter.models.Task`
         :raises: None
         """
         super(TaskItemData, self).__init__()
@@ -483,7 +483,7 @@ class TaskItemData(ItemData):
         """Return the task
 
         :returns: the task
-        :rtype: :class:`jukebox.core.djadapter.models.Task`
+        :rtype: :class:`jukeboxcore.djadapter.models.Task`
         :raises: None
         """
         return self._task
@@ -493,7 +493,7 @@ def taskfile_path_data(file_, role):
     """Return the data for path
 
     :param file_: the file that holds the data
-    :type file_: :class:`jukebox.core.djadapter.models.File`
+    :type file_: :class:`jukeboxcore.djadapter.models.File`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the path
@@ -508,7 +508,7 @@ def taskfile_user_data(file_, role):
     """Return the data for user
 
     :param file_: the file that holds the data
-    :type file_: :class:`jukebox.core.djadapter.models.File`
+    :type file_: :class:`jukeboxcore.djadapter.models.File`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the user
@@ -523,7 +523,7 @@ def taskfile_created_data(file_, role):
     """Return the data for created date
 
     :param file_: the file that holds the data
-    :type file_: :class:`jukebox.core.djadapter.models.File`
+    :type file_: :class:`jukeboxcore.djadapter.models.File`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the created date
@@ -539,7 +539,7 @@ def taskfile_updated_data(file_, role):
     """Return the data for updated date
 
     :param file_: the file that holds the data
-    :type file_: :class:`jukebox.core.djadapter.models.File`
+    :type file_: :class:`jukeboxcore.djadapter.models.File`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the updated date
@@ -555,7 +555,7 @@ def taskfile_version_data(file_, role):
     """Return the data for version
 
     :param file_: the file that holds the data
-    :type file_: :class:`jukebox.core.djadapter.models.File`
+    :type file_: :class:`jukeboxcore.djadapter.models.File`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the version
@@ -570,7 +570,7 @@ def taskfile_rtype_data(file_, role):
     """Return the data for rtype
 
     :param file_: the file that holds the data
-    :type file_: :class:`jukebox.core.djadapter.models.File`
+    :type file_: :class:`jukeboxcore.djadapter.models.File`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the releasetype
@@ -582,14 +582,14 @@ def taskfile_rtype_data(file_, role):
 
 
 class TaskFileItemData(ItemData):
-    """Item Data for :class:`jukebox.core.gui.treemodel.TreeItem` that represents a taskfile
+    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a taskfile
     """
 
     def __init__(self, taskfile):
         """Constructs a new item data for the taskfile
 
         :param taskfile: the taskfile to represent
-        :type taskfile: :class:`jukebox.core.djadapter.models.TaskFile`
+        :type taskfile: :class:`jukeboxcore.djadapter.models.TaskFile`
         :raises: None
         """
         super(TaskFileItemData, self).__init__()
@@ -630,7 +630,7 @@ class TaskFileItemData(ItemData):
         """Return the taskfile
 
         :returns: the taskfile
-        :rtype: :class:`jukebox.core.djadapter.models.TaskFile`
+        :rtype: :class:`jukeboxcore.djadapter.models.TaskFile`
         :raises: None
         """
         return self._taskfile
@@ -640,7 +640,7 @@ def atype_name_data(atype, role):
     """Return the data for name
 
     :param atype: the assettype that holds the data
-    :type atype: :class:`jukebox.core.djadapter.models.Atype`
+    :type atype: :class:`jukeboxcore.djadapter.models.Atype`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the name
@@ -655,7 +655,7 @@ def atype_description_data(atype, role):
     """Return the data for description
 
     :param atype: the assettype that holds the data
-    :type atype: :class:`jukebox.core.djadapter.models.Atype`
+    :type atype: :class:`jukeboxcore.djadapter.models.Atype`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the description
@@ -667,14 +667,14 @@ def atype_description_data(atype, role):
 
 
 class AtypeItemData(ItemData):
-    """Item Data for :class:`jukebox.core.gui.treemodel.TreeItem` that represents an assettype
+    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents an assettype
     """
 
     def __init__(self, atype):
         """Constructs a new item data for the assettype
 
         :param atype: the assettype to represent
-        :type atype: :class:`jukebox.core.djadapter.models.Atype`
+        :type atype: :class:`jukeboxcore.djadapter.models.Atype`
         :raises: None
         """
         super(AtypeItemData, self).__init__()
@@ -711,7 +711,7 @@ class AtypeItemData(ItemData):
         """Return the assettype
 
         :returns: the shot
-        :rtype: :class:`jukebox.core.djadapter.models.Atype`
+        :rtype: :class:`jukeboxcore.djadapter.models.Atype`
         :raises: None
         """
         return self._atype
@@ -721,7 +721,7 @@ def asset_name_data(asset, role):
     """Return the data for name
 
     :param asset: the asset that holds the data
-    :type asset: :class:`jukebox.core.djadapter.models.Asset`
+    :type asset: :class:`jukeboxcore.djadapter.models.Asset`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the name
@@ -736,7 +736,7 @@ def asset_description_data(asset, role):
     """Return the data for description
 
     :param asset: the asset that holds the data
-    :type asset: :class:`jukebox.core.djadapter.models.Asset`
+    :type asset: :class:`jukeboxcore.djadapter.models.Asset`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the description
@@ -748,14 +748,14 @@ def asset_description_data(asset, role):
 
 
 class AssetItemData(ItemData):
-    """Item Data for :class:`jukebox.core.gui.treemodel.TreeItem` that represents an asset
+    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents an asset
     """
 
     def __init__(self, asset):
         """Constructs a new item data for the asset
 
         :param asset: the asset to represent
-        :type asset: :class:`jukebox.core.djadapter.models.Asset`
+        :type asset: :class:`jukeboxcore.djadapter.models.Asset`
         :raises: None
         """
         super(AssetItemData, self).__init__()
@@ -792,7 +792,7 @@ class AssetItemData(ItemData):
         """Return the asset
 
         :returns: the asset
-        :rtype: :class:`jukebox.core.djadapter.models.Asset`
+        :rtype: :class:`jukeboxcore.djadapter.models.Asset`
         :raises: None
         """
         return self._asset
@@ -802,7 +802,7 @@ def note_content_data(note, role):
     """Return the data for content
 
     :param note: the note that holds the data
-    :type note: :class:`jukebox.core.djadapter.models.Note`
+    :type note: :class:`jukeboxcore.djadapter.models.Note`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the created date
@@ -817,7 +817,7 @@ def note_user_data(note, role):
     """Return the data for user
 
     :param note: the note that holds the data
-    :type note: :class:`jukebox.core.djadapter.models.Note`
+    :type note: :class:`jukeboxcore.djadapter.models.Note`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the created date
@@ -832,7 +832,7 @@ def note_created_data(note, role):
     """Return the data for created date
 
     :param note: the note that holds the data
-    :type note: :class:`jukebox.core.djadapter.models.Note`
+    :type note: :class:`jukeboxcore.djadapter.models.Note`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the created date
@@ -848,7 +848,7 @@ def note_updated_data(note, role):
     """Return the data for updated date
 
     :param note: the note that holds the data
-    :type note: :class:`jukebox.core.djadapter.models.Note`
+    :type note: :class:`jukeboxcore.djadapter.models.Note`
     :param role: item data role
     :type role: QtCore.Qt.ItemDataRole
     :returns: data for the updated date
@@ -861,14 +861,14 @@ def note_updated_data(note, role):
 
 
 class NoteItemData(ItemData):
-    """Item data for :class:`jukebox.core.gui.treemodel.TreeITem` that represents a note.
+    """Item data for :class:`jukeboxcore.gui.treemodel.TreeITem` that represents a note.
     """
 
     def __init__(self, note):
         """Constructs a new item data for the note
 
         :param note: the note to represent
-        :type note: :class:`jukebox.core.djadapter.models.Note`
+        :type note: :class:`jukeboxcore.djadapter.models.Note`
         :raises: None
         """
         super(NoteItemData, self).__init__()
@@ -907,7 +907,7 @@ class NoteItemData(ItemData):
         """Return the note
 
         :returns: the note
-        :rtype: :class:`jukebox.core.djadapter.models.Note`
+        :rtype: :class:`jukeboxcore.djadapter.models.Note`
         :raises: None
         """
         return self._note

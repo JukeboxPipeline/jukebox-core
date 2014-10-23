@@ -9,7 +9,7 @@ def setup_package(request):
     os.environ['JUKEBOX_TESTING'] = 'True'
 
     def fin():
-        old_db = os.environ.get('OLD_DB', None)
-        if old_db:
-            django.db.connection.creation.destroy_test_db(old_db)
+        test_db = os.environ.get('TEST_DB', None)
+        if test_db:
+            django.db.connection.creation.destroy_test_db(test_db)
     request.addfinalizer(fin)

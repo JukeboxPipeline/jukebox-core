@@ -1,38 +1,22 @@
+======
 Python
 ======
 
 We use almost only python code for our pipeline. So here are a few infos to you should know.
+I recommend python 2.7 64-bit because it compatible with the jukebox-maya package.
 
-Third Party Packages
+--------------------
+Virtual Environments
 --------------------
 
-For 'Users'
-+++++++++++
+I recommend using `virtualenv <https://pypi.python.org/pypi/virtualenv>`_ or even better `virtualenvwrapper <https://pypi.python.org/pypi/virtualenvwrapper>`_. To install `virtualenvwrapper <https://pypi.python.org/pypi/virtualenvwrapper>`_ on Windows might be a little hard to do. It is possible by downloading several dependencies and putting them in your Git bin directory. But for that you also need ``msys`` and edit your ``.bashrc``. It might be easier to try `virtualenvwrapper for Windows <https://pypi.python.org/pypi/virtualenvwrapper-win>`_.
 
-Third party python packages that are needed for every pipeline user, not just devs, are located in a directory described by :data:`jukebox.core.constants.THIRD_PARTY_PATH`. In this directory is a whole subtree of dirs for the different platform and python versions. You can generate yourself a path with::
+Create a new virtual environment for jukecore. Then install `tox <https://pypi.python.org/pypi/tox>`_ for unittesting.
+I also recommend to install jukebox-core in edit mode::
 
-  import jukebox.loaders.thirdparty as tp
-  tp.make_third_party_path()
+  $ pip install -e path/to/jukeboxcorerepository
 
-You can also include this path automatically by just calling::
-
-  tp.include_libs()
-
-.. seealso:: :mod:`jukebox.core.thirdparty`
-
-For 'Devs'
-++++++++++
-
-Third party python packages that are only needed for development (Sphinx, Nose, Lettuce etc.) have to be installed for your python distribution. To make things easy, I recommend to install these packages on your lokal python distribution. Here is a little guide on how to use a special setup.py, that will install all required libs automatically with only one command.
-
-First of all: you need setuptools! Setuptools should be already installed on the computers in the CA-Pool. Unfortunately you have to add the script path manually to your ``PATH`` environment variable.
-
-Then you can use the ``esay_install`` command to install the packages. There is a premade package for your convinience that installs all required packages. So just call::
-
-  easy_install /L/pipeline/dev/Installation/jukebox_env-1.0.zip
-
-and you are setup!
-
+------------------
 Coding Conventions
 ------------------
 
@@ -45,6 +29,7 @@ Organize your imports should be in the following order:
   2. related third party imports
   3. local application/library specific imports
 
+++++++
 PySide
 ++++++
 
@@ -84,3 +69,64 @@ Here is a list for the most common widgets and layouts:
 .. Note:: This list is in alpha stadium and can change!
 
 Some widgets in the designer have internal layouts. These layouts can often be renamed directly in the designer. Especially the ones under ``container``.
+
+
+--------------------------
+Project Structure Overview
+--------------------------
+
+All jukebox projects are python packages. So there are a couple of files worth mentioning.
+
++++++++++
+rst-files
++++++++++
+
+There are some rst-files in the root folder (``AUTHORS.rst``, ``README.rst``, ``CONTRIBUTING.rst``, etc.). These are standard files
+and should not be removed. They are the first files a developer might read. Feel free to edit them and make them look nicer.
+
++++++++
+License
++++++++
+
+The current license is a `BSD License <http://opensource.org/licenses/bsd-license.php>`_. The license file is very important, so do not
+delete or move it.
+
++++++++++++
+MANIFEST.in
++++++++++++
+
+This file declares which files to include when distributing the package.
+
+++++++++
+setup.py
+++++++++
+
+A very important file! It is responsible for all the distribution and packaging.
+If you add dependencies to the project, include them here.
+The setup.py also creates the jukebox launcher scripts. Have a look at it's entry points.
+
+
+++++++++++
+.gitignore
+++++++++++
+
+Do not ignore the gitignore. A file that describes which files not to ignore for version control.
+Every developer should have the same gitignore.
+
+++++
+docs
+++++
+
+This directory is for the documentation. See :ref:`documenting` for more information.
+
++++
+src
++++
+
+Contains the source code with all the packages.
+
+++++
+test
+++++
+
+Directory for unittests

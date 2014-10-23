@@ -1,7 +1,7 @@
 """Bundles common gui functions and classes
 
-When creating a standalone app, you can use :func:`jukebox.core.gui.main.get_qapp` to
-make sure there is a running QApplication.
+When creating a standalone app, you can use :func:`jukeboxcore.gui.main.init_gui` to
+make sure there is a running QApplication. Usually the launcher will do that for you.
 Then use set_main_style to apply the main_stylesheet to your app.
 That way all the plugins have a consistent look.
 """

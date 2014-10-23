@@ -160,7 +160,7 @@ class AbstractTreeBrowser(QtGui.QWidget):
         :param depth: the depth level that the level should handle
         :type depth: int
         :returns: a new level for the given depth
-        :rtype: :class:`jukebox.core.gui.widgets.browser.AbstractLevel`
+        :rtype: :class:`jukeboxcore.gui.widgets.browser.AbstractLevel`
         :raises: NotImplementedError
         """
         raise NotImplementedError
@@ -185,7 +185,7 @@ class AbstractTreeBrowser(QtGui.QWidget):
         into the ui.
 
         :param level: a newly created level
-        :type level: :class:`jukebox.core.gui.widgets.browser.AbstractLevel`
+        :type level: :class:`jukeboxcore.gui.widgets.browser.AbstractLevel`
         :param header: a newly created header
         :type header: QtCore.QWidget|None
         :returns: None
@@ -445,7 +445,7 @@ class ComboBoxBrowser(AbstractTreeBrowser):
         """Insert the level and header into the ui.
 
         :param level: a newly created level
-        :type level: :class:`jukebox.core.gui.widgets.browser.AbstractLevel`
+        :type level: :class:`jukeboxcore.gui.widgets.browser.AbstractLevel`
         :param header: a newly created header
         :type header: QtCore.QWidget|None
         :returns: None
@@ -619,7 +619,7 @@ class ListBrowser(AbstractTreeBrowser):
         :param depth: the depth level that the level should handle
         :type depth: int
         :returns: a new level for the given depth
-        :rtype: :class:`jukebox.core.gui.widgets.browser.AbstractLevel`
+        :rtype: :class:`jukeboxcore.gui.widgets.browser.AbstractLevel`
         :raises: None
         """
         ll = ListLevel(parent=self)
@@ -650,7 +650,7 @@ class ListBrowser(AbstractTreeBrowser):
         """Insert the level and header into the ui.
 
         :param level: a newly created level
-        :type level: :class:`jukebox.core.gui.widgets.browser.AbstractLevel`
+        :type level: :class:`jukeboxcore.gui.widgets.browser.AbstractLevel`
         :param header: a newly created header
         :type header: QtCore.QWidget|None
         :returns: None
@@ -671,7 +671,7 @@ class CommentBrowser(ListBrowser):
     """A list browser that has a list view for every level
     and a label for every header.
     The header labels will be above each list.
-    The lists are designed to display :class:`jukebox.core.gui.djitemdata.NoteItemData`.
+    The lists are designed to display :class:`jukeboxcore.gui.djitemdata.NoteItemData`.
     """
 
     def create_level(self, depth):
@@ -682,7 +682,7 @@ class CommentBrowser(ListBrowser):
         :param depth: the depth level that the level should handle
         :type depth: int
         :returns: a new level for the given depth
-        :rtype: :class:`jukebox.core.gui.widgets.browser.AbstractLevel`
+        :rtype: :class:`jukeboxcore.gui.widgets.browser.AbstractLevel`
         :raises: None
         """
         ll = ListLevel(parent=self)

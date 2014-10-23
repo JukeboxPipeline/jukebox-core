@@ -30,7 +30,7 @@ def setup_module():
     dep = dj.departments.create(name='Design', short='des', assetflag=False)
     task = dj.tasks.create(department=dep, project=prj, status='New', element=shot)
     usr = dj.users.create_user(username='Uz')
-    tfile = dj.taskfiles.create(task=task, version=5, releasetype='handoff', path='anicepath', user=usr, typ=dj.models.FILETYPES['mayamainscene'])
+    tfile = dj.taskfiles.create(task=task, version=5, releasetype='handoff', path='anicepath', user=usr, typ=dj.FILETYPES['mayamainscene'])
     atype = dj.atypes.create(name='matte', description='matte paintings')
     atype.projects.add(prj)
     atype.save()

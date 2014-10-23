@@ -6,6 +6,7 @@ Usage, just call::
 
   updatedoc.py -h
 
+This is automatically executed when building with sphinx. Check the bottom of docs/conf.py.
 """
 import argparse
 import os

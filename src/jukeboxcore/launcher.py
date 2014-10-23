@@ -3,7 +3,14 @@
 
 This launcher is used for console_scripts and gui_scripts entry points of setuptools.
 It is used for all commandline actions of the pipeline.
+For useage execute::
+
+  jukebox -h
+
+This requires jukeboxcore to be installed via setuptools (pip or easy_install will do that for you). You can also execute this script directly.
+
 It's duty is to initialize the pipeline and then launch whatever plugin is requested.
+It also mirrors the django manage commands of manage.py.
 """
 import argparse
 import sys
@@ -13,7 +20,7 @@ from jukeboxcore.gui import compile_ui
 
 
 class Launcher(object):
-    """Launcher provides commands and handles argument parsing
+    """Provides commands and handles argument parsing
     """
 
     def __init__(self, ):
@@ -149,8 +156,9 @@ class Launcher(object):
         :rtype: None
         :raises: None
         """
-        # first argument is usually manage.py so we do this
+        # first argument is usually manage.py. This will also adapt the help messages
         args = ['jukebox manage']
+        args.extend(namespace.args)
         args.extend(unknown)
         from django.core.management import execute_from_command_line
         execute_from_command_line(args)
@@ -166,7 +174,8 @@ class Launcher(object):
         """
         parser.set_defaults(func=self.compile_ui)
         parser.add_argument('uifile',
-                        help='the uifile that will be compiled. The compiled file will be in the same directory but ends with _ui.py',
+                        help='the uifile that will be compiled.\
+The compiled file will be in the same directory but ends with _ui.py',
                         type=argparse.FileType('r'))
 
     def compile_ui(self, namespace, unknown):

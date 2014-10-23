@@ -8,7 +8,7 @@ If not, make sure the data method can handle columns outside their column count.
 If you want to create a tree, create the needed itemdata classes,
 create a root tree item that is parent for all top-level items.
 The root item does not have to provide data, so the data might be None.
-It is advides to use :class:`jukebox.core.gui.treemodel.ListItemData` because the data in the list
+It is advides to use :class:`jukeboxcore.gui.treemodel.ListItemData` because the data in the list
 will be used for the headers.
 Then create the tree items with their appropriate data instances.
 Finally create a tree model instance with the root tree item.
@@ -148,10 +148,10 @@ class TreeItem(object):
         """Constructs a new TreeItem that holds some data and might be parented under parent
 
         :param data: the data item. if the tree item is the root, the data will be used for horizontal headers!
-                     It is recommended to use :class:`jukebox.core.gui.treeitem.ListItemData` in that case.
-        :type data: :class:`jukebox.core.gui.treemodel.ItemData`
+                     It is recommended to use :class:`jukeboxcore.gui.treeitem.ListItemData` in that case.
+        :type data: :class:`jukeboxcore.gui.treemodel.ItemData`
         :param parent: the parent treeitem
-        :type parent: :class:`jukebox.core.gui.treemodel.TreeItem`
+        :type parent: :class:`jukeboxcore.gui.treemodel.TreeItem`
         :raises: None
         """
         self._data = data
@@ -166,7 +166,7 @@ class TreeItem(object):
         :param row: the row number
         :type row: int
         :returns: the child
-        :rtype: :class:`jukebox.core.gui.treemodel.TreeItem`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeItem`
         :raises: IndexError
         """
         return self.childItems[row]
@@ -221,7 +221,7 @@ class TreeItem(object):
         """Return the parent tree item
 
         :returns: the parent or None if there is no parent
-        :rtype: :class:`jukebox.core.gui.treemodel.TreeItem`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeItem`
         :raises: None
         """
         return self._parent
@@ -258,7 +258,7 @@ class TreeItem(object):
 
 
 class TreeModel(QtCore.QAbstractItemModel):
-    """A tree model that uses the :class:`jukebox.core.gui.treemodel.TreeItem` to represent a general tree.
+    """A tree model that uses the :class:`jukeboxcore.gui.treemodel.TreeItem` to represent a general tree.
 
     """
 

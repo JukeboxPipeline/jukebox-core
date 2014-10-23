@@ -7,7 +7,7 @@ def test_plugin_manager():
     """ Test Plugin Manager """
     jpp = os.path.abspath('test/testplugins')
     assert os.path.exists(jpp)
-    os.environ['JUKEBOX_PLUGIN_PATH'] = jpp
+    os.environ['JUKEBOX_PLUGIN_PATHS'] = jpp
     pmanager = PluginManager()
     pmanager.load_plugins()
     pmanager.unload_plugins()

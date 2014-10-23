@@ -64,6 +64,9 @@ setup(
     entry_points={
         'console_scripts': [
             'jukebox = jukeboxcore.launcher:main_func',
+        ],
+        'gui_scripts': [
+            'jukeboxw = jukeboxcore.launcher:main_func',
         ]
     },
     classifiers=[

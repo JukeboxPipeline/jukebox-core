@@ -1,4 +1,4 @@
-""" A collection of classes, metaclasses and functions for Plugins
+"""A collection of classes, metaclasses and functions for Plugins
 
 As a plugin developer: Subclass from one of the JB_Plugin classes and implement the abstract functions.
 The plugin managers load and hold plugins.
@@ -14,15 +14,17 @@ from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 from jukeboxcore import errors
 from jukeboxcore.constants import PLUGIN_CONFIG_DIR, CONFIG_EXT, BUILTIN_PLUGIN_PATH
-from jukeboxcore.iniconf import load_config
+from jukeboxcore.iniconf import load_config, get_core_config
 
 
 class JB_Plugin(object):
     """Abstract Base Class for jukebox plugins.
 
     Subclass this to create your own types of plugins. The name of the subclass will be the name
-    of the plugin itself, so be sure to pick a unique one. Else you will override an existing plugin (maybe that is your intend, then do it).
-    If you write a plugin, always subclass from a subclass of JB_Plugin but not JB_Plugin directly!
+    of the plugin itself, so be sure to pick a unique one.
+    Else you will override an existing plugin (maybe that is your intend, then do it).
+    If you write a plugin, always subclass from a subclass of JB_Plugin
+    but not JB_Plugin directly!
 
     For subclassing: you have to implement **init** and **uninit**!
 
@@ -33,7 +35,8 @@ class JB_Plugin(object):
     User Config:
 
       Every Plugin can have its own userpreference file.
-      The user preferences are ini-files that lie in the config folder inside the pipeline user directory.
+      The user preferences are ini-files that lie in the config folder
+      inside the pipeline user directory.
       As a plugin developer, create a configspec file in the same folder as your plugin module.
       Do it only, if you need to use get_config().
 
@@ -45,7 +48,8 @@ class JB_Plugin(object):
     __LOADED = True
 
     required = ()
-    """The plugins required to run this one successfully. Set this to a list of strings with the required classnames."""
+    """The plugins required to run this one successfully.
+    Set this to a list of strings with the required classnames."""
     author = None
     """The author of the plugin."""
     copyright = None
@@ -198,7 +202,7 @@ class JB_CoreStandaloneGuiPlugin(JB_CoreStandalonePlugin):
 
 
 class PluginManager(object):
-    """ Loads and unloads core plugins.
+    """Loads and unloads core plugins.
 
     A plugin manager scanns the plugin directories for plugins.
     Only plugins types that are supported can be loaded.
@@ -212,7 +216,7 @@ class PluginManager(object):
     """
 
     instance = None
-    """ PluginManager instance when using PluginManager.get() """
+    """PluginManager instance when using PluginManager.get() """
 
     supportedTypes = [JB_CorePlugin, JB_CoreStandalonePlugin, JB_CoreStandaloneGuiPlugin]
     """ A list of plugin classes, the manager can load.
@@ -225,12 +229,13 @@ class PluginManager(object):
 
     @classmethod
     def get(cls):
-        """ Return a PluginManager Instance.
+        """Return a PluginManager Instance.
 
         This will always return the same instance. If the instance is not available
         it will be created and returned.
         There should only be one pluginmanager at a time. If you create a PluginManager with get()
-        and use get() on for example a MayaPluginManager, the PluginManager instance is returned (not a MayaPluginManager).
+        and use get() on for example a MayaPluginManager,
+        the PluginManager instance is returned (not a MayaPluginManager).
 
         :returns: always the same PluginManager
         :rtype: PluginManager
@@ -241,7 +246,7 @@ class PluginManager(object):
         return cls.instance
 
     def __init__(self, ):
-        """ Constructs a new PluginManager, use the get method in 99% of cases!
+        """Constructs a new PluginManager, use the get method in 99% of cases!
 
         :raises: None
         """
@@ -251,7 +256,7 @@ class PluginManager(object):
             self.__plugins[p.__name__] = p()
 
     def find_plugins(self, path):
-        """ Return a list with all plugins found in path
+        """Return a list with all plugins found in path
 
         :param path: the directory with plugins
         :type path: str
@@ -284,9 +289,9 @@ class PluginManager(object):
         return plugins
 
     def gather_plugins(self):
-        """ Return all plugins that are found in the plugin paths
+        """Return all plugins that are found in the plugin paths
 
-        Looks in the .. :data:jukebox.constants.BUILTIN_PLUGINS_PATH
+        Looks in the .. :data:`PluginManager.builtinpluginpath`
         Then in the envvar ``JUKEBOX_PLUGIN_PATH``.
 
         :returns:
@@ -294,16 +299,20 @@ class PluginManager(object):
         :raises:
         """
         plugins = []
-        pathenv = os.environ.get('JUKEBOX_PLUGIN_PATH', '')
+        cfg = get_core_config()
+        pathenv =  os.environ.get("JUKEBOX_PLUGIN_PATHS", "")
+        pathenv = os.pathsep.join((pathenv, cfg['jukebox']['pluginpaths']))
         pathenv = os.pathsep.join((pathenv, self.builtinpluginpath))
         paths = pathenv.split(os.pathsep)
-        for p in paths:
-            if p:  # in case of an empty string, we do not search!
+        # first find built-ins then the ones in the config, then the one from the environment
+        # so user plugins can override built-ins
+        for p in reversed(paths):
+            if p and os.path.exists(p):  # in case of an empty string, we do not search!
                 plugins.extend(self.find_plugins(p))
         return plugins
 
     def load_plugins(self, ):
-        """ Loads all found plugins
+        """Loads all found plugins
 
         :returns: None
         :rtype: None
@@ -316,7 +325,7 @@ class PluginManager(object):
                 log.exception('Initializing the plugin: %s failed.' % p)
 
     def load_plugin(self, p):
-        """ Load the specified plugin
+        """Load the specified plugin
 
         :param p: The plugin to load
         :type p: Subclass of JB_Plugin
@@ -361,7 +370,7 @@ class PluginManager(object):
                     log.error('Uninitialization of the plugin: %s failed.' % p)
 
     def __import_file(self, f):
-        """ Import the specified file and return the imported module
+        """Import the specified file and return the imported module
 
         :param f: the file to import
         :type f: str
@@ -381,7 +390,7 @@ class PluginManager(object):
         return module
 
     def get_plugin(self, plugin):
-        """ Return the plugin instance for the given pluginname
+        """Return the plugin instance for the given pluginname
 
         :param plugin: Name of the plugin class
         :type plugin: str

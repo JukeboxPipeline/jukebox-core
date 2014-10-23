@@ -1,7 +1,7 @@
 """Models for configobj objects
 
 :class:`jukebox.core.gui.configeditor.ConfigObjModel` represents one ConfigObj and is designed for TreeViews.
-:class:`jukebox.core.gui.configeditor.InifilesModel` is designed for listviews and represents multiple ConfigObjs.
+:class:`jukeboxcore.gui.configeditor.InifilesModel` is designed for listviews and represents multiple ConfigObjs.
 """
 from PySide import QtCore
 from PySide import QtGui

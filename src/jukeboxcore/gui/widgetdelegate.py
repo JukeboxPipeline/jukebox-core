@@ -137,7 +137,7 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
 
 
 class CommentDelegate(WidgetDelegate):
-    """A delegate for drawing a :class:`jukebox.core.gui.djitemdata.NoteItemData`.
+    """A delegate for drawing a :class:`jukeboxcore.gui.djitemdata.NoteItemData`.
     """
 
     def __init__(self, parent=None):

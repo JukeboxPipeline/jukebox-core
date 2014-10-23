@@ -1,7 +1,7 @@
 """Bundles common core functions.
 
-There are different init functions to initialize jukebox. Usually the launcher executes a script/software.
-Then in your script/software you call one of these inits. Some softwares have special inits.
+There are different init functions to initialize jukebox.
+:func:`jukeboxcore.main.init` should be called once before using the pipeline.
 """
 import os
 import sys
