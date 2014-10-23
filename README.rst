@@ -8,7 +8,7 @@ Jukebox Core
 .. image:: http://img.shields.io/pypi/dm/jukeboxcore.png
     :target: https://pypi.python.org/pypi/jukeboxcore
 
-.. image:: http://img.shields.io/pypi/l/jukeboxcore.svg
+.. image:: http://img.shields.io/pypi/l/jukeboxcore.png
     :target: https://pypi.python.org/pypi/jukeboxcore
 
 This is the core package for the jukebox cg-pipeline.
