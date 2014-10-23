@@ -6,8 +6,10 @@ Then use set_main_style to apply the main_stylesheet to your app.
 That way all the plugins have a consistent look.
 """
 
+import os
 import sys
 import weakref
+import pkg_resources
 
 try:
     import shiboken
@@ -15,7 +17,7 @@ except ImportError:
     from PySide import shiboken
 from PySide import QtGui, QtCore
 
-from jukeboxcore.constants import MAIN_STYLESHEET
+from jukeboxcore.constants import MAIN_STYLESHEET, ICON_PATH
 
 app = None
 """The QApplication app instance when using :func:`jukebox.core.gui.main.get_qapp`"""
@@ -96,6 +98,31 @@ def dt_to_qdatetime(dt):
     """
     return QtCore.QDateTime(QtCore.QDate(dt.year, dt.month, dt.day),
                             QtCore.QTime(dt.hour, dt.minute, dt.second))
+
+
+def get_icon(name, aspix=False, asicon=False):
+    """Return the real file path to the given icon name
+    If aspix is True return as QtGui.QPixmap, if asicon is True return as QtGui.QIcon.
+
+    :param name: the name of the icon
+    :type name: str
+    :param aspix: If True, return a QtGui.QPixmap.
+    :type aspix: bool
+    :param asicon: If True, return a QtGui.QIcon.
+    :type asicon: bool
+    :returns: The real file path to the given icon name.
+              If aspix is True return as QtGui.QPixmap, if asicon is True return as QtGui.QIcon.
+              If both are True, a QtGui.QIcon is returned.
+    :rtype: string
+    :raises: None
+    """
+    datapath = os.path.join(ICON_PATH, name)
+    icon = pkg_resources.resource_filename('jukeboxcore', datapath)
+    if aspix or asicon:
+        icon = QtGui.QPixmap(icon)
+        if asicon:
+            icon = QtGui.QIcon(icon)
+    return icon
 
 
 class JB_Gui(object):

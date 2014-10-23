@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pytest
 from nose.tools import eq_
 from PySide import QtCore, QtGui
 
@@ -96,8 +97,8 @@ class Test_JBGui():
 class Test_JB_MainWindow():
     def test_inheritance(self):
         jbmw = main.JB_MainWindow(flags=QtCore.Qt.WindowStaysOnTopHint)
-        #assert jbmw in jbmw.instances()
-        #assert jbmw.windowFlags() & QtCore.Qt.WindowStaysOnTopHint == QtCore.Qt.WindowStaysOnTopHint
+        assert jbmw in jbmw.instances()
+        assert jbmw.windowFlags() & QtCore.Qt.WindowStaysOnTopHint == QtCore.Qt.WindowStaysOnTopHint
 
 
 def test_dt_to_qdatetime():
@@ -105,3 +106,14 @@ def test_dt_to_qdatetime():
     qdt = QtCore.QDateTime(QtCore.QDate(now.year, now.month, now.day),
                            QtCore.QTime(now.hour, now.minute, now.second))
     eq_(main.dt_to_qdatetime(now), qdt)
+
+
+@pytest.mark.parametrize("args,expected",[((False, False), basestring),
+                                          ((True, False), QtGui.QPixmap),
+                                          ((False, True), QtGui.QIcon),
+                                          ((True, True), QtGui.QIcon),
+                                        ])
+def test_get_icon(args, expected):
+    name = "glyphicons_003_user.png"
+    icon = main.get_icon(name, aspix=args[0], asicon=args[1])
+    assert isinstance(icon, expected)

@@ -9,10 +9,9 @@ from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 
 from jukeboxcore import djadapter
-from jukeboxcore.constants import ICON_PATH
 from jukeboxcore.filesys import JB_File, TaskFileInfo
 from jukeboxcore.plugins import JB_CorePlugin
-from jukeboxcore.gui.main import JB_MainWindow
+from jukeboxcore.gui.main import JB_MainWindow, get_icon
 from jukeboxcore.gui import treemodel, djitemdata
 from jukeboxcore.gui.widgets.browser import ComboBoxBrowser, ListBrowser, CommentBrowser
 from jukeboxcore.gui.widgets.textedit import JB_PlainTextEdit
@@ -128,23 +127,17 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :rtype: None
         :raises: None
         """
-        folder_icon_path = os.path.join(ICON_PATH, 'glyphicons_144_folder_open.png')
-        folder_pix = QtGui.QPixmap(folder_icon_path)
-        folder_icon = QtGui.QIcon(folder_pix)
+        folder_icon = get_icon('glyphicons_144_folder_open.png', asicon=True)
         self.asset_open_path_tb.setIcon(folder_icon)
         self.shot_open_path_tb.setIcon(folder_icon)
         self.asset_open_pb.setIcon(folder_icon)
         self.shot_open_pb.setIcon(folder_icon)
 
-        floppy_icon_path = os.path.join(ICON_PATH, 'glyphicons_446_floppy_save.png')
-        floppy_pix = QtGui.QPixmap(floppy_icon_path)
-        floppy_icon = QtGui.QIcon(floppy_pix)
+        floppy_icon = get_icon('glyphicons_446_floppy_save.png', asicon=True)
         self.asset_save_pb.setIcon(floppy_icon)
         self.shot_save_pb.setIcon(floppy_icon)
 
-        current_icon_path = os.path.join(ICON_PATH, 'glyphicons_181_download_alt.png')
-        current_pix = QtGui.QPixmap(current_icon_path)
-        current_icon = QtGui.QIcon(current_pix)
+        current_icon = get_icon('glyphicons_181_download_alt.png', asicon=True)
         self.current_pb.setIcon(current_icon)
 
     def setup_signals(self, ):
