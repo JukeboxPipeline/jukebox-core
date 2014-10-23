@@ -1,10 +1,7 @@
-import os
-
 from PySide import QtGui
 
-from jukeboxcore.constants import ICON_PATH
 from jukeboxcore.gui.widgets import commentwidget_ui
-from jukeboxcore.gui.main import dt_to_qdatetime
+from jukeboxcore.gui.main import dt_to_qdatetime, get_icon
 
 
 class CommentWidget(commentwidget_ui.Ui_CommentWidget, QtGui.QFrame):
@@ -25,8 +22,7 @@ class CommentWidget(commentwidget_ui.Ui_CommentWidget, QtGui.QFrame):
         self.setFrameStyle(self.StyledPanel)
         self.setFrameShadow(self.Sunken)
 
-        user_icon_path = os.path.join(ICON_PATH, 'glyphicons_003_user.png')
-        user_pix = QtGui.QPixmap(user_icon_path)
+        user_pix = get_icon('glyphicons_003_user.png', aspix=True)
         self.user_lb.setPixmap(user_pix)
 
     def set_index(self, index):
