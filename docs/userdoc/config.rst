@@ -14,3 +14,6 @@ For more information see :ref:`Connect to an existing Database <connect_db>`.
 The Configer Tool will show you, if your settings are acceptable by displaying them either in green or red.
 If you want to enter a string with a lot of special characters, try to put them in double quotes.
 The reset button on the lower right cornor will reset the selected field to its default.
+
+
+.. NOTE:: All keys that ask for paths should be a list of paths seperated by either ``:`` on linux or ``;`` on windows.

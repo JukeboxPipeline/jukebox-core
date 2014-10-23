@@ -14,7 +14,7 @@ from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 from jukeboxcore import errors
 from jukeboxcore.constants import PLUGIN_CONFIG_DIR, CONFIG_EXT, BUILTIN_PLUGIN_PATH
-from jukeboxcore.iniconf import load_config
+from jukeboxcore.iniconf import load_config, get_core_config
 
 
 class JB_Plugin(object):
@@ -299,11 +299,12 @@ class PluginManager(object):
         :raises:
         """
         plugins = []
-        pathenv = os.environ.get('JUKEBOX_PLUGIN_PATH', '')
+        cfg = get_core_config()
+        pathenv = cfg['jukebox']['pluginpaths']
         pathenv = os.pathsep.join((pathenv, self.builtinpluginpath))
         paths = pathenv.split(os.pathsep)
         for p in paths:
-            if p:  # in case of an empty string, we do not search!
+            if p and os.path.exists(p):  # in case of an empty string, we do not search!
                 plugins.extend(self.find_plugins(p))
         return plugins
 

@@ -6,6 +6,7 @@ Welcome to the developer's documenation. All necessary information for contribut
 .. toctree::
    :maxdepth: 2
 
+   getstarted
    git
    python
    unittest
