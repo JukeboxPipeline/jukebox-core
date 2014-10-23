@@ -29,6 +29,10 @@ import django
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 
+if not os.environ.get("DJANGO_SETTINGS_MODULE"):
+   import jukeboxcore.main
+   jukeboxcore.main.init_environment()
+
 django.setup()
 
 
