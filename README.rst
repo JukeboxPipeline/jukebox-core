@@ -2,13 +2,13 @@
 Jukebox Core
 =========================================================
 
-.. image:: http://img.shields.io/pypi/v/jukeboxcore.png
+.. image:: http://img.shields.io/pypi/v/jukebox-core.png
     :target: https://pypi.python.org/pypi/jukeboxcore
 
-.. image:: http://img.shields.io/pypi/dm/jukeboxcore.png
+.. image:: http://img.shields.io/pypi/dm/jukebox-core.png
     :target: https://pypi.python.org/pypi/jukeboxcore
 
-.. image:: http://img.shields.io/pypi/l/jukeboxcore.png
+.. image:: http://img.shields.io/pypi/l/jukebox-core.png
     :target: https://pypi.python.org/pypi/jukeboxcore
 
 This is the core package for the jukebox cg-pipeline.
