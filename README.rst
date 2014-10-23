@@ -2,6 +2,15 @@
 Jukebox Core
 =========================================================
 
+.. image:: http://img.shields.io/pypi/v/jukeboxcore.png
+    :target: https://pypi.python.org/pypi/jukeboxcore
+
+.. image:: http://img.shields.io/pypi/dm/jukeboxcore.png
+    :target: https://pypi.python.org/pypi/jukeboxcore
+
+.. image:: http://img.shields.io/pypi/l/jukeboxcore.svg
+    :target: https://pypi.python.org/pypi/jukeboxcore
+
 This is the core package for the jukebox cg-pipeline.
 It is a framework for developing pipeline tools for different softwares in python.
 
