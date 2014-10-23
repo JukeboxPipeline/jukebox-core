@@ -40,6 +40,7 @@ If you want to create addons for jukebox follow this guide:
   5. Edit your ``pluginpaths`` in the userconfiguration and append the new folder to the paths.
      Multiple paths are seperated by either ``:`` on linux or ``;`` on windows.
      See :ref:`configuration` for more information.
+     Alternatively you can set the environment variable ``JUKEBOX_PLUGIN_PATHS``.
   6. Create a python file in your new folder and start coding the plugin.
      Create a new subclass from one of the :class:`jukeboxcore.plugins.JB_Plugin` classes and implement
      the abstract functions.
