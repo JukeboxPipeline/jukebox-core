@@ -34,13 +34,13 @@ class PyTest(TestCommand):
         sys.exit(errcode)
 
 about={}
-initfile = os.path.join(here, 'src', 'jukebox-core', '__init__.py')
+initfile = os.path.join(here, 'src', 'jukeboxcore', '__init__.py')
 with open(initfile) as fp:
     exec(fp.read(), about)
 
 long_description = read('README.rst', 'HISTORY.rst')
-install_requires = []
-tests_require = ['pytest']
+install_requires = ['pyside', 'configobj', 'django>=1.7', 'psycopg2']
+tests_require = ['pytest', 'nose']
 
 
 setup(
@@ -53,6 +53,7 @@ setup(
     url='https://github.com/JukeboxPipeline/jukebox-core',
     packages=find_packages('src'),
     package_dir={'': 'src'},
+    package_data={'jukeboxcore': ['data/*.*']},
     include_package_data=True,
     tests_require=tests_require,
     install_requires=install_requires,
@@ -60,7 +61,14 @@ setup(
     license='BSD',
     zip_safe=False,
     keywords='jukebox-core',
-    test_suite='jukebox-core.test.jukebox-core',
+    entry_points={
+        'console_scripts': [
+            'jukebox = jukeboxcore.launcher:main_func',
+        ],
+        'gui_scripts': [
+            'jukeboxw = jukeboxcore.launcher:main_func',
+        ]
+    },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

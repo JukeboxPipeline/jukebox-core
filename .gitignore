@@ -56,3 +56,6 @@ docs/reference
 
 # Flymake
 *_flymake.py
+
+# files for local use
+localtoxinstall
