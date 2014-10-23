@@ -11,10 +11,11 @@ There are numerous ways for unittesting. This is a description of the current te
 
   -- Daniel Lindsley on his ToastDriven blog.
 
+------------
 Organisation
 ------------
 
-We use `tox <https://pypi.python.org/pypi/tox>`_ for running a whole array of unittests.
+We use tox_ for running a whole array of unittests.
 Tox as is a generic virtualenv management and test command line tool you can use for:
 
     - checking your package installs correctly with different Python versions and interpreters
@@ -25,7 +26,7 @@ Because all jukebox products are packages it is important to test them in their 
 Tox lets you configure multiple environments with different dependencies and executes the tests in these environments. So you could test your code
 with python 2.7, 3.3, 3.4, pypy etc. There are numerous environments already configured. Some have special usecases, e.g. they test building the documentation.
 
-Tox itselfs basically invokes any command you tell it to. So for the unittesting itself we use `pytest <http://pytest.org/latest/>`_.
+Tox itselfs basically invokes any command you tell it to. So for the unittesting itself we use pytest_.
 Pytest is a tool for testing in python. It helps you with writing your tests, collects them, executes them and reports the results.
 So for testing our package, tox invokes the pytest command.
 If you are familiar with other test frameworks like nose or unittest, pytest is really easy. Pytest even understands a good amount of nose,
@@ -159,6 +160,8 @@ Usually you have two environments for every python version. One with coverage an
 Because certain race conditions cannot be tested with coverage as it introduces a slight overhead. 
 
 
+.. _localtox:
+
 ++++++++++++
 localtox.ini
 ++++++++++++
@@ -181,3 +184,48 @@ The reason why you might want to use this file is the following:
 +++++++++++
 
 Ignore this file. If somebody manages to make jukeboxcore work on `Travis-CI <https://travis-ci.org/>`_ this might be interesting.
+
+
+-------------------
+Testing with pytest
+-------------------
+
+pytest_ is very easy to use. To execute all tests use::
+
+  $ py.test
+
+or for better verbosity::
+
+  $ py.test -vv
+
+If you only want to execute one test file use::
+
+  $ py.test path/to/testfile.py -vv
+
+For coverage reports you need `coverage <https://pypi.python.org/pypi/coverage>`_ and `pytest-cov <https://pypi.python.org/pypi/pytest-cov>`_.
+The use::
+
+  $ py.test --cov src -vv
+
+This will capture coverage for all python files in source.
+
+
+----------------
+Testing with tox
+----------------
+
+Testing with tox_ is preferred because it will offer preconfigured environments and will test the package in its distributed form in a virutal env.
+It is really easy to use::
+
+  $ # test all environments of tox at once that are specified in the envlist of the tox.ini
+  $ tox
+  $ # test special environments, e.g. just the test for documentation
+  $ tox -e docs
+  $ # test with the localtox.ini
+  $ tox -c localtox.ini
+
+You might want to use localtox_ instead of the regular tox.ini when working on windows. Follow the guide above on how to configure a local tox
+settings file, so you can have custom dependencies installed, which are not on any package index.
+
+.. _pytest: http://pytest.org/latest/
+.. _tox: https://pypi.python.org/pypi/tox
