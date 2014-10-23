@@ -300,10 +300,13 @@ class PluginManager(object):
         """
         plugins = []
         cfg = get_core_config()
-        pathenv = cfg['jukebox']['pluginpaths']
+        pathenv =  os.environ.get("JUKEBOX_PLUGIN_PATHS", "")
+        pathenv = os.pathsep.join((pathenv, cfg['jukebox']['pluginpaths']))
         pathenv = os.pathsep.join((pathenv, self.builtinpluginpath))
         paths = pathenv.split(os.pathsep)
-        for p in paths:
+        # first find built-ins then the ones in the config, then the one from the environment
+        # so user plugins can override built-ins
+        for p in reversed(paths):
             if p and os.path.exists(p):  # in case of an empty string, we do not search!
                 plugins.extend(self.find_plugins(p))
         return plugins
