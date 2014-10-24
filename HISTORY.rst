@@ -12,3 +12,9 @@ History
 +++++++++++++++++++++++++++++++++++++++
 
 * First release on PyPI
+
+1.0.4 (2014-10-24)
++++++++++++++++++++++++++++++++++++++++
+
+* Fix for missing dependency
+* Documentation hosted on pythonhosted.org
