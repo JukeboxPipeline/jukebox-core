@@ -2,7 +2,7 @@
 
 The release process in general works like this:
 
-  1. Sanity checks
+  1. Open the work file and run sanity checks
   2. Copy the file to release location and create db entry
   3. Open the release file and perform cleanup actions
 
@@ -79,12 +79,11 @@ class Release(object):
 
         :param checks: the file action object that has been already processed.
         :type checks: :class:`FileAction`
-        :returns: None
-        :rtype: None
+        :returns: True, if the user confirmed to continue. False if the user wants to abort.
+        :rtype: :class:`bool`
         :raises: None
         """
-        r = checks.show_confirm_dialog()
-        return r
+        raise NotImplementedError
 
     def copy_file(self, old, new):
         """Copy the old file to the location of the new file
@@ -115,7 +114,7 @@ class Release(object):
         :rtype: None
         :raises: None
         """
-        pass
+        raise NotImplementedError
 
     def cleanup(self, f, cleanup):
         """Cleanup the given releasefile

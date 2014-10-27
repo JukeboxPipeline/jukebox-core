@@ -90,12 +90,12 @@ class ActionUnit(object):
         :raises: None
         """
         super(ActionUnit, self).__init__()
-        self._depsuccess = depsuccess
-        self._depfail = depfail
+        self.depsuccess = depsuccess
+        self.depfail = depfail
         self.name = name
         self.description = description
         self.status = ActionStatus()
-        self.actionfunc = None
+        self.actionfunc = actionfunc
 
     def run(self, f):
         """Execute the actions on the given file.
@@ -114,7 +114,7 @@ class ActionUnit(object):
                     return
         if self.depfail:
             for d in self.depfail:
-                if self.depfail.status.value == ActionStatus.SUCCESS:
+                if d.status.value == ActionStatus.SUCCESS:
                     self.status.value = ActionStatus.SKIPPED
                     self.status.message = "Skipped because action \"%s\" did not fail." % d.name
                     return
@@ -140,10 +140,9 @@ class FileAction(object):
     You can access the action and file object with these attributes:
 
       :actions: a list of action units.
-      :f: the :class:`jukeboxcore.filesys.JB_File`
     """
 
-    def __init__(self, actions, f):
+    def __init__(self, actions):
         """Initializes a FileAction object.
         The actions will be performed on a file when :meth:`FileAction.execute` is called.
 
@@ -152,7 +151,6 @@ class FileAction(object):
         :raises: None
         """
         self.actions = actions
-        self.f = f
 
     def execute(self, f):
         """Run all action units on the given JB_File.
@@ -165,17 +163,6 @@ class FileAction(object):
         """
         for a in self.actions:
             a.run(self.f)
-
-    #TODO move this out of here. maybe a function that takes a FileAction object and displays it
-    def show_confirm_dialog(self, ):
-        """Show a dialog that shows the status of all actions
-        and ask the user to proceed. Return the answer of the user.
-
-        :returns: The answer of the user. True means proceed, False, means abort.
-        :rtype: :class:`bool`
-        :raises: None
-        """
-        pass
 
     def status(self, ):
         """The global status that summerizes all actions
@@ -193,7 +180,7 @@ class FileAction(object):
         status = ActionStatus(ActionStatus.SUCCESS, "All actions succeeded.")
         for a in self.actions:
             if a.status.value == ActionStatus.ERROR:
-                status = ActionStatus(ActionStatus.ERROR, "Error: action \"%s\" raised an error!" % a.name)
+                status = ActionStatus(ActionStatus.ERROR, "Error: action \"%s\" raised an error!" % a.name, a.status.traceback)
                 break
             if a.status.value == ActionStatus.FAILURE:
                 status = ActionStatus(ActionStatus.FAILURE, "Action(s) failed!")
