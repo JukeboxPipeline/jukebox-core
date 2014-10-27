@@ -72,7 +72,7 @@ class Release(object):
         :rtype: :class:`CheckResult``
         :raises: None
         """
-        pass
+        checks.execute(f)
 
     def confirm_check_result(self, checks):
         """Display the result to the user and ask for confirmation if you can continue
@@ -128,4 +128,4 @@ class Release(object):
         :rtype: None
         :raises: None
         """
-        pass
+        cleanup.execute(f)
