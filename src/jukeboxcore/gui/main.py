@@ -204,3 +204,5 @@ class JB_MainWindow(JB_Gui, QtGui.QMainWindow):
         super(JB_MainWindow, self).__init__(*args, **kwargs)
         set_main_style(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, on=True)
+        jb_icon = get_icon('JB_Icon_32x32.png',asicon=True)
+        self.setWindowIcon(jb_icon)
