@@ -35,46 +35,55 @@ class Release(object):
         self._workfile = JB_File(self._tfi)
         self._releasefile = JB_File(self._rfi)
 
-    def relase(self, ):
+    def release(self, checks, cleanup, force=False):
         """Create a release
 
         Perform Sanity checks on work file.
         Copy work file to releasefile location.
         Perform cleanup actions on releasefile.
 
+        :param checks: the file action object that holds the checks to perform
+        :type checks: :class:`FileAction`
+        :param force: If True, does not perform sanity checks.
+        :type force: bool
+        :param cleanup: The file action object that holds actions to perform on the released file
+        :type cleanup: :class:`FileAction`
         :returns: None
         :rtype: None
         :raises: None
         """
-        result = self.sanity_check(self._workfile)
-        if not result.passed():
-            if not self.confirm_check_result(result):
-                return
+        if not force:
+            self.sanity_check(self._workfile, checks)
+            if not checks.passed():
+                if not self.confirm_check_result(checks):
+                    return
         self.copy_file(self._workfile, self._releasefile)
         self.create_db_entry(self._releasefile)
-        self.cleanup(self._releasefile)
+        self.cleanup(self._releasefile, cleanup)
 
-    def sanity_check(self, f):
+    def sanity_check(self, f, checks):
         """Check the given JB_File object
 
         :param f: the file to check
         :type f: :class:`JB_File`
+        :param checks: the file action object with sanity checks
+        :type checks: :class:`FileAction`
         :returns: a check result object
         :rtype: :class:`CheckResult``
         :raises: None
         """
         pass
 
-    def confirm_check_result(self, result):
+    def confirm_check_result(self, checks):
         """Display the result to the user and ask for confirmation if you can continue
 
-        :param result: the result of the sanity check
-        :type result: :class:`CheckResult`
+        :param checks: the file action object that has been already processed.
+        :type checks: :class:`FileAction`
         :returns: None
         :rtype: None
         :raises: None
         """
-        r = result.show_confirm_dialog()
+        r = checks.show_confirm_dialog()
         return r
 
     def copy_file(self, old, new):
@@ -102,6 +111,19 @@ class Release(object):
         :type f: :class:`JB_File`
         :param comment: comment for the release
         :type comment: :class:`str`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        pass
+
+    def cleanup(self, f, cleanup):
+        """Cleanup the given releasefile
+
+        :param f: the releasefile to cleanup
+        :type f: :class:`JB_File`
+        :param cleanup: a file action object that holds cleanup actions for the given file
+        :type cleanup: :class:`FileAction`
         :returns: None
         :rtype: None
         :raises: None
