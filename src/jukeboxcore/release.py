@@ -13,6 +13,7 @@ import shutil
 
 from jukeboxcore.djadapter import RELEASETYPES
 from jukeboxcore.filesys import TaskFileInfo, JB_File
+from jukeboxcore.fileaction import ActionStatus
 
 
 class Release(object):
@@ -38,9 +39,12 @@ class Release(object):
     def release(self, checks, cleanup, force=False):
         """Create a release
 
-        Perform Sanity checks on work file.
-        Copy work file to releasefile location.
-        Perform cleanup actions on releasefile.
+        Multiprocessing is used and the release is executed in another process.
+        In the process these steps are executed:
+
+          1. Perform Sanity checks on work file.
+          2. Copy work file to releasefile location.
+          3. Perform cleanup actions on releasefile.
 
         :param checks: the file action object that holds the checks to perform
         :type checks: :class:`FileAction`
@@ -54,12 +58,15 @@ class Release(object):
         """
         if not force:
             self.sanity_check(self._workfile, checks)
-            if not checks.passed():
+            if not checks.status().value == ActionStatus.SUCCESS:
                 if not self.confirm_check_result(checks):
                     return
         self.copy_file(self._workfile, self._releasefile)
-        self.create_db_entry(self._releasefile)
         self.cleanup(self._releasefile, cleanup)
+        if not cleanup.status().value == ActionStatus.SUCCESS:
+            if not self.confirm_check_result(cleanup):
+                self.delete_file(self._releasefile)
+        self.create_db_entry(self._releasefile)
 
     def sanity_check(self, f, checks):
         """Check the given JB_File object
