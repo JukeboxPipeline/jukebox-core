@@ -10,6 +10,9 @@ Step 2. is the same for every file. Only 1. and 3. vary
 """
 import os
 import shutil
+import tempfile
+
+import yaml
 
 from jukeboxcore.djadapter import RELEASETYPES
 from jukeboxcore.filesys import TaskFileInfo, JB_File
@@ -66,8 +69,9 @@ class Release(object):
         :rtype: None
         :raises: None
         """
-        rf = self.dump_release()
-        self.start_release_process(rf)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            self.dump_release(f)
+        self.start_release_process(f)
 
     def execute_actions(self, ):
         """Execute the sanity checks, copy the release file and perform the cleanup
@@ -88,14 +92,16 @@ class Release(object):
                 return
         self.create_db_entry(self._releasefile)
 
-    def dump_release(self, ):
-        """Dump this release object into a temp file and return the file path
+    def dump_release(self, f):
+        """Dump this release object into the given file stream
 
+        :param f: a file stream to dump the data into
+        :type f: file stream
         :returns: None
         :rtype: None
         :raises: None
         """
-        raise NotImplementedError
+        yaml.dump(self, f)
 
     def start_release_process(self, dump):
         """Start a subprocess that executes the given, dumped release
@@ -194,13 +200,20 @@ class Release(object):
 def load_release(dump):
     """Load the given, dumped release and return the :class:`Release` instance
 
+    Raises an TypeError, if the loaded object is no :class:`Release` instance.
+
     :param dump: The path to the dumped release (with :meth:`Release.dump_release`) file.
     :type dump: :class:`str`
-    :returns: None
-    :rtype: None
-    :raises: None
+    :returns: the loaded release
+    :rtype: :class:`Release`
+    :raises: AssertionError
     """
-    raise NotImplementedError
+    r = None
+    with open(dump) as f:
+        r = yaml.load(f)
+    if not isinstance(r, Release):
+        raise TypeError("Expected to load a release instance. Instead got: %s" % r)
+    return r
 
 
 def run_release(dump):
