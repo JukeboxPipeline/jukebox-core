@@ -58,6 +58,30 @@ def test_action_error():
     assert s.traceback
 
 
+def test_action_return_status():
+    """Test if when action returns no status, an error status is created instead"""
+    def nicefunc(obj):
+        return sucstat
+
+    def badfunc(obj):
+        return None
+
+    niceu = ActionUnit("NiceUnit", "Returns status", nicefunc)
+    badu = ActionUnit("BadUnit", "Does not return status", badfunc)
+
+    niceu.run(None)
+    s = niceu.status
+    assert s.value is ActionStatus.SUCCESS
+    assert s.message == "Success"
+    assert not s.traceback
+
+    badu.run(None)
+    s = badu.status
+    assert s.value is ActionStatus.ERROR
+    assert s.message == "Unexpected Error."
+    assert s.traceback
+
+
 def test_action_depsuccess():
     """Test if action gets skipped if other actions are unsuccessful"""
     d = [dsuc1, dfail, derr, dsuc2]
