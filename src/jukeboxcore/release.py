@@ -24,7 +24,7 @@ class Release(object):
     """Handle file releases of taskfiles
     """
 
-    def __init__(self, taskfileinfo, checks, cleanup):
+    def __init__(self, taskfileinfo, checks, cleanup, comment):
         """Create a release object that can handle the release of the given taskfileinfo
 
         :param taskfileinfo: the taskfileinfo for the file that should be released
@@ -35,6 +35,8 @@ class Release(object):
         :param cleanup: The action collection object that holds actions to perform on the released file.
                         It should accept a :class:`JB_File` as object for execute.
         :type cleanup: :class:`ActionCollection`
+        :param comment: The comment for the release
+        :type comment:
         :raises: None
         """
         super(Release, self).__init__()
@@ -47,6 +49,7 @@ class Release(object):
         self._releasefile = JB_File(self._rfi)
         self.checks = checks
         self.cleanup = cleanup
+        self.comment = comment
 
     def release(self):
         """Create a release
@@ -92,7 +95,7 @@ class Release(object):
             if not self.confirm_check_result(self.cleanup):
                 self.delete_file(self._releasefile)
                 return
-        self.create_db_entry(self._releasefile)
+        self.create_db_entry(self._releasefile, self.comment)
 
     def dump_release(self, f):
         """Dump this release object into the given file stream
