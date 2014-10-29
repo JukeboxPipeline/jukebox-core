@@ -36,36 +36,36 @@ class Release(object):
         self._workfile = JB_File(self._tfi)
         self._releasefile = JB_File(self._rfi)
 
-    def release(self, checks, cleanup, force=False):
+    def release(self, checks, cleanup):
         """Create a release
 
-        Multiprocessing is used and the release is executed in another process.
+        The release is executed in another subprocess.
         In the process these steps are executed:
 
           1. Perform Sanity checks on work file.
           2. Copy work file to releasefile location.
           3. Perform cleanup actions on releasefile.
 
-        :param checks: the file action object that holds the checks to perform
-        :type checks: :class:`FileAction`
-        :param force: If True, does not perform sanity checks.
-        :type force: bool
-        :param cleanup: The file action object that holds actions to perform on the released file
-        :type cleanup: :class:`FileAction`
+        :param checks: the action collection object that holds the checks to perform.
+                       It should accept a :class:`JB_File` as object for execute.
+        :type checks: :class:`ActionCollection`
+        :param cleanup: The action collection object that holds actions to perform on the released file.
+                        It should accept a :class:`JB_File` as object for execute.
+        :type cleanup: :class:`ActionCollection`
         :returns: None
         :rtype: None
         :raises: None
         """
-        if not force:
-            self.sanity_check(self._workfile, checks)
-            if not checks.status().value == ActionStatus.SUCCESS:
-                if not self.confirm_check_result(checks):
-                    return
+        self.sanity_check(self._workfile, checks)
+        if not checks.status().value == ActionStatus.SUCCESS:
+            if not self.confirm_check_result(checks):
+                return
         self.copy_file(self._workfile, self._releasefile)
         self.cleanup(self._releasefile, cleanup)
         if not cleanup.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(cleanup):
                 self.delete_file(self._releasefile)
+                return
         self.create_db_entry(self._releasefile)
 
     def sanity_check(self, f, checks):
@@ -73,10 +73,11 @@ class Release(object):
 
         :param f: the file to check
         :type f: :class:`JB_File`
-        :param checks: the file action object with sanity checks
-        :type checks: :class:`FileAction`
-        :returns: a check result object
-        :rtype: :class:`CheckResult``
+        :param checks: the action collection object with sanity checks
+                       It should accept a :class:`JB_File` as object for execute.
+        :type checks: :class:`ActionCollection`
+        :returns: None
+        :rtype: None
         :raises: None
         """
         checks.execute(f)
@@ -84,8 +85,9 @@ class Release(object):
     def confirm_check_result(self, checks):
         """Display the result to the user and ask for confirmation if you can continue
 
-        :param checks: the file action object that has been already processed.
-        :type checks: :class:`FileAction`
+        :param checks: the action collection object that has been already processed.
+                       It should accept a :class:`JB_File` as object for execute.
+        :type checks: :class:`ActionCollection`
         :returns: True, if the user confirmed to continue. False if the user wants to abort.
         :rtype: :class:`bool`
         :raises: None
@@ -110,6 +112,17 @@ class Release(object):
             os.makedirs(newdir)
         shutil.copy(oldp, newp)
 
+    def delete_file(self, f):
+        """Delete the given file
+
+        :param f: the file to delete
+        :type f: :class:`JB_File`
+        :returns: None
+        :rtype: None
+        :raises: :class:`OSError`
+        """
+        os.remove(f.get_fullpath())
+
     def create_db_entry(self, f, comment):
         """Create a db entry for the given file
 
@@ -128,8 +141,9 @@ class Release(object):
 
         :param f: the releasefile to cleanup
         :type f: :class:`JB_File`
-        :param cleanup: a file action object that holds cleanup actions for the given file
-        :type cleanup: :class:`FileAction`
+        :param cleanup: a action collection object that holds cleanup actions for the given file.
+                        It should accept a :class:`JB_File` as object for execute.
+        :type cleanup: :class:`ActionCollection`
         :returns: None
         :rtype: None
         :raises: None
