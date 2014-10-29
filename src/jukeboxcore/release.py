@@ -69,6 +69,7 @@ class Release(object):
         :rtype: None
         :raises: None
         """
+        # delete False is important so the subprocess can still read it
         with tempfile.NamedTemporaryFile(delete=False) as f:
             self.dump_release(f)
         self.start_release_process(f)
