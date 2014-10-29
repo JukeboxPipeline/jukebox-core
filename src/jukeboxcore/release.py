@@ -20,11 +20,17 @@ class Release(object):
     """Handle file releases of taskfiles
     """
 
-    def __init__(self, taskfileinfo):
+    def __init__(self, taskfileinfo, checks, cleanup):
         """Create a release object that can handle the release of the given taskfileinfo
 
         :param taskfileinfo: the taskfileinfo for the file that should be released
         :type taskfileinfo: :class:`TaskFileInfo`
+        :param checks: the action collection object that holds the checks to perform.
+                       It should accept a :class:`JB_File` as object for execute.
+        :type checks: :class:`ActionCollection`
+        :param cleanup: The action collection object that holds actions to perform on the released file.
+                        It should accept a :class:`JB_File` as object for execute.
+        :type cleanup: :class:`ActionCollection`
         :raises: None
         """
         super(Release, self).__init__()
@@ -35,38 +41,72 @@ class Release(object):
                                           self._tfi.descriptor)
         self._workfile = JB_File(self._tfi)
         self._releasefile = JB_File(self._rfi)
+        self.checks = checks
+        self.cleanup = cleanup
 
-    def release(self, checks, cleanup):
+    def release(self):
         """Create a release
 
         The release is executed in another subprocess.
+        So first we dump this release file for the subprocess.
         In the process these steps are executed:
 
-          1. Perform Sanity checks on work file.
-          2. Copy work file to releasefile location.
-          3. Perform cleanup actions on releasefile.
+          1. Load the dumped release
+          2. Start the release process.
+             In the process, do:
 
-        :param checks: the action collection object that holds the checks to perform.
-                       It should accept a :class:`JB_File` as object for execute.
-        :type checks: :class:`ActionCollection`
-        :param cleanup: The action collection object that holds actions to perform on the released file.
-                        It should accept a :class:`JB_File` as object for execute.
-        :type cleanup: :class:`ActionCollection`
+             1. Load dumped release, see :func:`load_release`
+             2. Execute the release actions, see :func:`run_release`:
+
+               1. Perform Sanity checks on work file.
+               2. Copy work file to releasefile location.
+               3. Perform cleanup actions on releasefile.
+
         :returns: None
         :rtype: None
         :raises: None
         """
-        self.sanity_check(self._workfile, checks)
-        if not checks.status().value == ActionStatus.SUCCESS:
-            if not self.confirm_check_result(checks):
+        rf = self.dump_release()
+        self.start_release_process(rf)
+
+    def execute_actions(self, ):
+        """Execute the sanity checks, copy the release file and perform the cleanup
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.sanity_check(self._workfile, self.checks)
+        if not self.checks.status().value == ActionStatus.SUCCESS:
+            if not self.confirm_check_result(self.checks):
                 return
         self.copy_file(self._workfile, self._releasefile)
-        self.cleanup(self._releasefile, cleanup)
-        if not cleanup.status().value == ActionStatus.SUCCESS:
-            if not self.confirm_check_result(cleanup):
+        self.cleanup(self._releasefile, self.cleanup)
+        if not self.cleanup.status().value == ActionStatus.SUCCESS:
+            if not self.confirm_check_result(self.cleanup):
                 self.delete_file(self._releasefile)
                 return
         self.create_db_entry(self._releasefile)
+
+    def dump_release(self, ):
+        """Dump this release object into a temp file and return the file path
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    def start_release_process(self, dump):
+        """Start a subprocess that executes the given, dumped release
+
+        :param dump: The path to the dumped release (with :meth:`Release.dump_release`) file.
+        :type dump: :class:`str`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
 
     def sanity_check(self, f, checks):
         """Check the given JB_File object
@@ -149,3 +189,32 @@ class Release(object):
         :raises: None
         """
         cleanup.execute(f)
+
+
+def load_release(dump):
+    """Load the given, dumped release and return the :class:`Release` instance
+
+    :param dump: The path to the dumped release (with :meth:`Release.dump_release`) file.
+    :type dump: :class:`str`
+    :returns: None
+    :rtype: None
+    :raises: None
+    """
+    raise NotImplementedError
+
+
+def run_release(dump):
+    """Load the given, dumped release and execute the release actions
+
+    This funtion is intended to be run in a subprocess, when using
+    :meth:`Release.start_release_process`.
+    Executes :meth:`Releaes.execute_actions` of the loaded :class:`Release` instance.
+
+    :param dump: The path to the dumped release (with :meth:`Release.dump_release`) file.
+    :type dump: :class:`str`
+    :returns: None
+    :rtype: None
+    :raises: None
+    """
+    release = load_release(dump)
+    release.execute_actions()
