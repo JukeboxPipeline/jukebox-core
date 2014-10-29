@@ -109,24 +109,22 @@ class ActionUnit(object):
         if self.depsuccess:
             for d in self.depsuccess:
                 if d.status.value != ActionStatus.SUCCESS:
-                    self.status.value = ActionStatus.SKIPPED
-                    self.status.message = "Skipped because action \"%s\" did not succeed." % d.name
+                    self.status = ActionStatus(ActionStatus.SKIPPED, "Skipped because action \"%s\" did not succeed." % d.name)
                     return
         if self.depfail:
             for d in self.depfail:
                 if d.status.value == ActionStatus.SUCCESS:
-                    self.status.value = ActionStatus.SKIPPED
-                    self.status.message = "Skipped because action \"%s\" did not fail." % d.name
+                    self.status = ActionStatus(ActionStatus.SKIPPED, "Skipped because action \"%s\" did not fail." % d.name)
                     return
         try:
-            self.status = self.actionfunc(f)
+            self.status = self.actionfunc(obj)
+            if not isinstance(self.status, ActionStatus):
+                raise TypeError("Expected action function %s to return a ActionStatus" % self.actionfunc)
         except:
-            self.status.value = ActionStatus.ERROR
-            self.status.message = "Unexpected Error."
-            self.status.traceback = traceback.format_exc()
+            self.status = ActionStatus(ActionStatus.ERROR, "Unexpected Error.", traceback.format_exc())
 
 
-class FileAction(object):
+class ActionCollection(object):
     """Perform a collection of :class:`ActionUnit`s on a object.
 
     Actions get executed in the given order.

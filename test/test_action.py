@@ -1,4 +1,4 @@
-from jukeboxcore.fileaction import FileAction, ActionUnit, ActionStatus
+from jukeboxcore.action import ActionCollection, ActionUnit, ActionStatus
 
 
 def successf(f):
@@ -136,22 +136,43 @@ def test_action_depfail():
     assert not s.traceback
 
 
-def test_fileaction_status():
-    """Test if fileaction status is calculated right."""
-    fa = FileAction([dsuc1, dsk, dsuc2])
-    s = fa.status()
+def test_actioncollection_status():
+    """Test if actioncollection status is calculated right."""
+    ac = ActionCollection([dsuc1, dsk, dsuc2])
+    s = ac.status()
     assert s.value is ActionStatus.SUCCESS
     assert s.message == "All actions succeeded."
     assert s.traceback == ""
 
-    fa = FileAction([dsuc1, dfail, dfail, derr, dfail, dsk, dsuc2])
-    s = fa.status()
+    ac = ActionCollection([dsuc1, dfail, dfail, derr, dfail, dsk, dsuc2])
+    s = ac.status()
     assert s.value is ActionStatus.ERROR
     assert s.message == "Error: action \"ErrorUnit\" raised an error!"
     assert s.traceback
 
-    fa = FileAction([dsuc1, dfail, dfail, dsk, dsuc2])
-    s = fa.status()
+    ac = ActionCollection([dsuc1, dfail, dfail, dsk, dsuc2])
+    s = ac.status()
     assert s.value is ActionStatus.FAILURE
     assert s.message == "Action(s) failed!"
     assert s.traceback == ""
+
+
+def test_actioncollection_execute():
+    """Test if all actions are run correctly"""
+    def append1(l):
+        l.append(1)
+        return sucstat
+
+    def append2(l):
+        l.append(2)
+        return sucstat
+
+    au1 = ActionUnit("append1", "append 1 to list", append1)
+    au2 = ActionUnit("append2", "append 2 to list", append2)
+    au3 = ActionUnit("append1", "append 1 to list", append1)
+    ac = ActionCollection([au1, au2, au3])
+    l = [3, 4, 5]
+    ac.execute(l)
+    s = ac.status()
+    assert s.value is ActionStatus.SUCCESS
+    assert l == [3, 4, 5, 1, 2, 1]
