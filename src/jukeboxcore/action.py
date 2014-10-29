@@ -1,4 +1,4 @@
-"""Module for performing arbitrary actions on files
+"""Module for performing arbitrary actions on objects
 
 A :class:`FileAction` object is a collection of multiple
 :class:`ActionUnit`s. When executing the :class:`FileAction` each :class:`ActionUnit` is run.
@@ -53,7 +53,7 @@ class ActionStatus(object):
 
 
 class ActionUnit(object):
-    """A single action to be performed on a file.
+    """A single action to be performed on a object.
 
     Actions might depend on others and only get executed when the dependency
     was successful. Other actions might depend on the failure of another action
@@ -67,7 +67,7 @@ class ActionUnit(object):
 
     .. Note::
 
-       The given file must be ready to be processed. So if the file needs to be opened first,
+       The given object must be ready to be processed. So if the object is a file, the file needs to be opened first,
        create an action that opens the file, and put it as dependency for all other actions.
        The same goes for closing or saving files.
     """
@@ -80,7 +80,7 @@ class ActionUnit(object):
         :type name: :class:`str`
         :param description: A short description of what the action unit does
         :type description: :class:`str`
-        :param actionfunc: A function that takes a :class:`jukeboxcore.filesys.JB_File` as argument and performs a action.
+        :param actionfunc: A function that takes an object as argument and performs a action.
                            the function should return a :class:`ActionStatus` object
         :type actionfunc: callable
         :param depsuccess: a list of action units that has to succeed first before this action can be executed
@@ -97,11 +97,11 @@ class ActionUnit(object):
         self.status = ActionStatus()
         self.actionfunc = actionfunc
 
-    def run(self, f):
-        """Execute the actions on the given file.
+    def run(self, obj):
+        """Execute the actions on the given object.
 
-        :param f: The file that the action should process
-        :type f: :class:`jukeboxcore.filesys.JB_File`
+        :param obj: The object that the action should process
+        :type obj: :class:`object`
         :returns: None
         :rtype: None
         :raises: None
@@ -127,24 +127,24 @@ class ActionUnit(object):
 
 
 class FileAction(object):
-    """Perform a collection of :class:`ActionUnit`s on files.
+    """Perform a collection of :class:`ActionUnit`s on a object.
 
     Actions get executed in the given order.
 
     .. Note::
 
-       The given file must be ready to be processed. So if the file needs to be opened first,
+       The given object must be ready to be processed. So if the object is a file, the file needs to be opened first,
        create an action that opens the file, and put it as dependency for all other actions.
        The same goes for closing or saving files.
 
-    You can access the action and file object with these attributes:
+    You can access the action objects with these attributes:
 
       :actions: a list of action units.
     """
 
     def __init__(self, actions):
         """Initializes a FileAction object.
-        The actions will be performed on a file when :meth:`FileAction.execute` is called.
+        The actions will be performed on a object when :meth:`FileAction.execute` is called.
 
         :param actions: a list of action units
         :type actions: list
@@ -152,17 +152,17 @@ class FileAction(object):
         """
         self.actions = actions
 
-    def execute(self, f):
-        """Run all action units on the given JB_File.
+    def execute(self, obj):
+        """Run all action units on the given object.
 
-        :param f: the file to be processed
-        :type f: :class:`jukeboxcore.filesys.JB_File`
+        :param obj: the object to be processed
+        :type obj: :class:`object`
         :returns: None
         :rtype: None
         :raises: None
         """
         for a in self.actions:
-            a.run(self.f)
+            a.run(obj)
 
     def status(self, ):
         """The global status that summerizes all actions

@@ -13,7 +13,7 @@ import shutil
 
 from jukeboxcore.djadapter import RELEASETYPES
 from jukeboxcore.filesys import TaskFileInfo, JB_File
-from jukeboxcore.fileaction import ActionStatus
+from jukeboxcore.action import ActionStatus
 
 
 class Release(object):
