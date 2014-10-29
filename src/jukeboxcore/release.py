@@ -71,8 +71,8 @@ class Release(object):
         """
         # delete False is important so the subprocess can still read it
         with tempfile.NamedTemporaryFile(delete=False) as f:
-            self.dump_release(f)
-        self.start_release_process(f)
+            self.dump_release(f.name)
+        self.start_release_process(f.name)
 
     def execute_actions(self, ):
         """Execute the sanity checks, copy the release file and perform the cleanup
@@ -203,6 +203,14 @@ def load_release(dump):
 
     Raises an TypeError, if the loaded object is no :class:`Release` instance.
 
+    The file is opened like this::
+
+      os.fdopen(os.open(dump, os.O_RDWR | os.O_BINARY | os.O_TEMPORARY), 'rb')
+
+    This ensures that a temporary file on windows can be opened multiple times.
+    I found the solution here: http://stackoverflow.com/a/15235559
+    The os.O_TEMPORARY is the key.
+
     :param dump: The path to the dumped release (with :meth:`Release.dump_release`) file.
     :type dump: :class:`str`
     :returns: the loaded release
@@ -210,8 +218,9 @@ def load_release(dump):
     :raises: AssertionError
     """
     r = None
-    with open(dump) as f:
-        r = yaml.load(f)
+    f = os.fdopen(os.open(dump, os.O_RDWR | os.O_BINARY | os.O_TEMPORARY), 'rb')
+    r = yaml.load(f)
+    f.close()
     if not isinstance(r, Release):
         raise TypeError("Expected to load a release instance. Instead got: %s" % r)
     return r
