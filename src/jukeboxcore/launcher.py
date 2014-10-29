@@ -17,6 +17,7 @@ import sys
 
 from jukeboxcore import main, plugins, gui
 from jukeboxcore.gui import compile_ui
+from jukeboxcore.release import run_release
 
 
 class Launcher(object):
@@ -38,10 +39,12 @@ class Launcher(object):
         managep = self.subparsers.add_parser("manage", add_help=False,
                                              help="Manage django command")
         compileuip = self.subparsers.add_parser("compileui", help="Compile Qt Designer Files")
+        releasep = self.subparsers.add_parser("release", help="Create a new release")
         self.setup_launch_parser(launchp)
         self.setup_list_parser(listp)
         self.setup_manage_parser(managep)
         self.setup_compile_ui_parser(compileuip)
+        self.setup_release_parser(releasep)
 
     def setup_core_parser(self, ):
         """Setup the core parser
@@ -181,8 +184,8 @@ The compiled file will be in the same directory but ends with _ui.py',
     def compile_ui(self, namespace, unknown):
         """Compile qt designer files
 
-        :param args: arguments from the launch parser
-        :type args: Namespace
+        :param namespace: namespace containing arguments from the launch parser
+        :type namespace: Namespace
         :param unknown: list of unknown arguments
         :type unknown: list
         :returns: None
@@ -191,6 +194,33 @@ The compiled file will be in the same directory but ends with _ui.py',
         """
         uifile = namespace.uifile.name
         compile_ui.compile(uifile)
+
+    def setup_release_parser(self, parser):
+        """Setup the given parser for the release command
+
+        :param parser:
+        :type parser:
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        parser.set_defaults(func=self.release)
+        parser.add_argument('releasedump',
+                            help='the dumped release information yaml file',)
+
+    def release(self, namespace, unknown):
+        """Execute the dumped release
+
+        :param namespace: namespace containing arguments from the release parser
+        :type namespace: Namespace
+        :param unknown: list of unknown arguments
+        :type unknown: list
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        f = namespace.releasedump
+        run_release(f)
 
     def parse_args(self, args=None):
         """Parse the given arguments

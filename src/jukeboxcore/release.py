@@ -11,6 +11,7 @@ Step 2. is the same for every file. Only 1. and 3. vary
 import os
 import shutil
 import tempfile
+import subprocess
 
 import yaml
 
@@ -113,7 +114,8 @@ class Release(object):
         :rtype: None
         :raises: None
         """
-        pass
+        args = ['jukebox', 'release', dump]
+        subprocess.Popen(args)
 
     def sanity_check(self, f, checks):
         """Check the given JB_File object
