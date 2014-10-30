@@ -1,3 +1,4 @@
+import getpass
 import os
 
 from nose.tools import eq_
@@ -299,3 +300,30 @@ class Test_TaskFileInfo():
         eq_(next5.releasetype, djadapter.RELEASETYPES['work'])
         eq_(next5.descriptor, 'take3')
         eq_(next5.typ, typ)
+
+    def test_create_db_entry(self):
+        name = getpass.getuser()
+        user = djadapter.users.create(username=name)
+
+        tfi = filesys.TaskFileInfo(self.task1, 99, djadapter.RELEASETYPES['release'], filesys.TaskFileInfo.TYPES['mayamainscene'])
+        tf, note = tfi.create_db_entry()
+        assert note is None
+        assert tf.task == self.task1
+        assert tf.version == 99
+        assert tf.releasetype == djadapter.RELEASETYPES['release']
+        assert tf.descriptor is None
+        assert tf.typ == filesys.TaskFileInfo.TYPES['mayamainscene']
+        tf.delete()
+
+        tfi = filesys.TaskFileInfo(self.task2, 99, djadapter.RELEASETYPES['release'], filesys.TaskFileInfo.TYPES['mayamainscene'])
+        comment = "A comment!"
+        tf, note = tfi.create_db_entry(comment)
+        assert note.content == comment
+        assert tf.task == self.task2
+        assert tf.version == 99
+        assert tf.releasetype == djadapter.RELEASETYPES['release']
+        assert tf.descriptor is None
+        assert tf.typ == filesys.TaskFileInfo.TYPES['mayamainscene']
+        tf.delete()
+        note.delete()
+        user.delete()

@@ -964,27 +964,11 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :rtype: tuple
         :raises: ValidationError
         """
-        jbfile = JB_File(tfi)
-        p = jbfile.get_fullpath()
-        user = djadapter.get_current_user()
-        tf = djadapter.models.TaskFile(path=p, task=tfi.task, version=tfi.version,
-                                       releasetype=tfi.releasetype, descriptor=tfi.descriptor,
-                                       typ=tfi.typ, user=user)
-        tf.full_clean()
-        tf.save()
         if tfi.task.department.assetflag:
             comment = self.asset_comment_pte.toPlainText()
         else:
             comment = self.shot_comment_pte.toPlainText()
-
-        try:
-            note = djadapter.models.Note(user=user, parent=tf, content=comment)
-            note.full_clean()
-            note.save()
-        except Exception, e:
-            tf.delete()
-            raise e
-        return tf, note
+        return tfi.create_db_entry(comment)
 
 
 class Genesis(JB_CorePlugin):

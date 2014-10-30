@@ -135,6 +135,35 @@ class TaskFileInfo(FileInfo):
             ver = 1
         return TaskFileInfo(task=task, version=ver, releasetype=releasetype, typ=typ, descriptor=descriptor)
 
+    def create_db_entry(self, comment=''):
+        """Create a db entry for this task file info
+        and link it with a optional comment
+
+        :param comment: a comment for the task file entry
+        :type comment: str
+        :returns: The created TaskFile django instance and the comment. If the comment was empty, None is returned instead
+        :rtype: tuple of :class:`dj.models.TaskFile` and :class:`dj.models.Note`|None
+        :raises: ValidationError, If the comment could not be created, the TaskFile is deleted and the Exception is propagated.
+        """
+        jbfile = JB_File(self)
+        p = jbfile.get_fullpath()
+        user = dj.get_current_user()
+        tf = dj.models.TaskFile(path=p, task=self.task, version=self.version,
+                                       releasetype=self.releasetype, descriptor=self.descriptor,
+                                       typ=self.typ, user=user)
+        tf.full_clean()
+        tf.save()
+        note = None
+        if comment:
+            try:
+                note = dj.models.Note(user=user, parent=tf, content=comment)
+                note.full_clean()
+                note.save()
+            except Exception, e:
+                tf.delete()
+                raise e
+        return tf, note
+
 
 class FileElement(object):
     """A file element uses a file info object to retrieve some information and generate

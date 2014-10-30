@@ -69,14 +69,14 @@ class Release(object):
                2. Copy work file to releasefile location.
                3. Perform cleanup actions on releasefile.
 
-        :returns: None
-        :rtype: None
+        :returns: the subprocess that handles the release
+        :rtype: :class:`subprocess.Popen`
         :raises: None
         """
         # delete False is important so the subprocess can still read it
         with tempfile.NamedTemporaryFile(delete=False) as f:
             self.dump_release(f)
-        self.start_release_process(f.name)
+        return self.start_release_process(f.name)
 
     def execute_actions(self, ):
         """Execute the sanity checks, copy the release file and perform the cleanup
@@ -113,12 +113,12 @@ class Release(object):
 
         :param dump: The path to the dumped release (with :meth:`Release.dump_release`) file.
         :type dump: :class:`str`
-        :returns: None
-        :rtype: None
+        :returns: the created subprocess
+        :rtype: :class:`subprocess.Popen`
         :raises: None
         """
         args = ['jukebox', 'release', dump]
-        subprocess.Popen(args)
+        return subprocess.Popen(args)
 
     def sanity_check(self, f, checks):
         """Check the given JB_File object
@@ -186,7 +186,8 @@ class Release(object):
         :rtype: None
         :raises: None
         """
-        raise NotImplementedError
+        tfi = f.get_obj()
+        tfi.create_db_entry(comment)
 
     def cleanup(self, f, cleanup):
         """Cleanup the given releasefile
