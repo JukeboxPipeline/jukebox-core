@@ -85,33 +85,13 @@ class Test_SoftwareElement():
         eq_(self.se.get_dir(self.tfio), 'Maya')
 
 
-class Test_TaskGroupElement():
-    @classmethod
-    def setup_class(cls):
-        cls.prj = djadapter.projects.create(name="Pixars Plants", short='plants', _path='plantpath', semester='SS14')
-        seq = djadapter.sequences.create(name='Seq01', project=cls.prj)
-        shot = djadapter.shots.create(name='Shot01', project=cls.prj, sequence=seq)
-        cls.at = djadapter.atypes.create(name='matte')
-        asset = djadapter.assets.create(name='background', atype=cls.at, project=cls.prj)
-        cls.dep1 = djadapter.departments.create(name="Layout", short="lay", assetflag=False)
-        cls.dep2 = djadapter.departments.create(name="Design", short="des", assetflag=True)
-        task1 = djadapter.tasks.create(department=cls.dep1, project=cls.prj, status='New', element=shot)
-        task2 = djadapter.tasks.create(department=cls.dep2, project=cls.prj, status='New', element=asset)
+def test_taskgroupelement_getdir(task1, task3):
+    tfio1 = filesys.TaskFileInfo(task1, 10, djadapter.RELEASETYPES['release'], 'mayamainscene')
+    tfio2= filesys.TaskFileInfo(task3, 10, djadapter.RELEASETYPES['release'], 'mayamainscene')
+    tge = filesys.TaskGroupElement()
 
-        cls.tfio1 = filesys.TaskFileInfo(task1, 10, djadapter.RELEASETYPES['release'], 'mayamainscene')
-        cls.tfio2= filesys.TaskFileInfo(task2, 10, djadapter.RELEASETYPES['release'], 'mayamainscene')
-        cls.tge = filesys.TaskGroupElement()
-
-    @classmethod
-    def teardown_class(cls):
-        cls.prj.delete()
-        cls.at.delete()
-        cls.dep1.delete()
-        cls.dep2.delete()
-
-    def test_getdir(self):
-        eq_(self.tge.get_dir(self.tfio1), os.path.normpath('shots/Seq01'))
-        eq_(self.tge.get_dir(self.tfio2), os.path.normpath('assets/matte'))
+    eq_(tge.get_dir(tfio1), os.path.normpath('shots/Seq01'))
+    eq_(tge.get_dir(tfio2), os.path.normpath('assets/matte'))
 
 
 class Test_ExtElement():
@@ -201,8 +181,7 @@ class Test_FileInfo():
 
 
 @pytest.fixture(scope='module')
-def taskfiles(request, dummyproject, user):
-    prj, seq, shot, dep1, dep2, task1, task2, usr, tfile, atype, asset = dummyproject
+def taskfiles(request, task1, task2, user):
     tf1 = djadapter.taskfiles.create(user=user, path='relpath1', task=task1, version=1,
                                          releasetype=djadapter.RELEASETYPES['release'],
                                          typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
@@ -229,8 +208,7 @@ def taskfiles(request, dummyproject, user):
     return l
 
 
-def test_get_latest(dummyproject, taskfiles):
-    prj, seq, shot, dep1, dep2, task1, task2, usr, tfile, atype, asset = dummyproject
+def test_get_latest(task1, task2, taskfiles):
     typ = filesys.TaskFileInfo.TYPES['mayamainscene']
     latest1 = filesys.TaskFileInfo.get_latest(task1, djadapter.RELEASETYPES['release'], typ)
     eq_(latest1.version, 3)
@@ -257,8 +235,7 @@ def test_get_latest(dummyproject, taskfiles):
     assert filesys.TaskFileInfo.get_latest(task2, djadapter.RELEASETYPES['work'], typ, descriptor='take3') is None
 
 
-def test_get_next(dummyproject, taskfiles):
-    prj, seq, shot, dep1, dep2, task1, task2, usr, tfile, atype, asset = dummyproject
+def test_get_next(task1, task2, taskfiles):
     typ = filesys.TaskFileInfo.TYPES['mayamainscene']
     next1 = filesys.TaskFileInfo.get_next(task1, djadapter.RELEASETYPES['release'], typ)
     eq_(next1.version, 4)
@@ -296,8 +273,7 @@ def test_get_next(dummyproject, taskfiles):
     eq_(next5.typ, typ)
 
 
-def test_create_db_entry(dummyproject, taskfiles, user):
-    prj, seq, shot, dep1, dep2, task1, task2, usr, tfile, atype, asset = dummyproject
+def test_create_db_entry(task1, task2, taskfiles, user):
     tfi = filesys.TaskFileInfo(task1, 99, djadapter.RELEASETYPES['release'], filesys.TaskFileInfo.TYPES['mayamainscene'])
     tf, note = tfi.create_db_entry()
     assert note is None
@@ -319,4 +295,3 @@ def test_create_db_entry(dummyproject, taskfiles, user):
     assert tf.typ == filesys.TaskFileInfo.TYPES['mayamainscene']
     tf.delete()
     note.delete()
-    user.delete()

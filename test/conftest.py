@@ -24,35 +24,120 @@ def user(setup_package):
 
 
 @pytest.fixture(scope='session')
-def dummyproject(request, setup_package):
-    """Returns:
+def prj(setup_package):
+    """Return project
 
-    project: name="Pixars Plants", short='plants', _path='plantpath', semester='SS14'
-    sequence: name='Seq01'
-    shot: name='Shot01'
-    department1: name="Design", short="des", assetflag=False
-    department2: name="Destruction", short="buum", assetflag=False
-    task1: task for shot and department1, status new
-    task2: task for shot and department2, status new
-    user: Uz
-    taskfile: task=task1, version=5, releasetype='handoff', path='anicepath', user=usrer, typ=dj.FILETYPES['mayamainscene']
-    assettype: name='matte', description='matte paintings'
-    asset: name='piranha plant', description='eats mario'
+    name="Pixars Plants", short='plants', _path='plantpath', semester='SS14', scale="cm"
     """
     from jukeboxcore import djadapter as dj
-    prj = dj.projects.create(name="Pixars Plants", short='plants', _path='plantpath', semester='SS14', scale="cm")
-    seq = dj.sequences.create(name='Seq01', project=prj, description='plants everywhere')
-    shot = dj.shots.create(name='Shot01', project=prj, sequence=seq, description='closeup of plant')
-    dep1 = dj.departments.create(name="Design", short="des", assetflag=False)
-    dep2 = dj.departments.create(name="Destruction", short="buum", assetflag=False)
-    task1 = dj.tasks.create(department=dep1, project=prj, status='New', element=shot)
-    task2 = dj.tasks.create(department=dep2, project=prj, status='New', element=shot)
-    usr = dj.users.create_user(username='Uz')
-    tfile = dj.taskfiles.create(task=task1, version=5, releasetype='handoff', path='anicepath', user=usr, typ=dj.FILETYPES['mayamainscene'])
+    return dj.projects.create(name="Pixars Plants", short='plants', _path='plantpath', semester='SS14', scale="cm")
+
+
+@pytest.fixture(scope='session')
+def seq(prj):
+    """Return sequence
+
+    name='Seq01', project=prj, description='plants everywhere'
+    """
+    from jukeboxcore import djadapter as dj
+    return dj.sequences.create(name='Seq01', project=prj, description='plants everywhere')
+
+
+@pytest.fixture(scope='session')
+def shot(prj, seq):
+    """Return shot
+
+    name='Shot01', project=prj, sequence=seq, description='closeup of plant'
+    """
+    from jukeboxcore import djadapter as dj
+    return dj.shots.create(name='Shot01', project=prj, sequence=seq, description='closeup of plant')
+
+
+@pytest.fixture(scope='session')
+def atype(prj):
+    """Return assettype
+
+    assettype is added to prj
+    name='matte', description='matte paintings'
+    """
+    from jukeboxcore import djadapter as dj
     atype = dj.atypes.create(name='matte', description='matte paintings')
     atype.projects.add(prj)
     atype.save()
-    asset = dj.assets.create(project=prj, atype=atype, name='piranha plant', description='eats mario')
+    return atype
 
-    l = (prj, seq, shot, dep1, dep2, task1, task2, usr, tfile, atype, asset)
-    return l
+
+@pytest.fixture(scope='session')
+def asset(prj, atype):
+    """Return asset
+
+    project=prj, atype=atype, name='piranha plant', description='eats mario'
+    """
+    from jukeboxcore import djadapter as dj
+    return dj.assets.create(project=prj, atype=atype, name='piranha plant', description='eats mario')
+
+
+@pytest.fixture(scope='session')
+def dep1(setup_package):
+    """Return a department
+
+    name="Design", short="des", assetflag=False
+    """
+    from jukeboxcore import djadapter as dj
+    return dj.departments.create(name="Design", short="des", assetflag=False)
+
+
+@pytest.fixture(scope='session')
+def dep2(setup_package):
+    """Return a department
+
+    name="Destruction", short="buum", assetflag=False
+    """
+    from jukeboxcore import djadapter as dj
+    return dj.departments.create(name="Destruction", short="buum", assetflag=False)
+
+
+@pytest.fixture(scope='session')
+def dep3(setup_package):
+    """Return a department
+
+    name="Matte", short="matte", assetflag=True
+    """
+    from jukeboxcore import djadapter as dj
+    return dj.departments.create(name="Matte", short="matte", assetflag=True)
+
+
+@pytest.fixture(scope='session')
+def task1(prj, shot, dep1):
+    """Return task
+
+    department=dep1, project=prj, status='New', element=shot
+    """
+    from jukeboxcore import djadapter as dj
+    return dj.tasks.create(department=dep1, project=prj, status='New', element=shot)
+
+
+@pytest.fixture(scope='session')
+def task2(prj, shot, dep2):
+    """Return task
+
+    department=dep2, project=prj, status='New', element=shot
+    """
+    from jukeboxcore import djadapter as dj
+    return dj.tasks.create(department=dep2, project=prj, status='New', element=shot)
+
+
+@pytest.fixture(scope='session')
+def task3(prj, asset, dep3):
+    from jukeboxcore import djadapter as dj
+    return dj.tasks.create(department=dep3, project=prj, status='New', element=asset)
+
+
+@pytest.fixture(scope='session')
+def tfile(task1, user):
+    """Return taskfile
+
+    task=task1, version=5, releasetype='handoff', path='anicepath', user=user, typ=dj.FILETYPES['mayamainscene']
+    """
+    from jukeboxcore import djadapter as dj
+    return dj.taskfiles.create(task=task1, version=5, releasetype='handoff', path='anicepath', user=user, typ=dj.FILETYPES['mayamainscene'])
