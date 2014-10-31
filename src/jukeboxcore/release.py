@@ -11,6 +11,7 @@ Step 2. is the same for every file. Only 1. and 3. vary
 from jukeboxcore.djadapter import RELEASETYPES
 from jukeboxcore.filesys import TaskFileInfo, JB_File, copy_file, delete_file
 from jukeboxcore.action import ActionStatus
+from jukeboxcore.gui.widgets.actionreportdialog import ActionReportDialog
 
 
 class Release(object):
@@ -91,7 +92,8 @@ class Release(object):
         :rtype: :class:`bool`
         :raises: None
         """
-        raise NotImplementedError
+        ard = ActionReportDialog(checks)
+        return ard.exec_()
 
     def create_db_entry(self, f, comment):
         """Create a db entry for the given file
