@@ -9,14 +9,13 @@ The release process in general works like this:
 Step 2. is the same for every file. Only 1. and 3. vary
 """
 import os
-import shutil
 import tempfile
 import subprocess
 
 import yaml
 
 from jukeboxcore.djadapter import RELEASETYPES
-from jukeboxcore.filesys import TaskFileInfo, JB_File
+from jukeboxcore.filesys import TaskFileInfo, JB_File, copy_file, delete_file
 from jukeboxcore.action import ActionStatus
 
 
@@ -73,9 +72,7 @@ class Release(object):
         :rtype: :class:`subprocess.Popen`
         :raises: None
         """
-        # delete False is important so the subprocess can still read it
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            self.dump_release(f)
+        f = self.dump_release()
         return self.start_release_process(f.name)
 
     def execute_actions(self, ):
@@ -89,24 +86,29 @@ class Release(object):
         if not self.checks.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(self.checks):
                 return
-        self.copy_file(self._workfile, self._releasefile)
+        copy_file(self._workfile, self._releasefile)
         self.cleanup(self._releasefile, self.cleanup)
         if not self.cleanup.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(self.cleanup):
-                self.delete_file(self._releasefile)
+                delete_file(self._releasefile)
                 return
         self.create_db_entry(self._releasefile, self.comment)
 
-    def dump_release(self, f):
-        """Dump this release object into the given file stream
+    def dump_release(self):
+        """Dump this release object into a temporary file and return it
 
-        :param f: a file stream to dump the data into
-        :type f: file stream
-        :returns: None
-        :rtype: None
+        The temp file will not be deleted when closed.
+        You can open it in a subprocess but see :func:`load_release`
+        for how to do that.
+
+        :returns: a temporary file object
+        :rtype: :class:`tempfile.NamedTemporaryFile`
         :raises: None
         """
-        yaml.dump(self, f)
+        # delete False is important so the subprocess can still read it
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            yaml.dump(self, f)
+        return f
 
     def start_release_process(self, dump):
         """Start a subprocess that executes the given, dumped release
@@ -146,35 +148,6 @@ class Release(object):
         """
         raise NotImplementedError
 
-    def copy_file(self, old, new):
-        """Copy the old file to the location of the new file
-
-        :param old: The file to copy
-        :type old: :class:`JB_File`
-        :param new: The JB_File for the new location
-        :type new: :class:`JB_File`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        oldp = old.get_fullpath()
-        newp = new.get_fullpath()
-        newdir = os.path.dirname(newp)
-        if not os.path.exists(newdir):
-            os.makedirs(newdir)
-        shutil.copy(oldp, newp)
-
-    def delete_file(self, f):
-        """Delete the given file
-
-        :param f: the file to delete
-        :type f: :class:`JB_File`
-        :returns: None
-        :rtype: None
-        :raises: :class:`OSError`
-        """
-        os.remove(f.get_fullpath())
-
     def create_db_entry(self, f, comment):
         """Create a db entry for the given file
 
@@ -182,12 +155,12 @@ class Release(object):
         :type f: :class:`JB_File`
         :param comment: comment for the release
         :type comment: :class:`str`
-        :returns: None
-        :rtype: None
-        :raises: None
+        :returns: The created TaskFile django instance and the comment. If the comment was empty, None is returned instead
+        :rtype: tuple of :class:`dj.models.TaskFile` and :class:`dj.models.Note`|None
+        :raises: ValidationError, If the comment could not be created, the TaskFile is deleted and the Exception is propagated.
         """
         tfi = f.get_obj()
-        tfi.create_db_entry(comment)
+        return tfi.create_db_entry(comment)
 
     def cleanup(self, f, cleanup):
         """Cleanup the given releasefile

@@ -1,8 +1,11 @@
 import os
 import getpass
+import tempfile
 
 import pytest
 import django
+
+from jukeboxcore.action import ActionStatus
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -24,13 +27,19 @@ def user(setup_package):
 
 
 @pytest.fixture(scope='session')
-def prj(setup_package):
+def prjpath():
+    """Return a path for the project of the prj fixture"""
+    return os.path.join(tempfile.gettempdir(), "testpixarplants")
+
+
+@pytest.fixture(scope='session')
+def prj(setup_package, prjpath):
     """Return project
 
-    name="Pixars Plants", short='plants', _path='plantpath', semester='SS14', scale="cm"
+    name="Pixars Plants", short='plants', _path=prjpath, semester='SS14', scale="cm"
     """
     from jukeboxcore import djadapter as dj
-    return dj.projects.create(name="Pixars Plants", short='plants', _path='plantpath', semester='SS14', scale="cm")
+    return dj.projects.create(name="Pixars Plants", short='plants', _path=prjpath, semester='SS14', scale="cm")
 
 
 @pytest.fixture(scope='session')
@@ -141,3 +150,27 @@ def tfile(task1, user):
     """
     from jukeboxcore import djadapter as dj
     return dj.taskfiles.create(task=task1, version=5, releasetype='handoff', path='anicepath', user=user, typ=dj.FILETYPES['mayamainscene'])
+
+
+@pytest.fixture(scope='session')
+def successf():
+    """Return a function that will return a successful action status"""
+    def func(f):
+        return ActionStatus(ActionStatus.SUCCESS, "Success")
+    return func
+
+
+@pytest.fixture(scope='session')
+def errorf():
+    """Return a function that will raise an exception"""
+    def func(f):
+        raise Exception
+    return func
+
+
+@pytest.fixture(scope='session')
+def failf():
+    """Return a function that will return a failed action status"""
+    def func(f):
+        return ActionStatus(ActionStatus.FAILURE, "Failed")
+    return func

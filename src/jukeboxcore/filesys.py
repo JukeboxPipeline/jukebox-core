@@ -1,4 +1,6 @@
 import os
+import shutil
+
 from operator import attrgetter
 
 from django.db.models import Max
@@ -6,6 +8,35 @@ from django.db.models import Max
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 from jukeboxcore import djadapter as dj
+
+
+def copy_file(old, new):
+    """Copy the old file to the location of the new file
+
+    :param old: The file to copy
+    :type old: :class:`JB_File`
+    :param new: The JB_File for the new location
+    :type new: :class:`JB_File`
+    :returns: None
+    :rtype: None
+    :raises: None
+    """
+    oldp = old.get_fullpath()
+    newp = new.get_fullpath()
+    new.create_directory()
+    shutil.copy(oldp, newp)
+
+
+def delete_file(f):
+    """Delete the given file
+
+    :param f: the file to delete
+    :type f: :class:`JB_File`
+    :returns: None
+    :rtype: None
+    :raises: :class:`OSError`
+    """
+    os.remove(f.get_fullpath())
 
 
 class FileInfo(object):

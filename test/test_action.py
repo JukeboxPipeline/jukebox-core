@@ -4,27 +4,6 @@ from jukeboxcore.action import ActionCollection, ActionUnit, ActionStatus
 
 
 @pytest.fixture(scope='session')
-def successf():
-    def func(f):
-        return ActionStatus(ActionStatus.SUCCESS, "Success")
-    return func
-
-
-@pytest.fixture(scope='session')
-def errorf():
-    def func(f):
-        raise Exception
-    return func
-
-
-@pytest.fixture(scope='session')
-def failf():
-    def func(f):
-        return ActionStatus(ActionStatus.FAILURE, "Failed")
-    return func
-
-
-@pytest.fixture(scope='session')
 def successstatus():
     return  ActionStatus(ActionStatus.SUCCESS, "Success", "")
 

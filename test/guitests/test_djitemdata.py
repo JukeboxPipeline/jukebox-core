@@ -19,8 +19,8 @@ def test_prj_short_data(prj):
     eq_(djitemdata.prj_short_data(prj, dr), "plants")
 
 
-def test_prj_path_data(prj):
-    eq_(djitemdata.prj_path_data(prj, dr), "plantpath")
+def test_prj_path_data(prj, prjpath):
+    eq_(djitemdata.prj_path_data(prj, dr), prjpath)
 
 
 def test_prj_created_data(prj):
