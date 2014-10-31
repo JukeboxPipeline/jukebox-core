@@ -33,17 +33,38 @@ def success_checks(successf):
 
 
 @pytest.fixture(scope='function')
+def fail_checks(failf):
+    """Return an action collection with failing check"""
+    au = ActionUnit("FailUnit", "this unit should always fail", failf)
+    return ActionCollection([au])
+
+
+@pytest.fixture(scope='function')
 def success_cleanup(successf):
-    """Return an action collection with a successing check"""
+    """Return an action collection with a successing cleanup"""
     au = ActionUnit("SuccessUnit", "this unit should always succeed", successf)
     return ActionCollection([au])
 
 
 @pytest.fixture(scope='function')
-def release_instance(tfi, success_checks, success_cleanup):
+def fail_cleanup(failf):
+    """Return an action collection with failing cleanup"""
+    au = ActionUnit("FailUnit", "this unit should always fail", failf)
+    return ActionCollection([au])
+
+
+@pytest.fixture(scope='function',
+                params=[("success_checks", "success_cleanup"),
+                        ("fail_checks", "fail_cleanup")])
+def release_instance(request, tfi):
     """Return a Release that should have successing checks and successing cleanups.
 
     The comment for the release is \"A comment.\"
     """
-    return release.Release(tfi, success_checks, success_cleanup, "A comment.")
+    check = request.getfuncargvalue(request.param[0])
+    cleanup = request.getfuncargvalue(request.param[1])
+    return release.Release(tfi, check, cleanup, "A comment.")
 
+
+def test_release(release_instance):
+    release_instance.release()

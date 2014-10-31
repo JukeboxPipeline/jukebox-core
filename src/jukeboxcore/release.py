@@ -8,12 +8,6 @@ The release process in general works like this:
 
 Step 2. is the same for every file. Only 1. and 3. vary
 """
-import os
-import tempfile
-import subprocess
-
-import yaml
-
 from jukeboxcore.djadapter import RELEASETYPES
 from jukeboxcore.filesys import TaskFileInfo, JB_File, copy_file, delete_file
 from jukeboxcore.action import ActionStatus
@@ -46,81 +40,32 @@ class Release(object):
                                           self._tfi.descriptor)
         self._workfile = JB_File(self._tfi)
         self._releasefile = JB_File(self._rfi)
-        self.checks = checks
-        self.cleanup = cleanup
+        self._checks = checks
+        self._cleanup = cleanup
         self.comment = comment
 
     def release(self):
         """Create a release
 
-        The release is executed in another subprocess.
-        So first we dump this release file for the subprocess.
-        In the process these steps are executed:
-
-          1. Load the dumped release
-          2. Start the release process.
-             In the process, do:
-
-             1. Load dumped release, see :func:`load_release`
-             2. Execute the release actions, see :func:`run_release`:
-
-               1. Perform Sanity checks on work file.
-               2. Copy work file to releasefile location.
-               3. Perform cleanup actions on releasefile.
-
-        :returns: the subprocess that handles the release
-        :rtype: :class:`subprocess.Popen`
-        :raises: None
-        """
-        f = self.dump_release()
-        return self.start_release_process(f.name)
-
-    def execute_actions(self, ):
-        """Execute the sanity checks, copy the release file and perform the cleanup
+        1. Perform Sanity checks on work file.
+        2. Copy work file to releasefile location.
+        3. Perform cleanup actions on releasefile.
 
         :returns: None
         :rtype: None
         :raises: None
         """
-        self.sanity_check(self._workfile, self.checks)
-        if not self.checks.status().value == ActionStatus.SUCCESS:
-            if not self.confirm_check_result(self.checks):
+        self.sanity_check(self._workfile, self._checks)
+        if not self._checks.status().value == ActionStatus.SUCCESS:
+            if not self.confirm_check_result(self._checks):
                 return
         copy_file(self._workfile, self._releasefile)
-        self.cleanup(self._releasefile, self.cleanup)
-        if not self.cleanup.status().value == ActionStatus.SUCCESS:
-            if not self.confirm_check_result(self.cleanup):
+        self.cleanup(self._releasefile, self._cleanup)
+        if not self._cleanup.status().value == ActionStatus.SUCCESS:
+            if not self.confirm_check_result(self._cleanup):
                 delete_file(self._releasefile)
                 return
         self.create_db_entry(self._releasefile, self.comment)
-
-    def dump_release(self):
-        """Dump this release object into a temporary file and return it
-
-        The temp file will not be deleted when closed.
-        You can open it in a subprocess but see :func:`load_release`
-        for how to do that.
-
-        :returns: a temporary file object
-        :rtype: :class:`tempfile.NamedTemporaryFile`
-        :raises: None
-        """
-        # delete False is important so the subprocess can still read it
-        with tempfile.NamedTemporaryFile(delete=False) as f:
-            yaml.dump(self, f)
-        return f
-
-    def start_release_process(self, dump):
-        """Start a subprocess that executes the given, dumped release
-
-        :param dump: The path to the dumped release (with :meth:`Release.dump_release`) file.
-        :type dump: :class:`str`
-        :returns: the created subprocess
-        :rtype: :class:`subprocess.Popen`
-        :raises: None
-        """
-        args = ['jukebox', 'release', dump]
-        return subprocess.Popen(args)
 
     def sanity_check(self, f, checks):
         """Check the given JB_File object
@@ -175,48 +120,3 @@ class Release(object):
         :raises: None
         """
         cleanup.execute(f)
-
-
-def load_release(dump):
-    """Load the given, dumped release and return the :class:`Release` instance
-
-    Raises an TypeError, if the loaded object is no :class:`Release` instance.
-
-    The file is opened like this::
-
-      os.fdopen(os.open(dump, os.O_RDWR | os.O_BINARY | os.O_TEMPORARY), 'rb')
-
-    This ensures that a temporary file on windows can be opened multiple times.
-    I found the solution here: http://stackoverflow.com/a/15235559
-    The os.O_TEMPORARY is the key.
-
-    :param dump: The path to the dumped release (with :meth:`Release.dump_release`) file.
-    :type dump: :class:`str`
-    :returns: the loaded release
-    :rtype: :class:`Release`
-    :raises: AssertionError
-    """
-    r = None
-    f = os.fdopen(os.open(dump, os.O_RDWR | os.O_BINARY | os.O_TEMPORARY), 'rb')
-    r = yaml.load(f)
-    f.close()
-    if not isinstance(r, Release):
-        raise TypeError("Expected to load a release instance. Instead got: %s" % r)
-    return r
-
-
-def run_release(dump):
-    """Load the given, dumped release and execute the release actions
-
-    This funtion is intended to be run in a subprocess, when using
-    :meth:`Release.start_release_process`.
-    Executes :meth:`Releaes.execute_actions` of the loaded :class:`Release` instance.
-
-    :param dump: The path to the dumped release (with :meth:`Release.dump_release`) file.
-    :type dump: :class:`str`
-    :returns: None
-    :rtype: None
-    :raises: None
-    """
-    release = load_release(dump)
-    release.execute_actions()
