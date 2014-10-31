@@ -24,6 +24,7 @@ class ActionReportDialog(JB_Dialog, Ui_ActionReportDialog):
         :raises: None
         """
         super(ActionReportDialog, self).__init__(parent, flags)
+        self.setupUi(self)
         self._actioncollection = actioncollection
         self._parent = parent
         self._flags = flags

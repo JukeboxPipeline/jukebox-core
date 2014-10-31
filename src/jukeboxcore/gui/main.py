@@ -220,7 +220,7 @@ class JB_Dialog(JB_Gui, QtGui.QDialog):
 
         :raises: None
         """
-        super(JB_MainWindow, self).__init__(*args, **kwargs)
+        super(JB_Dialog, self).__init__(*args, **kwargs)
         set_main_style(self)
         jb_icon = get_icon('JB_Icon_32x32.png',asicon=True)
         self.setWindowIcon(jb_icon)

@@ -1,5 +1,5 @@
 """This module provides a way to display the result of an :class:`jukeboxcore.action.ActionCollection` to the user."""
-from PySide import QtCore
+from PySide import QtCore, QtGui
 
 from jukeboxcore.gui.treemodel import TreeModel, ItemData, ListItemData, TreeItem
 from jukeboxcore.action import ActionStatus
@@ -9,10 +9,10 @@ class ActionItemData(ItemData):
     """A class that holds data of a :class:`jukeboxcore.action.ActionUnit`
     """
 
-    colormapping = {ActionStatus.SUCCESS: QtCore.Qt.darkGreen,
-                    ActionStatus.FAILURE: QtCore.QColor(255, 153, 51),
-                    ActionStatus.ERROR: QtCore.Qt.darkRed,
-                    ActionStatus.SKIPPED: QtCore.Qt.yellow}
+    colormapping = {ActionStatus.SUCCESS: QtGui.QColor(QtCore.Qt.green),
+                    ActionStatus.FAILURE: QtGui.QColor(255, 153, 51),
+                    ActionStatus.ERROR: QtGui.QColor(QtCore.Qt.red),
+                    ActionStatus.SKIPPED: QtGui.QColor(QtCore.Qt.yellow)}
 
     def __init__(self, actionunit):
         """Create a new ActionItemData for the given actionunit
