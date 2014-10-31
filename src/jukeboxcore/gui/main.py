@@ -206,3 +206,21 @@ class JB_MainWindow(JB_Gui, QtGui.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, on=True)
         jb_icon = get_icon('JB_Icon_32x32.png',asicon=True)
         self.setWindowIcon(jb_icon)
+
+
+class JB_Dialog(JB_Gui, QtGui.QDialog):
+    """A dialog class that should be used for all generic dialogs
+
+    It is useful for tracking all dialogs and we can already set common
+    attributes.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Constructs a new JB_MainWindow. Arguments are passed on to QMainWindow
+
+        :raises: None
+        """
+        super(JB_MainWindow, self).__init__(*args, **kwargs)
+        set_main_style(self)
+        jb_icon = get_icon('JB_Icon_32x32.png',asicon=True)
+        self.setWindowIcon(jb_icon)
