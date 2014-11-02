@@ -138,7 +138,7 @@ class JB_Gui(object):
     instances of its own class+subclasses
     """
 
-    _allinstances = weakref.WeakSet()
+    _allinstances = set()
 
     def __init__(self, *args, **kwargs):
         """Constructs a new JB_Gui that will be tracked

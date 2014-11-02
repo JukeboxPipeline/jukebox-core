@@ -912,7 +912,7 @@ class NoteItemData(ItemData):
         """
         return self._note
 
-    def flags(self, ):
+    def flags(self, column):
         """Return the item flags for the item
 
         This returns editable True to enable custom editors.

@@ -68,11 +68,13 @@ class ItemData(object):  # pragma: no cover
         """
         return None
 
-    def flags(self, ):
+    def flags(self, column):
         """Return the item flags for the item
 
         Default is QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
+        :param column: the column to query
+        :type column: int
         :returns: the item flags
         :rtype: QtCore.Qt.ItemFlags
         :raises: None
@@ -247,14 +249,16 @@ class TreeItem(object):
         """
         return self._data.internal_data()
 
-    def flags(self, ):
+    def flags(self, index):
         """Return the flags for the item
 
+        :param index: the index to query
+        :type index: :class:`QtCore.QModelIndex`
         :returns: the flags
         :rtype: QtCore.Qt.ItemFlags
         :raises: None
         """
-        return self._data.flags()
+        return self._data.flags(index.column())
 
 
 class TreeModel(QtCore.QAbstractItemModel):
@@ -424,14 +428,14 @@ class TreeModel(QtCore.QAbstractItemModel):
     def flags(self, index):
         """
 
-        :param index:
-        :type index:
+        :param index: the index to query
+        :type index: :class:`QtCore.QModelIndex`
         :returns: None
         :rtype: None
         :raises: None
         """
         if index.isValid():
             item = index.internalPointer()
-            return item.flags()
+            return item.flags(index)
         else:
             super(TreeModel, self).flags(index)

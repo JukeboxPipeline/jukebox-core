@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\actionreportdialog.ui'
 #
-# Created: Fri Oct 31 16:34:59 2014
+# Created: Sun Nov 02 15:33:59 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -37,6 +37,7 @@ class Ui_ActionReportDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.traceback_pte.sizePolicy().hasHeightForWidth())
         self.traceback_pte.setSizePolicy(sizePolicy)
+        self.traceback_pte.setDocumentTitle("")
         self.traceback_pte.setPlainText("")
         self.traceback_pte.setTextInteractionFlags(QtCore.Qt.TextSelectableByKeyboard|QtCore.Qt.TextSelectableByMouse)
         self.traceback_pte.setObjectName("traceback_pte")
@@ -56,13 +57,6 @@ class Ui_ActionReportDialog(object):
         self.message_lb.setObjectName("message_lb")
         self.gridLayout.addWidget(self.message_lb, 1, 0, 1, 3)
         self.verticalLayout.addLayout(self.gridLayout)
-        self.actions_tablev = QtGui.QTableView(ActionReportDialog)
-        self.actions_tablev.setSortingEnabled(True)
-        self.actions_tablev.setObjectName("actions_tablev")
-        self.actions_tablev.horizontalHeader().setDefaultSectionSize(100)
-        self.actions_tablev.horizontalHeader().setStretchLastSection(True)
-        self.actions_tablev.verticalHeader().setStretchLastSection(False)
-        self.verticalLayout.addWidget(self.actions_tablev)
         self.buttonBox = QtGui.QDialogButtonBox(ActionReportDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -79,6 +73,5 @@ class Ui_ActionReportDialog(object):
     def retranslateUi(self, ActionReportDialog):
         ActionReportDialog.setWindowTitle(QtGui.QApplication.translate("ActionReportDialog", "Report", None, QtGui.QApplication.UnicodeUTF8))
         self.status_title_lb.setText(QtGui.QApplication.translate("ActionReportDialog", "Status:", None, QtGui.QApplication.UnicodeUTF8))
-        self.traceback_pte.setDocumentTitle(QtGui.QApplication.translate("ActionReportDialog", "Traceback", None, QtGui.QApplication.UnicodeUTF8))
         self.showtb_checkb.setText(QtGui.QApplication.translate("ActionReportDialog", "Show Traceback", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -75,6 +75,23 @@ class ActionItemData(ItemData):
         """
         return self._au
 
+    def flags(self, column):
+        """Return the item flags for the item
+
+        Default is QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        Column 4 is also editable.
+
+        :param column: the column to query
+        :type column: int
+        :returns: the item flags.
+        :rtype: QtCore.Qt.ItemFlags
+        :raises: None
+        """
+        flags = super(ActionItemData, self).flags(column)
+        if column == 4:
+            flags = flags | QtCore.Qt.ItemIsEditable
+        return flags
+
 
 def create_action_model(actioncollection):
     """Create and return a new model for the given actioncollection
