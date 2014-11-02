@@ -63,7 +63,12 @@ def release_instance(request, tfi):
     """
     check = request.getfuncargvalue(request.param[0])
     cleanup = request.getfuncargvalue(request.param[1])
-    return release.Release(tfi, check, cleanup, "A comment.")
+    r = release.Release(tfi, check, cleanup, "A comment.")
+
+    def returnTrue(*args, **kwargs):
+        return True
+    r.confirm_check_result = returnTrue
+    return r
 
 
 def test_release(release_instance):
