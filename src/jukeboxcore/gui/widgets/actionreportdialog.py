@@ -51,19 +51,19 @@ class TracebackButton(QtGui.QPushButton):
         :raises: None
         """
         if self.actionunit:
-            mw = JB_MainWindow(flags=QtCore.Qt.Dialog)
-            mw.setWindowTitle("Traceback")
-            mw.setWindowModality(QtCore.Qt.ApplicationModal)
+            self.mw = JB_MainWindow(flags=QtCore.Qt.Dialog)
+            self.mw.setWindowTitle("Traceback")
+            self.mw.setWindowModality(QtCore.Qt.ApplicationModal)
             w = QtGui.QWidget()
-            mw.setCentralWidget(w)
+            self.mw.setCentralWidget(w)
             vbox = QtGui.QVBoxLayout(w)
             pte = QtGui.QPlainTextEdit()
             pte.setPlainText(self.actionunit.status.traceback)
             vbox.addWidget(pte)
             # move window to cursor position
-            d = self.cursor().pos() - mw.mapToGlobal(mw.pos())
-            mw.move(d)
-            mw.show()
+            d = self.cursor().pos() - self.mw.mapToGlobal(self.mw.pos())
+            self.mw.move(d)
+            self.mw.show()
 
 
 class ActionUnitTracebackDelegate(WidgetDelegate):

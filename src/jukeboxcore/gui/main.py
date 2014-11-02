@@ -223,4 +223,5 @@ class JB_Dialog(JB_Gui, QtGui.QDialog):
         super(JB_Dialog, self).__init__(*args, **kwargs)
         set_main_style(self)
         jb_icon = get_icon('JB_Icon_32x32.png',asicon=True)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose, on=True)
         self.setWindowIcon(jb_icon)

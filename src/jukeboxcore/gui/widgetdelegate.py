@@ -327,7 +327,6 @@ class WD_TableView(QtGui.QTableView):
         rect = self.visualRect(index)  # rect of the index
         p = self.viewport().mapToGlobal(rect.topLeft())
         pos = self.cursor().pos() - p
-
         # issue two mouse clicks because e.g. a button only will be activated
         # if it is pressed and released
         e1 = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress,
