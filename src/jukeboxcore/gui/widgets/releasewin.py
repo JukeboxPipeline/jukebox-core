@@ -1,10 +1,50 @@
+import abc
+
 from PySide import QtGui
 
 from jukeboxcore.release import Release
+from jukeboxcore.action import ActionCollection
 from jukeboxcore.gui.main import JB_MainWindow, get_icon
 from jukeboxcore.gui.widgets.filebrowser import FileBrowser
 from jukeboxcore.gui.widgets.textedit import JB_PlainTextEdit
 from releasewin_ui import Ui_release_mwin
+
+
+class ReleaseOptionWidget(QtGui.QWidget):
+    """A widget that shows some options for a release to the user.
+
+    Depending on the selection of the user, the ReleaseOptionWidget
+    will return sanity checks, and cleanup actions.
+
+    Subclass it and implement, get_checks and get_cleanups.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Initialize a new releae option widget
+
+        :raises: None
+        """
+        super(ReleaseOptionWidget, self).__init__(*args, **kwargs)
+
+    @abc.abstractmethod
+    def get_checks(self, ):
+        """Get the sanity check actions for a releaes depending on the selected options
+
+        :returns: the cleanup actions
+        :rtype: :class:`jukeboxcore.action.ActionCollection`
+        :raises: None
+        """
+        pass
+
+    @abc.abstractmethod
+    def get_cleanups(self, ):
+        """Get the cleanup actions for a releaes depending on the selected options
+
+        :returns: the cleanup actions
+        :rtype: :class:`jukeboxcore.action.ActionCollection`
+        :raises: None
+        """
+        pass
 
 
 class ReleaseWin(JB_MainWindow, Ui_release_mwin):
@@ -28,6 +68,7 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         self.setup_signals()
         self.browser.init_selection()
         self.filetype = filetype
+        self.release_option_widget = None
 
     def setup_ui(self, ):
         """Create the browsers and all necessary ui elements for the tool
@@ -94,3 +135,48 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         comment = self.get_comment()
         r = Release(tf, checks, cleanups, comment)
         r.release()
+
+    def set_release_option_widget(self, widget):
+        """Set the widget that gives users options about the release, e.g. importing references
+
+        :param widget: A widget with differnt options for the user that affect the cleanups or sanity checks of the release.
+        :type widget: :class:`ReleaseOptionWin`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.release_option_widget = widget
+        self.option_vbox.addWidget(widget)
+
+    def get_checks(self, ):
+        """Get the sanity checks for the release from the release option widget
+
+        :returns: the sanity checks
+        :rtype: :class:`jukeboxcore.action.ActionCollection`
+        :raises: None
+        """
+        if self.release_option_widget:
+            return self.release_option_widget.get_checks()
+        else:
+            return ActionCollection([])
+
+    def get_cleanups(self, ):
+        """Get the cleanup actions for the release from the release option widget
+
+        :returns: the cleanup actions
+        :rtype: :class:`jukeboxcore.action.ActionCollection`
+        :raises: None
+        """
+        if self.release_option_widget:
+            return self.release_option_widget.get_cleanups()
+        else:
+            return ActionCollection([])
+
+    def get_comment(self, ):
+        """Return the comment for the release from the UI
+
+        :returns: the comment
+        :rtype: str
+        :raises: None
+        """
+        return self.comment_pte.toPlainText()

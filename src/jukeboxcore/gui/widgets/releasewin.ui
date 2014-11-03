@@ -16,34 +16,38 @@
   <widget class="QWidget" name="central_widget">
    <layout class="QVBoxLayout" name="central_vbox">
     <item>
-     <layout class="QHBoxLayout" name="release_hbox">
-      <item>
-       <widget class="QPushButton" name="release_pb">
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Release</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QGroupBox" name="option_gb">
+      <property name="title">
+       <string>Options</string>
+      </property>
+      <layout class="QVBoxLayout" name="option_vbox"/>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="release_pb">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>200</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Release</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
