@@ -105,8 +105,6 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         self.asset_descriptor_le.setPlaceholderText(ph)
         self.shot_descriptor_le.setPlaceholderText(ph)
 
-        self.shot_info_mapper = QtGui.QDataWidgetMapper()
-        self.asset_info_mapper = QtGui.QDataWidgetMapper()
         self.setup_icons()
 
     def setup_icons(self, ):

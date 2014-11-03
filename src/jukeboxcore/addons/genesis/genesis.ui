@@ -68,84 +68,76 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="shot_new_hbox">
-      <item>
-       <widget class="QPushButton" name="shot_save_pb">
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Save/New</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="shot_descriptor_lb">
-        <property name="text">
-         <string>Descriptor:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="shot_descriptor_le"/>
-      </item>
-     </layout>
+     <widget class="QPushButton" name="shot_save_pb">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>200</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Save/New</string>
+      </property>
+     </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="asset_new_hbox">
-      <item>
-       <widget class="QPushButton" name="asset_save_pb">
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Save/New</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="asset_descriptor_lb">
-        <property name="text">
-         <string>Descriptor:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="asset_descriptor_le"/>
-      </item>
-     </layout>
+     <widget class="QPushButton" name="asset_save_pb">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>200</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Save/New</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="asset_descriptor_le"/>
+    </item>
+    <item>
+     <widget class="QLabel" name="asset_descriptor_lb">
+      <property name="text">
+       <string>Descriptor:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="shot_descriptor_le"/>
+    </item>
+    <item>
+     <widget class="QLabel" name="shot_descriptor_lb">
+      <property name="text">
+       <string>Descriptor:</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

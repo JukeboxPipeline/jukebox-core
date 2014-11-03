@@ -703,3 +703,23 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         d = os.path.dirname(f)
         osinter = get_interface()
         osinter.open_path(d)
+
+    def get_current_selection(self, ):
+        """Get the :class:`TaskFileInfo` for the file selected in the active tab
+
+        :returns: The taskfile info in the currently active tab
+        :rtype: :class:`TaskFileInfo`|None
+        :raises: None
+        """
+        taskfile = None
+        if self.selection_tabw.currentIndex() == 0:
+            indexes = self.assetverbrws.selected_indexes(0)
+            if indexes and indexes[0].isValid():
+                item = indexes[0].internalPointer()
+                taskfile = item.internal_data()
+        elif self.selection_tabw.currentIndex() == 1:
+            indexes = self.shotverbrws.selected_indexes(0)
+            if indexes and indexes[0].isValid():
+                item = indexes[0].internalPointer()
+                taskfile = item.internal_data()
+        return taskfile

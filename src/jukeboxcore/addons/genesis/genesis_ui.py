@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\addons\genesis\genesis.ui'
 #
-# Created: Mon Nov 03 13:13:48 2014
+# Created: Mon Nov 03 16:39:53 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -37,8 +37,6 @@ class Ui_genesis_mwin(object):
         self.asset_open_pb.setFont(font)
         self.asset_open_pb.setObjectName("asset_open_pb")
         self.central_vbox.addWidget(self.asset_open_pb)
-        self.shot_new_hbox = QtGui.QHBoxLayout()
-        self.shot_new_hbox.setObjectName("shot_new_hbox")
         self.shot_save_pb = QtGui.QPushButton(self.central_widget)
         self.shot_save_pb.setMinimumSize(QtCore.QSize(200, 32))
         self.shot_save_pb.setMaximumSize(QtCore.QSize(200, 16777215))
@@ -48,16 +46,7 @@ class Ui_genesis_mwin(object):
         font.setBold(True)
         self.shot_save_pb.setFont(font)
         self.shot_save_pb.setObjectName("shot_save_pb")
-        self.shot_new_hbox.addWidget(self.shot_save_pb)
-        self.shot_descriptor_lb = QtGui.QLabel(self.central_widget)
-        self.shot_descriptor_lb.setObjectName("shot_descriptor_lb")
-        self.shot_new_hbox.addWidget(self.shot_descriptor_lb)
-        self.shot_descriptor_le = QtGui.QLineEdit(self.central_widget)
-        self.shot_descriptor_le.setObjectName("shot_descriptor_le")
-        self.shot_new_hbox.addWidget(self.shot_descriptor_le)
-        self.central_vbox.addLayout(self.shot_new_hbox)
-        self.asset_new_hbox = QtGui.QHBoxLayout()
-        self.asset_new_hbox.setObjectName("asset_new_hbox")
+        self.central_vbox.addWidget(self.shot_save_pb)
         self.asset_save_pb = QtGui.QPushButton(self.central_widget)
         self.asset_save_pb.setMinimumSize(QtCore.QSize(200, 32))
         self.asset_save_pb.setMaximumSize(QtCore.QSize(200, 16777215))
@@ -67,14 +56,19 @@ class Ui_genesis_mwin(object):
         font.setBold(True)
         self.asset_save_pb.setFont(font)
         self.asset_save_pb.setObjectName("asset_save_pb")
-        self.asset_new_hbox.addWidget(self.asset_save_pb)
-        self.asset_descriptor_lb = QtGui.QLabel(self.central_widget)
-        self.asset_descriptor_lb.setObjectName("asset_descriptor_lb")
-        self.asset_new_hbox.addWidget(self.asset_descriptor_lb)
+        self.central_vbox.addWidget(self.asset_save_pb)
         self.asset_descriptor_le = QtGui.QLineEdit(self.central_widget)
         self.asset_descriptor_le.setObjectName("asset_descriptor_le")
-        self.asset_new_hbox.addWidget(self.asset_descriptor_le)
-        self.central_vbox.addLayout(self.asset_new_hbox)
+        self.central_vbox.addWidget(self.asset_descriptor_le)
+        self.asset_descriptor_lb = QtGui.QLabel(self.central_widget)
+        self.asset_descriptor_lb.setObjectName("asset_descriptor_lb")
+        self.central_vbox.addWidget(self.asset_descriptor_lb)
+        self.shot_descriptor_le = QtGui.QLineEdit(self.central_widget)
+        self.shot_descriptor_le.setObjectName("shot_descriptor_le")
+        self.central_vbox.addWidget(self.shot_descriptor_le)
+        self.shot_descriptor_lb = QtGui.QLabel(self.central_widget)
+        self.shot_descriptor_lb.setObjectName("shot_descriptor_lb")
+        self.central_vbox.addWidget(self.shot_descriptor_lb)
         genesis_mwin.setCentralWidget(self.central_widget)
         self.statusbar = QtGui.QStatusBar(genesis_mwin)
         self.statusbar.setObjectName("statusbar")
@@ -88,7 +82,7 @@ class Ui_genesis_mwin(object):
         self.shot_open_pb.setText(QtGui.QApplication.translate("genesis_mwin", "Open", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_open_pb.setText(QtGui.QApplication.translate("genesis_mwin", "Open", None, QtGui.QApplication.UnicodeUTF8))
         self.shot_save_pb.setText(QtGui.QApplication.translate("genesis_mwin", "Save/New", None, QtGui.QApplication.UnicodeUTF8))
-        self.shot_descriptor_lb.setText(QtGui.QApplication.translate("genesis_mwin", "Descriptor:", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_save_pb.setText(QtGui.QApplication.translate("genesis_mwin", "Save/New", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_descriptor_lb.setText(QtGui.QApplication.translate("genesis_mwin", "Descriptor:", None, QtGui.QApplication.UnicodeUTF8))
+        self.shot_descriptor_lb.setText(QtGui.QApplication.translate("genesis_mwin", "Descriptor:", None, QtGui.QApplication.UnicodeUTF8))
 
