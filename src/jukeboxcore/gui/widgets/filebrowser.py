@@ -14,15 +14,15 @@ from jukeboxcore.gui.widgets.browser import ComboBoxBrowser, ListBrowser, Commen
 from filebrowser_ui import Ui_FileBrowser
 
 
-class FileBrowser(Ui_FileBrowser):
+class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
     """A browser for taskfiles
     """
 
     shot_taskfile_sel_changed = QtCore.Signal(TaskFileInfo)
-    """Signal when the selection changes. Returns a TaskFileInfo or None"""
+    """Signal when the selection changes. Returns a :class:`TaskFileInfo` or None"""
 
     asset_taskfile_sel_changed = QtCore.Signal(TaskFileInfo)
-    """Signal when the selection changes. Returns a TaskFileInfo or None"""
+    """Signal when the selection changes. Returns a :class:`TaskFileInfo` or None"""
 
     def __init__(self, filetype, get_current_file=None, parent=None):
         """Initialize a new file browser widget with the given parent
@@ -43,8 +43,17 @@ class FileBrowser(Ui_FileBrowser):
         self.setup_signals()
 
         self.prjbrws.set_model(self.create_prj_model())
+        if get_current_file:
+            self.set_to_current()
 
-        # call selection changed in the beginning, so signals get emitted once
+    def init_selection(self):
+        """Call selection changed in the beginning, so signals get emitted once
+
+        Emit shot_taskfile_sel_changed signal and asset_taskfile_sel_changed.
+
+        :returns: None
+        :raises: None
+        """
         si = self.shotverbrws.selected_indexes(0)
         if si:
             self.shot_ver_sel_changed(si[0])
@@ -71,7 +80,7 @@ class FileBrowser(Ui_FileBrowser):
         self.assetverbrws = self.create_ver_browser(self.asset_browser_vbox)
         self.assetcommentbrws = self.create_comment_browser(self.asset_info_hbox)
         self.current_pb = self.create_current_pb()
-        self.current_pb.setVisible(self.get_current_file)
+        self.current_pb.setVisible(bool(self.get_current_file))
         self.shot_info_mapper = QtGui.QDataWidgetMapper()
         self.asset_info_mapper = QtGui.QDataWidgetMapper()
         self.setup_icons()
@@ -83,6 +92,10 @@ class FileBrowser(Ui_FileBrowser):
         :rtype: None
         :raises: None
         """
+        folder_icon = get_icon('glyphicons_144_folder_open.png', asicon=True)
+        self.asset_open_path_tb.setIcon(folder_icon)
+        self.shot_open_path_tb.setIcon(folder_icon)
+
         current_icon = get_icon('glyphicons_181_download_alt.png', asicon=True)
         self.current_pb.setIcon(current_icon)
 
@@ -338,7 +351,7 @@ class FileBrowser(Ui_FileBrowser):
         :raises: None
         """
         if project is None:
-            self.shotbrws.set_model(None)
+            self.assetbrws.set_model(None)
             return
         assetmodel = self.create_asset_model(project, releasetype)
         self.assetbrws.set_model(assetmodel)
@@ -660,5 +673,5 @@ class FileBrowser(Ui_FileBrowser):
             parent = browser.selected_indexes(2)[0]
             ddata = treemodel.ListItemData([tfi.descriptor])
             ditem = treemodel.TreeItem(ddata)
-            browser.model.addRow(0, ditem, parent)
+            browser.model.insertRow(0, ditem, parent)
         self.set_level(browser, 3, [tfi.descriptor])
