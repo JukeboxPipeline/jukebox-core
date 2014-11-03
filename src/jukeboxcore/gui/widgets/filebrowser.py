@@ -1,3 +1,4 @@
+import os
 from functools import partial
 
 from PySide import QtCore
@@ -7,6 +8,7 @@ from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 
 from jukeboxcore import djadapter
+from jukeboxcore.ostool import get_interface
 from jukeboxcore.filesys import TaskFileInfo
 from jukeboxcore.gui.main import get_icon
 from jukeboxcore.gui import treemodel, djitemdata
@@ -137,6 +139,8 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         assetverlvl.new_root.connect(partial(self.assetcommentbrws.set_root, 0))
 
         self.current_pb.clicked.connect(self.set_to_current)
+        self.asset_open_path_tb.clicked.connect(self.open_asset_path)
+        self.shot_open_path_tb.clicked.connect(self.open_shot_path)
 
     def create_prj_browser(self, ):
         """Create the project browser
@@ -675,3 +679,27 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
             ditem = treemodel.TreeItem(ddata)
             browser.model.insertRow(0, ditem, parent)
         self.set_level(browser, 3, [tfi.descriptor])
+
+    def open_asset_path(self, *args, **kwargs):
+        """Open the currently selected asset in the filebrowser
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        f = self.asset_path_le.text()
+        d = os.path.dirname(f)
+        osinter = get_interface()
+        osinter.open_path(d)
+
+    def open_shot_path(self, *args, **kwargs):
+        """Open the currently selected shot in the filebrowser
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        f = self.shot_path_le.text()
+        d = os.path.dirname(f)
+        osinter = get_interface()
+        osinter.open_path(d)
