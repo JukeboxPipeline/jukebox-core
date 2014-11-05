@@ -46,6 +46,7 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
 
         self.comment_pte = self.create_comment_edit()
         self.central_vbox.addWidget(self.comment_pte)
+        self.option_gb.setVisible(False)
 
         self.setup_icons()
 
@@ -110,6 +111,7 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         self.option_widget = self.release_actions.option_widget()
         if self.option_widget:
             self.option_vbox.addWidget(self.option_widget)
+            self.option_gb.setVisible(True)
 
     def get_checks(self, ):
         """Get the sanity checks for the release from the release option widget
