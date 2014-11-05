@@ -8,6 +8,8 @@ The release process in general works like this:
 
 Step 2. is the same for every file. Only 1. and 3. vary
 """
+import abc
+
 from jukeboxcore.djadapter import RELEASETYPES
 from jukeboxcore.filesys import TaskFileInfo, JB_File, copy_file, delete_file
 from jukeboxcore.action import ActionStatus
@@ -122,3 +124,57 @@ class Release(object):
         :raises: None
         """
         cleanup.execute(f)
+
+
+class ReleaseActions(object):
+    """Abstract class that provides sanity checks and cleanups for a release
+
+    This class can also offer a widget to a :class:`jukeboxcore.gui.widgets.releasewin.ReleaseWin`
+    to give the user options. Depending on these options it should return sanity checks and cleanup
+    actions.
+
+    Subclass it and implement, :meth:`ReleaseActions.get_checks` and :meth:`ReleaseActions.get_cleanups`.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Initialize a new releae option widget
+
+        :raises: None
+        """
+        super(ReleaseActions, self).__init__(*args, **kwargs)
+
+    @abc.abstractmethod
+    def get_checks(self, ):
+        """Get the sanity check actions for a releaes depending on the selected options
+
+        :returns: the cleanup actions
+        :rtype: :class:`jukeboxcore.action.ActionCollection`
+        :raises: None
+        """
+        pass
+
+    @abc.abstractmethod
+    def get_cleanups(self, ):
+        """Get the cleanup actions for a releaes depending on the selected options
+
+        :returns: the cleanup actions
+        :rtype: :class:`jukeboxcore.action.ActionCollection`
+        :raises: None
+        """
+        pass
+
+    @abc.abstractmethod
+    def option_widget(self, ):
+        """Return a widget that gives the user options for the release.
+
+        .. Note:: The widget might get parented to another window. So create a new
+                  ReleaseAction instance for each window.
+
+        The cleanups and sanity checks should correspond to the options the user
+        selects in this widget.
+
+        :returns: a widget with options for the user
+        :rtype: :class:`PySide.QtGui.QWidget`|None
+        :raises: None
+        """
+        pass

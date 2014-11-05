@@ -1,5 +1,3 @@
-import abc
-
 from PySide import QtGui
 
 from jukeboxcore.release import Release
@@ -8,43 +6,6 @@ from jukeboxcore.gui.main import JB_MainWindow, get_icon
 from jukeboxcore.gui.widgets.filebrowser import FileBrowser
 from jukeboxcore.gui.widgets.textedit import JB_PlainTextEdit
 from releasewin_ui import Ui_release_mwin
-
-
-class ReleaseOptionWidget(QtGui.QWidget):
-    """A widget that shows some options for a release to the user.
-
-    Depending on the selection of the user, the ReleaseOptionWidget
-    will return sanity checks, and cleanup actions.
-
-    Subclass it and implement, get_checks and get_cleanups.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """Initialize a new releae option widget
-
-        :raises: None
-        """
-        super(ReleaseOptionWidget, self).__init__(*args, **kwargs)
-
-    @abc.abstractmethod
-    def get_checks(self, ):
-        """Get the sanity check actions for a releaes depending on the selected options
-
-        :returns: the cleanup actions
-        :rtype: :class:`jukeboxcore.action.ActionCollection`
-        :raises: None
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_cleanups(self, ):
-        """Get the cleanup actions for a releaes depending on the selected options
-
-        :returns: the cleanup actions
-        :rtype: :class:`jukeboxcore.action.ActionCollection`
-        :raises: None
-        """
-        pass
 
 
 class ReleaseWin(JB_MainWindow, Ui_release_mwin):
@@ -136,17 +97,19 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         r = Release(tf, checks, cleanups, comment)
         r.release()
 
-    def set_release_option_widget(self, widget):
+    def set_release_actions(self, actions):
         """Set the widget that gives users options about the release, e.g. importing references
 
-        :param widget: A widget with differnt options for the user that affect the cleanups or sanity checks of the release.
-        :type widget: :class:`ReleaseOptionWin`
+        :param actions: Release actions that define the sanity checks and cleanup actions
+        :type actions: :class:`jukeboxcore.release.ReleaseActions`
         :returns: None
         :rtype: None
         :raises: None
         """
-        self.release_option_widget = widget
-        self.option_vbox.addWidget(widget)
+        self.release_actions = actions
+        self.option_widget = self.release_actions.option_widget()
+        if self.option_widget:
+            self.option_vbox.addWidget(self.option_widget)
 
     def get_checks(self, ):
         """Get the sanity checks for the release from the release option widget
@@ -155,8 +118,8 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         :rtype: :class:`jukeboxcore.action.ActionCollection`
         :raises: None
         """
-        if self.release_option_widget:
-            return self.release_option_widget.get_checks()
+        if self.release_actions:
+            return self.release_actions.get_checks()
         else:
             return ActionCollection([])
 
@@ -167,8 +130,8 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         :rtype: :class:`jukeboxcore.action.ActionCollection`
         :raises: None
         """
-        if self.release_option_widget:
-            return self.release_option_widget.get_cleanups()
+        if self.release_actions:
+            return self.release_actions.get_cleanups()
         else:
             return ActionCollection([])
 
