@@ -7,7 +7,6 @@ That way all the plugins have a consistent look.
 """
 
 import os
-import sys
 import weakref
 import pkg_resources
 
@@ -33,7 +32,7 @@ def get_qapp():
     global app
     app = QtGui.QApplication.instance()
     if app is None:
-        app = QtGui.QApplication(sys.argv)
+        app = QtGui.QApplication([], QtGui.QApplication.GuiClient)
     return app
 
 

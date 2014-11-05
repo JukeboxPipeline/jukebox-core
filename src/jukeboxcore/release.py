@@ -40,7 +40,7 @@ class Release(object):
         self._rfi = TaskFileInfo.get_next(self._tfi.task,
                                           RELEASETYPES['release'],
                                           self._tfi.typ,
-                                          self._tfi.descriptor)
+                                          None)
         self._workfile = JB_File(self._tfi)
         self._releasefile = JB_File(self._rfi)
         self._checks = checks

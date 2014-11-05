@@ -91,7 +91,7 @@ class Launcher(object):
         """
         pm = plugins.PluginManager.get()
         addon = pm.get_plugin(args.addon)
-        isgui = isinstance(addon, plugins.JB_CoreStandaloneGuiPlugin)
+        isgui = isinstance(addon, plugins.JB_StandaloneGuiPlugin)
         if isgui:
             gui.main.init_gui()
         print "Launching %s..." % args.addon
@@ -129,7 +129,7 @@ class Launcher(object):
             return
         print "Addons:"
         for p in plugs:
-            if isinstance(p, plugins.JB_CoreStandalonePlugin):
+            if isinstance(p, plugins.JB_StandalonePlugin):
                 print "\t%s" % p.__class__.__name__
 
     def setup_manage_parser(self, parser):

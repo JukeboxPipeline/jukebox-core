@@ -2,6 +2,7 @@ from PySide import QtGui
 
 from jukeboxcore.release import Release
 from jukeboxcore.action import ActionCollection
+from jukeboxcore.filesys import TaskFileInfo
 from jukeboxcore.gui.main import JB_MainWindow, get_icon
 from jukeboxcore.gui.widgets.filebrowser import FileBrowser
 from jukeboxcore.gui.widgets.textedit import JB_PlainTextEdit
@@ -24,12 +25,12 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         :raises: None
         """
         super(ReleaseWin, self).__init__(parent, flags)
+        self.filetype = filetype
         self.setupUi(self)
         self.setup_ui()
         self.setup_signals()
         self.browser.init_selection()
-        self.filetype = filetype
-        self.release_option_widget = None
+        self.release_actions = None
 
     def setup_ui(self, ):
         """Create the browsers and all necessary ui elements for the tool
@@ -41,7 +42,7 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         w = QtGui.QWidget(self)
         w.setLayout(self.central_vbox)
         self.setCentralWidget(w)
-        self.browser = FileBrowser(self.filetype, self.get_current_file, self)
+        self.browser = FileBrowser(self.filetype, None, self)
         self.central_vbox.insertWidget(0, self.browser)
 
         self.comment_pte = self.create_comment_edit()
@@ -92,10 +93,11 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         if not tf:
             self.statusbar.showMessage("Select a file to release, please!")
             return
+        tfi = TaskFileInfo(tf.task, tf.version, tf.releasetype, tf.typ, tf.descriptor)
         checks = self.get_checks()
         cleanups = self.get_cleanups()
         comment = self.get_comment()
-        r = Release(tf, checks, cleanups, comment)
+        r = Release(tfi, checks, cleanups, comment)
         r.release()
 
     def set_release_actions(self, actions):
