@@ -202,7 +202,7 @@ class JB_CorePlugin(JB_Plugin):
     pass
 
 
-class JB_CoreStandalonePlugin(JB_StandalonePlugin):
+class JB_CoreStandalonePlugin(JB_StandalonePlugin, JB_CorePlugin):
     """Core plugin for standalone addons.
 
     Standalone addons feature a special run method an
@@ -215,7 +215,7 @@ class JB_CoreStandalonePlugin(JB_StandalonePlugin):
     pass
 
 
-class JB_CoreStandaloneGuiPlugin(JB_StandaloneGuiPlugin):
+class JB_CoreStandaloneGuiPlugin(JB_StandaloneGuiPlugin, JB_CoreStandalonePlugin):
     """Core plugin for standalone addons that also need a gui.
 
     Standalone addons feature a special run method an
