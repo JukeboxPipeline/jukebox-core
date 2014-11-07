@@ -1,0 +1,7 @@
+<RCC>
+  <qresource>
+    <file alias="checkbox.png">../icons/checkbox.png</file>
+    <file alias="down_arrow.png">../icons/down_arrow.png</file>
+    <file alias="handle.png">../icons/handle.png</file>
+  </qresource>
+</RCC>
