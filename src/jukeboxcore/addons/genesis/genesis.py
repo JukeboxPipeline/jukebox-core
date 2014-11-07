@@ -44,7 +44,6 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         self.setupUi(self)
         self.setup_ui()
         self.setup_signals()
-        self.browser.init_selection()
 
         if not self._filetype:
             log.warning('No Filetypes are allowed. Genesis will not show any files! Call set_filetype before instancing!')
