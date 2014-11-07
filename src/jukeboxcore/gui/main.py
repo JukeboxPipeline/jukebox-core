@@ -9,6 +9,8 @@ That way all the plugins have a consistent look.
 import os
 import weakref
 import pkg_resources
+import pkgutil
+import sys
 
 try:
     import shiboken
@@ -16,6 +18,8 @@ except ImportError:
     from PySide import shiboken
 from PySide import QtGui, QtCore
 
+from jukeboxcore.log import get_logger
+log = get_logger(__name__)
 from jukeboxcore.constants import MAIN_STYLESHEET, ICON_PATH
 from jukeboxcore.gui import resources
 
@@ -37,6 +41,23 @@ def get_qapp():
     return app
 
 
+def load_all_resources():
+    """Load all resources inside this package
+
+    When compiling qt resources, the compiled python file will register the resource
+    on import.
+
+    .. Warning:: This will simply import all modules inside this package
+    """
+    pkgname = resources.__name__
+    for importer, mod_name, _ in pkgutil.iter_modules(resources.__path__):
+        full_mod_name = '%s.%s' % (pkgname, mod_name)
+        if full_mod_name not in sys.modules:
+            module = importer.find_module(mod_name
+                        ).load_module(full_mod_name)
+            log.debug("Loaded resource from: %s" % module)
+
+
 def set_main_style(widget):
     """Load the main.qss and apply it to the application
 
@@ -47,6 +68,7 @@ def set_main_style(widget):
     :rtype: None
     :raises: None
     """
+    load_all_resources()
     with open(MAIN_STYLESHEET, 'r') as qss:
         sheet = qss.read()
     widget.setStyleSheet(sheet)
@@ -60,7 +82,6 @@ def init_gui():
     :raises: None
     """
     app = get_qapp()
-    resources.load_all_resources()
     app.setStyle("plastique")
     set_main_style(app)
 
