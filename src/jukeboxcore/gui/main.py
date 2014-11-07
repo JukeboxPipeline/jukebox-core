@@ -17,6 +17,7 @@ except ImportError:
 from PySide import QtGui, QtCore
 
 from jukeboxcore.constants import MAIN_STYLESHEET, ICON_PATH
+from jukeboxcore.gui import resources
 
 app = None
 """The QApplication app instance when using :func:`jukebox.core.gui.main.get_qapp`"""
@@ -59,6 +60,7 @@ def init_gui():
     :raises: None
     """
     app = get_qapp()
+    resources.load_all_resources()
     app.setStyle("plastique")
     set_main_style(app)
 

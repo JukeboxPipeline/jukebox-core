@@ -16,7 +16,7 @@ import argparse
 import sys
 
 from jukeboxcore import main, plugins, gui
-from jukeboxcore.gui import compile_ui
+from jukeboxcore.gui import qtcompile
 
 
 class Launcher(object):
@@ -38,10 +38,12 @@ class Launcher(object):
         managep = self.subparsers.add_parser("manage", add_help=False,
                                              help="Manage django command")
         compileuip = self.subparsers.add_parser("compileui", help="Compile Qt Designer Files")
+        compilerccp = self.subparsers.add_parser("compilercc", help="Compile Qt Resource Files")
         self.setup_launch_parser(launchp)
         self.setup_list_parser(listp)
         self.setup_manage_parser(managep)
         self.setup_compile_ui_parser(compileuip)
+        self.setup_compile_rcc_parser(compilerccp)
 
     def setup_core_parser(self, ):
         """Setup the core parser
@@ -164,7 +166,7 @@ class Launcher(object):
         execute_from_command_line(args)
 
     def setup_compile_ui_parser(self, parser):
-        """Setup the given parser for the compile command
+        """Setup the given parser for the compile_ui command
 
         :param parser: the argument parser to setup
         :type parser: :class:`argparse.ArgumentParser`
@@ -190,7 +192,36 @@ The compiled file will be in the same directory but ends with _ui.py',
         :raises: None
         """
         uifile = namespace.uifile.name
-        compile_ui.compile(uifile)
+        qtcompile.compile_ui(uifile)
+
+    def setup_compile_rcc_parser(self, parser):
+        """Setup the given parser for the compile_rcc command
+
+        :param parser: the argument parser to setup
+        :type parser: :class:`argparse.ArgumentParser`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        parser.set_defaults(func=self.compile_rcc)
+        parser.add_argument('rccfile',
+                            help='the resource file to compile.\
+                            The compiled file will be in the jukeboxcore.gui.resources package and ends with _rc.py',
+                            type=argparse.FileType('r'))
+
+    def compile_rcc(self, namespace, unknown):
+        """Compile qt resource files
+
+        :param namespace: namespace containing arguments from the launch parser
+        :type namespace: Namespace
+        :param unknown: list of unknown arguments
+        :type unknown: list
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        rccfile = namespace.rccfile.name
+        qtcompile.compile_rcc(rccfile)
 
     def parse_args(self, args=None):
         """Parse the given arguments
