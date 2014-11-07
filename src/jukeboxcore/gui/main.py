@@ -59,6 +59,7 @@ def init_gui():
     :raises: None
     """
     app = get_qapp()
+    app.setStyle("plastique")
     set_main_style(app)
 
 
