@@ -14,11 +14,12 @@ class ActionStatus(object):
     So when an action is performed, the action status shows, if the action has been
     successful or failed and also shows why.
 
-    You can query and set 3 attributes:
+    You can query and set 4 attributes:
 
         :value: the status value as a string
         :message: the status message as a string
         :traceback: in case of an error, the traceback as a string
+        :returnvalue: If the action wants to provide some value for further processing.
 
     Possible status values are :data:`ActionStatus.SUCCESS`, :data:`ActionStatus.SKIPPED`, :data:`ActionStatus.FAILURE`, :data:`ActionStatus.ERROR`
     and None. Before a action gets executed, the status is None
@@ -36,7 +37,7 @@ class ActionStatus(object):
     ERROR="Error"
     """Status for when the action crashed and raised an error."""
 
-    def __init__(self, value=None, msg="Not executed.", traceback=""):
+    def __init__(self, value=None, msg="Not executed.", traceback="", returnvalue=None):
         """Initialize a new action status with the given value, message and traceback
 
         :param value: The status value
@@ -45,11 +46,14 @@ class ActionStatus(object):
         :type msg: :class:`str`
         :param traceback: The traceback if an error occured during action execution.
         :type traceback: :class:`str`
+        :param returnvalue: If the actions wants to return values, this can be used to store the return value
+        :type returnvalue: None|object
         :raises: None
         """
         self.value = value
         self.message = msg
         self.traceback = traceback
+        self.returnvalue = returnvalue
 
 
 class ActionUnit(object):
@@ -81,7 +85,8 @@ class ActionUnit(object):
         :param description: A short description of what the action unit does
         :type description: :class:`str`
         :param actionfunc: A function that takes an object as argument and performs a action.
-                           the function should return a :class:`ActionStatus` object
+                           the function should return a :class:`ActionStatus` object.
+                           Use the ``returnvalue`` attribute of the status, if you need to return something else.
         :type actionfunc: callable
         :param depsuccess: a list of action units that has to succeed first before this action can be executed
         :type depsuccess: list|None
@@ -91,7 +96,11 @@ class ActionUnit(object):
         """
         super(ActionUnit, self).__init__()
         self.depsuccess = depsuccess
+        if depsuccess is None:
+            self.depsuccess = []
         self.depfail = depfail
+        if depfail is None:
+            self.depfail = []
         self.name = name
         self.description = description
         self.status = ActionStatus()
@@ -106,16 +115,14 @@ class ActionUnit(object):
         :rtype: None
         :raises: None
         """
-        if self.depsuccess:
-            for d in self.depsuccess:
-                if d.status.value != ActionStatus.SUCCESS:
-                    self.status = ActionStatus(ActionStatus.SKIPPED, "Skipped because action \"%s\" did not succeed." % d.name)
-                    return
-        if self.depfail:
-            for d in self.depfail:
-                if d.status.value == ActionStatus.SUCCESS:
-                    self.status = ActionStatus(ActionStatus.SKIPPED, "Skipped because action \"%s\" did not fail." % d.name)
-                    return
+        for d in self.depsuccess:
+            if d.status.value != ActionStatus.SUCCESS:
+                self.status = ActionStatus(ActionStatus.SKIPPED, "Skipped because action \"%s\" did not succeed." % d.name)
+                return
+        for d in self.depfail:
+            if d.status.value == ActionStatus.SUCCESS:
+                self.status = ActionStatus(ActionStatus.SKIPPED, "Skipped because action \"%s\" did not fail." % d.name)
+                return
         try:
             self.status = self.actionfunc(obj)
             if not isinstance(self.status, ActionStatus):

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\actionreportdialog.ui'
 #
-# Created: Sun Nov 02 15:33:59 2014
+# Created: Fri Nov 07 16:12:58 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -56,10 +56,18 @@ class Ui_ActionReportDialog(object):
         self.message_lb.setWordWrap(True)
         self.message_lb.setObjectName("message_lb")
         self.gridLayout.addWidget(self.message_lb, 1, 0, 1, 3)
+        self.label = QtGui.QLabel(ActionReportDialog)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        font.setWeight(75)
+        font.setBold(True)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 2, 0, 1, 2)
         self.verticalLayout.addLayout(self.gridLayout)
         self.buttonBox = QtGui.QDialogButtonBox(ActionReportDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Abort|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
@@ -74,4 +82,5 @@ class Ui_ActionReportDialog(object):
         ActionReportDialog.setWindowTitle(QtGui.QApplication.translate("ActionReportDialog", "Report", None, QtGui.QApplication.UnicodeUTF8))
         self.status_title_lb.setText(QtGui.QApplication.translate("ActionReportDialog", "Status:", None, QtGui.QApplication.UnicodeUTF8))
         self.showtb_checkb.setText(QtGui.QApplication.translate("ActionReportDialog", "Show Traceback", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("ActionReportDialog", "Do you wish to continue?", None, QtGui.QApplication.UnicodeUTF8))
 

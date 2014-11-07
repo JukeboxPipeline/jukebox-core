@@ -100,7 +100,12 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         cleanups = self.get_cleanups()
         comment = self.get_comment()
         r = Release(tfi, checks, cleanups, comment)
-        r.release()
+        self.statusbar.showMessage("Release in progress...")
+        success = r.release()
+        if success:
+            self.statusbar.showMessage("Success!")
+        else:
+            self.statusbar.showMessage("Release canceled by user!")
 
     def set_release_actions(self, actions):
         """Set the widget that gives users options about the release, e.g. importing references

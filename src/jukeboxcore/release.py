@@ -54,21 +54,22 @@ class Release(object):
         2. Copy work file to releasefile location.
         3. Perform cleanup actions on releasefile.
 
-        :returns: None
-        :rtype: None
+        :returns: True if successfull, False if user canceled the process
+        :rtype: bool
         :raises: None
         """
         self.sanity_check(self._workfile, self._checks)
         if not self._checks.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(self._checks):
-                return
+                return False
         copy_file(self._workfile, self._releasefile)
         self.cleanup(self._releasefile, self._cleanup)
         if not self._cleanup.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(self._cleanup):
                 delete_file(self._releasefile)
-                return
+                return False
         self.create_db_entry(self._releasefile, self.comment)
+        return True
 
     def sanity_check(self, f, checks):
         """Check the given JB_File object
