@@ -250,7 +250,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :rtype: :class:`QtGui.QPushButton`
         :raises: None
         """
-        pb = QtGui.QPushButton("Set to current")
+        pb = QtGui.QPushButton("Select current")
         self.selection_tabw.setCornerWidget(pb)
         return pb
 
