@@ -27,6 +27,7 @@ class Test_JBGui():
         cls.FooBar = FooBar
 
     def test_trackinstances(self):
+        main.JB_Gui._allinstances = set()
         assert len(main.JB_Gui.allinstances()) == 0
         assert len(main.JB_Gui.instances()) == 0
         assert len(main.JB_Gui.classinstances()) == 0

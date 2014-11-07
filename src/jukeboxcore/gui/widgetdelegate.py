@@ -9,12 +9,12 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
     When subclassing, reimplement set_widget_index, create_widget, createEditor, setEditorData, setModelData
     to your liking.
     Make sure that the model returns the ItemIsEditable flag!
+    I recommend using one of the views in this module, because they issue a left click, when
+    an index is clicked.
     """
 
     def __init__(self, parent=None):
         """Create a new abstract widget delegate that draws the given widget.
-
-        This delegate only works ListViews that are not in IconMode. Maybe also in other views.
 
         :param widget: the widget to draw. If None, it behaves like a :class:`QtGui.QStyledItemDelegate`
         :type widget: :class:`QtGui.QWidget` | None
@@ -23,7 +23,8 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         :raises: None
         """
         super(WidgetDelegate, self).__init__(parent)
-        self._widget = self.create_widget()
+        self._widget = self.create_widget(parent)
+        self._widget.setVisible(False)
 
     @property
     def widget(self):
@@ -34,20 +35,6 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         :raises: None
         """
         return self._widget
-
-    @widget.setter
-    def widget(self, widget):
-        """Set the widget
-
-        :param widget: The widget to set
-        :type widget: :class:`QtGui.QWidget`
-        :raises: None
-        """
-        if self._widget:
-            self._lay.removeWidget(self._widget)
-        self._widget = widget
-        if widget:
-            self._lay.insertWidget(0, widget)
 
     def paint(self, painter, option, index):
         """Use the painter and style option to render the item specified by the item index.
@@ -205,3 +192,202 @@ class CommentDelegate(WidgetDelegate):
         :raises: None
         """
         editor.set_index(index)
+
+
+class WD_AbstractItemView(QtGui.QAbstractItemView):
+    """A abstract item view that that when clicked, tries to issue
+    a left click to the widget delegate.
+    """
+
+    def __init__(self, parent):
+        """Initialize a new abstract item view
+
+        :raises: None
+        """
+        super(WD_AbstractItemView, self).__init__(parent)
+        self.clicked.connect(self.clicked_cb)
+
+    def clicked_cb(self, index):
+        """When the view is clicked, tries to edit the clicked index.
+        If the clicked index has a widget delegate, then issue a left click on the widget.
+
+        :param index: the clicked index
+        :type index: :class:`QtCore.QModelIndex`
+        :returns: None
+        :raises: None
+        """
+        if self.state() == self.EditingState:
+            return
+        delegate = self.itemDelegate(index)
+        if not isinstance(delegate, WidgetDelegate):
+            return
+        self.edit(index)
+        widget = delegate.widget
+        # try to find the relative position to the widget
+        rect = self.visualRect(index)  # rect of the index
+        p = self.viewport().mapToGlobal(rect.topLeft())
+        pos = self.cursor().pos() - p
+
+        # issue two mouse clicks because e.g. a button only will be activated
+        # if it is pressed and released
+        e1 = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress,
+                               pos,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.NoModifier)
+        e2 = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease,
+                               pos,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.NoModifier)
+        QtCore.QCoreApplication.sendEvent(widget, e1)
+        QtCore.QCoreApplication.sendEvent(widget, e2)
+
+
+class WD_ListView(QtGui.QListView):
+    """A list view that that when clicked, tries to issue
+    a left click to the widget delegate.
+    """
+
+    def __init__(self, parent):
+        """Initialize a new list view
+
+        :raises: None
+        """
+        super(WD_ListView, self).__init__(parent)
+        self.clicked.connect(self.clicked_cb)
+
+    def clicked_cb(self, index):
+        """When the view is clicked, tries to edit the clicked index.
+        If the clicked index has a widget delegate, then issue a left click on the widget.
+
+        :param index: the clicked index
+        :type index: :class:`QtCore.QModelIndex`
+        :returns: None
+        :raises: None
+        """
+        if self.state() == self.EditingState:
+            return
+        delegate = self.itemDelegate(index)
+        if not isinstance(delegate, WidgetDelegate):
+            return
+        self.edit(index)
+        widget = delegate.widget
+        # try to find the relative position to the widget
+        rect = self.visualRect(index)  # rect of the index
+        p = self.viewport().mapToGlobal(rect.topLeft())
+        pos = self.cursor().pos() - p
+
+        # issue two mouse clicks because e.g. a button only will be activated
+        # if it is pressed and released
+        e1 = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress,
+                               pos,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.NoModifier)
+        e2 = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease,
+                               pos,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.NoModifier)
+        QtCore.QCoreApplication.sendEvent(widget, e1)
+        QtCore.QCoreApplication.sendEvent(widget, e2)
+
+
+class WD_TableView(QtGui.QTableView):
+    """A table view that that when clicked, tries to issue
+    a left click to the widget delegate.
+    """
+
+    def __init__(self, parent):
+        """Initialize a new table view
+
+        :raises: None
+        """
+        super(WD_TableView, self).__init__(parent)
+        self.clicked.connect(self.clicked_cb)
+
+    def clicked_cb(self, index):
+        """When the view is clicked, tries to edit the clicked index.
+        If the clicked index has a widget delegate, then issue a left click on the widget.
+
+        :param index: the clicked index
+        :type index: :class:`QtCore.QModelIndex`
+        :returns: None
+        :raises: None
+        """
+        if self.state() == self.EditingState:
+            return
+        delegate = self.itemDelegate(index)
+        if not isinstance(delegate, WidgetDelegate):
+            return
+        self.edit(index)
+        widget = delegate.widget
+        # try to find the relative position to the widget
+        rect = self.visualRect(index)  # rect of the index
+        p = self.viewport().mapToGlobal(rect.topLeft())
+        pos = self.cursor().pos() - p
+        # issue two mouse clicks because e.g. a button only will be activated
+        # if it is pressed and released
+        e1 = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress,
+                               pos,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.NoModifier)
+        e2 = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease,
+                               pos,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.NoModifier)
+        QtCore.QCoreApplication.sendEvent(widget, e1)
+        QtCore.QCoreApplication.sendEvent(widget, e2)
+
+
+class WD_TreeView(QtGui.QTreeView):
+    """A tree view that that when clicked, tries to issue
+    a left click to the widget delegate.
+    """
+
+    def __init__(self, parent):
+        """Initialize a new tree view
+
+        :raises: None
+        """
+        super(WD_TableView, self).__init__(parent)
+        self.clicked.connect(self.clicked_cb)
+
+    def clicked_cb(self, index):
+        """When the view is clicked, tries to edit the clicked index.
+        If the clicked index has a widget delegate, then issue a left click on the widget.
+
+        :param index: the clicked index
+        :type index: :class:`QtCore.QModelIndex`
+        :returns: None
+        :raises: None
+        """
+        if self.state() == self.EditingState:
+            return
+        delegate = self.itemDelegate(index)
+        if not isinstance(delegate, WidgetDelegate):
+            return
+        self.edit(index)
+        widget = delegate.widget
+        # try to find the relative position to the widget
+        rect = self.visualRect(index)  # rect of the index
+        p = self.viewport().mapToGlobal(rect.topLeft())
+        pos = self.cursor().pos() - p
+
+        # issue two mouse clicks because e.g. a button only will be activated
+        # if it is pressed and released
+        e1 = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress,
+                               pos,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.NoModifier)
+        e2 = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease,
+                               pos,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.LeftButton,
+                               QtCore.Qt.NoModifier)
+        QtCore.QCoreApplication.sendEvent(widget, e1)
+        QtCore.QCoreApplication.sendEvent(widget, e2)

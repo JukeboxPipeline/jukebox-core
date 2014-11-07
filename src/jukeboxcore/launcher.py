@@ -91,7 +91,7 @@ class Launcher(object):
         """
         pm = plugins.PluginManager.get()
         addon = pm.get_plugin(args.addon)
-        isgui = isinstance(addon, plugins.JB_CoreStandaloneGuiPlugin)
+        isgui = isinstance(addon, plugins.JB_StandaloneGuiPlugin)
         if isgui:
             gui.main.init_gui()
         print "Launching %s..." % args.addon
@@ -129,7 +129,7 @@ class Launcher(object):
             return
         print "Addons:"
         for p in plugs:
-            if isinstance(p, plugins.JB_CoreStandalonePlugin):
+            if isinstance(p, plugins.JB_StandalonePlugin):
                 print "\t%s" % p.__class__.__name__
 
     def setup_manage_parser(self, parser):
@@ -181,8 +181,8 @@ The compiled file will be in the same directory but ends with _ui.py',
     def compile_ui(self, namespace, unknown):
         """Compile qt designer files
 
-        :param args: arguments from the launch parser
-        :type args: Namespace
+        :param namespace: namespace containing arguments from the launch parser
+        :type namespace: Namespace
         :param unknown: list of unknown arguments
         :type unknown: list
         :returns: None

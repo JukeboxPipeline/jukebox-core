@@ -1,4 +1,6 @@
 import os
+import shutil
+
 from operator import attrgetter
 
 from django.db.models import Max
@@ -6,6 +8,192 @@ from django.db.models import Max
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 from jukeboxcore import djadapter as dj
+
+
+def copy_file(old, new):
+    """Copy the old file to the location of the new file
+
+    :param old: The file to copy
+    :type old: :class:`JB_File`
+    :param new: The JB_File for the new location
+    :type new: :class:`JB_File`
+    :returns: None
+    :rtype: None
+    :raises: None
+    """
+    oldp = old.get_fullpath()
+    newp = new.get_fullpath()
+    new.create_directory()
+    shutil.copy(oldp, newp)
+
+
+def delete_file(f):
+    """Delete the given file
+
+    :param f: the file to delete
+    :type f: :class:`JB_File`
+    :returns: None
+    :rtype: None
+    :raises: :class:`OSError`
+    """
+    os.remove(f.get_fullpath())
+
+
+class FileInfo(object):
+    """Abstract class that can be used for implementing info objects
+    that can be used with FileElements
+
+    You don't have to use this, but it provides an interface for
+    getting the latest or next version.
+    """
+
+    @classmethod
+    def get_latest(cls, ):
+        """Get the latest existing file for the given info or None if there is no existing one
+
+        You should reimplement this method so it accepts
+        some arguments with infos and returns
+        a FileInfo that is the latest version
+        for the given info.
+
+        :returns: a fileinfoobject that is the latest existing file for the given info
+        :rtype: :class:`FileInfo` | None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def get_next(cls, ):
+        """Return a file info object that would be the next version for the given info
+
+        You should reimplement this method so it accepts
+        some arguments with infos and returns
+        a FileInfo that would be the next version after the latest
+        for the given info
+
+        :returns: a fileinfoobject that is the latest existing file for the given info
+        :rtype: :class:`FileInfo`
+        :raises: None
+        """
+        raise NotImplementedError
+
+
+class TaskFileInfo(FileInfo):
+    """FileInfo for a taskfile
+
+    Can get the latest or the next version if you provide a task, releasetype (and a descriptor).
+    """
+
+    TYPES = dj.FILETYPES
+    """A dict for file types that can be used in a TaskFile
+
+    the values are the actual data that gets stored in the database.
+
+    Explanations:
+
+      :mayamainscene: probably the most common for maya scenes. these are the usual release and workfiles
+                      maybe even a handoff file, if it does not need a direct subfolder.
+                      Main scenes hold the main information, not just extracted parts.
+                      If you export shader or maybe some blendshapes in a scene, do not use this one.
+    """
+
+    def __init__(self, task, version, releasetype, typ, descriptor=None):
+        """Constructs a new TaskFileInfo
+
+        :param task: the task of the taskfile
+        :type task: :class:`jukeboxcore.djadapter.models.Task`
+        :param version: the version of the TaskFile
+        :type version: int
+        :param releasetype: the releasetype
+        :type releasetype: str - :data:`jukeboxcore.djadapter.RELEASETYPES`
+        :param typ: the file type, see :data:`TaskFileInfo.TYPES`
+        :type typ: str
+        :param descriptor: the descriptor, if the taskfile has one.
+        :type descriptor: str|None
+        :raises: None
+        """
+        super(TaskFileInfo, self).__init__()
+        self.task = task
+        self.version = version
+        self.releasetype = releasetype
+        self.descriptor = descriptor
+        self.typ = typ
+
+    @classmethod
+    def get_latest(cls, task, releasetype, typ, descriptor=None):
+        """Returns a TaskFileInfo that with the latest existing version and the provided info
+
+        :param task: the task of the taskfile
+        :type task: :class:`jukeboxcore.djadapter.models.Task`
+        :param releasetype: the releasetype
+        :type releasetype: str - :data:`jukeboxcore.djadapter.RELEASETYPES`
+        :param typ: the file type, see :data:`TaskFileInfo.TYPES`
+        :type typ: str
+        :param descriptor: the descriptor, if the taskfile has one.
+        :type descriptor: str|None
+        :returns: taskfileinfoobject with the latest extisting version and the provided info
+                  or none if there is no latest.
+        :rtype: :class:`TaskFileInfo` | None
+        :raises: None
+        """
+        qs = dj.taskfiles.filter(task=task, releasetype=releasetype, descriptor=descriptor, typ=typ)
+        if qs.exists():
+            maxver = qs.aggregate(Max('version'))['version__max']
+            return TaskFileInfo(task, maxver, releasetype, typ, descriptor)
+        else:
+            return
+
+    @classmethod
+    def get_next(cls, task, releasetype, typ, descriptor=None):
+        """Returns a TaskFileInfo that with the next available version and the provided info
+
+        :param task: the task of the taskfile
+        :type task: :class:`jukeboxcore.djadapter.models.Task`
+        :param releasetype: the releasetype
+        :type releasetype: str - :data:`jukeboxcore.djadapter.RELEASETYPES`
+        :param typ: the file type, see :data:`TaskFileInfo.TYPES`
+        :type typ: str
+        :param descriptor: the descriptor, if the taskfile has one.
+        :type descriptor: str|None
+        :returns: taskfileinfoobject with next available version and the provided info
+        :rtype: :class:`TaskFileInfo`
+        :raises: None
+        """
+        qs = dj.taskfiles.filter(task=task, releasetype=releasetype, descriptor=descriptor, typ=typ)
+        if qs.exists():
+            ver = qs.aggregate(Max('version'))['version__max']+1
+        else:
+            ver = 1
+        return TaskFileInfo(task=task, version=ver, releasetype=releasetype, typ=typ, descriptor=descriptor)
+
+    def create_db_entry(self, comment=''):
+        """Create a db entry for this task file info
+        and link it with a optional comment
+
+        :param comment: a comment for the task file entry
+        :type comment: str
+        :returns: The created TaskFile django instance and the comment. If the comment was empty, None is returned instead
+        :rtype: tuple of :class:`dj.models.TaskFile` and :class:`dj.models.Note`|None
+        :raises: ValidationError, If the comment could not be created, the TaskFile is deleted and the Exception is propagated.
+        """
+        jbfile = JB_File(self)
+        p = jbfile.get_fullpath()
+        user = dj.get_current_user()
+        tf = dj.models.TaskFile(path=p, task=self.task, version=self.version,
+                                       releasetype=self.releasetype, descriptor=self.descriptor,
+                                       typ=self.typ, user=user)
+        tf.full_clean()
+        tf.save()
+        note = None
+        if comment:
+            try:
+                note = dj.models.Note(user=user, parent=tf, content=comment)
+                note.full_clean()
+                note.save()
+            except Exception, e:
+                tf.delete()
+                raise e
+        return tf, note
 
 
 class FileElement(object):
@@ -183,6 +371,9 @@ class SoftwareElement(FileElement):
     """This element checks a TaskFileInfo for the typ and returns the directory name
     for the software branch.
     """
+
+    typmapping = {TaskFileInfo.TYPES['mayamainscene']: 'Maya',}
+
     def get_dir(self, taskinfo):
         """Return a directory for the software, depending on the typ of taskinfo
 
@@ -192,8 +383,7 @@ class SoftwareElement(FileElement):
         :rtype: str
         :raises: None
         """
-        if taskinfo.typ == taskinfo.TYPES['mayamainscene']:
-            return 'Maya'
+        return self.typmapping.get(taskinfo.typ, "")
 
 
 class TaskGroupElement(FileElement):
@@ -262,6 +452,8 @@ class StaticExtElement(ExtElement):
 class TaskFileExtElement(ExtElement):
     """This extension element uses a :class:`TaskFileInfo` and returns an appropriate extension"""
 
+    typmapping = {TaskFileInfo.TYPES['mayamainscene']: 'mb'}
+
     def get_ext(self, taskinfo):
         """Return a file extension (without the extension seperator) for the given file info obj
 
@@ -271,136 +463,7 @@ class TaskFileExtElement(ExtElement):
         :rtype: str
         :raises: None
         """
-        if taskinfo.typ == taskinfo.TYPES['mayamainscene']:
-            return 'mb'
-
-
-class FileInfo(object):
-    """Abstract class that can be used for implementing info objects
-    that can be used with FileElements
-
-    You don't have to use this, but it provides an interface for
-    getting the latest or next version.
-    """
-
-    @classmethod
-    def get_latest(cls, ):
-        """Get the latest existing file for the given info or None if there is no existing one
-
-        You should reimplement this method so it accepts
-        some arguments with infos and returns
-        a FileInfo that is the latest version
-        for the given info.
-
-        :returns: a fileinfoobject that is the latest existing file for the given info
-        :rtype: :class:`FileInfo` | None
-        :raises: None
-        """
-        raise NotImplementedError
-
-    @classmethod
-    def get_next(cls, ):
-        """Return a file info object that would be the next version for the given info
-
-        You should reimplement this method so it accepts
-        some arguments with infos and returns
-        a FileInfo that would be the next version after the latest
-        for the given info
-
-        :returns: a fileinfoobject that is the latest existing file for the given info
-        :rtype: :class:`FileInfo`
-        :raises: None
-        """
-        raise NotImplementedError
-
-
-class TaskFileInfo(FileInfo):
-    """FileInfo for a taskfile
-
-    Can get the latest or the next version if you provide a task, releasetype (and a descriptor).
-    """
-
-    TYPES = dj.FILETYPES
-    """A dict for file types that can be used in a TaskFile
-
-    the values are the actual data that gets stored in the database.
-
-    Explanations:
-
-      :mayamainscene: probably the most common for maya scenes. these are the usual release and workfiles
-                      maybe even a handoff file, if it does not need a direct subfolder.
-                      Main scenes hold the main information, not just extracted parts.
-                      If you export shader or maybe some blendshapes in a scene, do not use this one.
-    """
-
-    def __init__(self, task, version, releasetype, typ, descriptor=None):
-        """Constructs a new TaskFileInfo
-
-        :param task: the task of the taskfile
-        :type task: :class:`jukeboxcore.djadapter.models.Task`
-        :param version: the version of the TaskFile
-        :type version: int
-        :param releasetype: the releasetype
-        :type releasetype: str - :data:`jukeboxcore.djadapter.RELEASETYPES`
-        :param typ: the file type, see :data:`TYPES`
-        :type typ: str
-        :param descriptor: the descriptor, if the taskfile has one.
-        :type descriptor: str|None
-        :raises: None
-        """
-        super(TaskFileInfo, self).__init__()
-        self.task = task
-        self.version = version
-        self.releasetype = releasetype
-        self.descriptor = descriptor
-        self.typ = typ
-
-    @classmethod
-    def get_latest(cls, task, releasetype, typ, descriptor=None):
-        """Returns a TaskFileInfo that with the latest existing version and the provided info
-
-        :param task: the task of the taskfile
-        :type task: :class:`jukeboxcore.djadapter.models.Task`
-        :param releasetype: the releasetype
-        :type releasetype: str - :data:`jukeboxcore.djadapter.RELEASETYPES`
-        :param typ: the file type, see :data:`TYPES`
-        :type typ: str
-        :param descriptor: the descriptor, if the taskfile has one.
-        :type descriptor: str|None
-        :returns: taskfileinfoobject with the latest extisting version and the provided info
-                  or none if there is no latest.
-        :rtype: :class:`TaskFileInfo` | None
-        :raises: None
-        """
-        qs = dj.taskfiles.filter(task=task, releasetype=releasetype, descriptor=descriptor, typ=typ)
-        if qs.exists():
-            maxver = qs.aggregate(Max('version'))['version__max']
-            return TaskFileInfo(task, maxver, releasetype, typ, descriptor)
-        else:
-            return
-
-    @classmethod
-    def get_next(cls, task, releasetype, typ, descriptor=None):
-        """Returns a TaskFileInfo that with the next available version and the provided info
-
-        :param task: the task of the taskfile
-        :type task: :class:`jukeboxcore.djadapter.models.Task`
-        :param releasetype: the releasetype
-        :type releasetype: str - :data:`jukeboxcore.djadapter.RELEASETYPES`
-        :param typ: the file type, see :data:`TYPES`
-        :type typ: str
-        :param descriptor: the descriptor, if the taskfile has one.
-        :type descriptor: str|None
-        :returns: taskfileinfoobject with next available version and the provided info
-        :rtype: :class:`TaskFileInfo`
-        :raises: None
-        """
-        qs = dj.taskfiles.filter(task=task, releasetype=releasetype, descriptor=descriptor, typ=typ)
-        if qs.exists():
-            ver = qs.aggregate(Max('version'))['version__max']+1
-        else:
-            ver = 1
-        return TaskFileInfo(task=task, version=ver, releasetype=releasetype, typ=typ, descriptor=descriptor)
+        return self.typmapping.get(taskinfo.typ, "")
 
 
 class JB_File(object):

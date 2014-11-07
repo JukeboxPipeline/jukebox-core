@@ -7,7 +7,6 @@ That way all the plugins have a consistent look.
 """
 
 import os
-import sys
 import weakref
 import pkg_resources
 
@@ -33,7 +32,7 @@ def get_qapp():
     global app
     app = QtGui.QApplication.instance()
     if app is None:
-        app = QtGui.QApplication(sys.argv)
+        app = QtGui.QApplication([], QtGui.QApplication.GuiClient)
     return app
 
 
@@ -138,7 +137,7 @@ class JB_Gui(object):
     instances of its own class+subclasses
     """
 
-    _allinstances = weakref.WeakSet()
+    _allinstances = set()
 
     def __init__(self, *args, **kwargs):
         """Constructs a new JB_Gui that will be tracked
@@ -205,4 +204,23 @@ class JB_MainWindow(JB_Gui, QtGui.QMainWindow):
         set_main_style(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, on=True)
         jb_icon = get_icon('JB_Icon_32x32.png',asicon=True)
+        self.setWindowIcon(jb_icon)
+
+
+class JB_Dialog(JB_Gui, QtGui.QDialog):
+    """A dialog class that should be used for all generic dialogs
+
+    It is useful for tracking all dialogs and we can already set common
+    attributes.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Constructs a new JB_MainWindow. Arguments are passed on to QMainWindow
+
+        :raises: None
+        """
+        super(JB_Dialog, self).__init__(*args, **kwargs)
+        set_main_style(self)
+        jb_icon = get_icon('JB_Icon_32x32.png',asicon=True)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose, on=True)
         self.setWindowIcon(jb_icon)

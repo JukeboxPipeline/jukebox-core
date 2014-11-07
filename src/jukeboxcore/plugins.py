@@ -154,19 +154,8 @@ class JB_Plugin(object):
         return load_config(confpath, specpath)
 
 
-class JB_CorePlugin(JB_Plugin):
-    """Core plugin class
-
-    Core plugins should be loadable at all times and not require a
-    specific software to run.
-
-    For subclassing: you have to implement **init** and **uninit**!
-    """
-    pass
-
-
-class JB_CoreStandalonePlugin(JB_CorePlugin):
-    """Core plugin for standalone addons.
+class JB_StandalonePlugin(JB_Plugin):
+    """Abstract plugin class for standalone addons.
 
     Standalone addons feature a special run method an
     can be run with the jukebox launcher.
@@ -188,7 +177,45 @@ class JB_CoreStandalonePlugin(JB_CorePlugin):
         pass
 
 
-class JB_CoreStandaloneGuiPlugin(JB_CoreStandalonePlugin):
+class JB_StandaloneGuiPlugin(JB_StandalonePlugin):
+    """Abstract plugin class for standalone addons that need a gui.
+
+    Standalone addons feature a special run method an
+    can be run with the jukebox launcher.
+    The launcher will first initialize the plugin and then
+    call the run method.
+    The launcher will also initialize the gui before running the plugin.
+
+    For subclassing: you have to implement **init**, **unit** and **run**!
+    """
+    pass
+
+
+class JB_CorePlugin(JB_Plugin):
+    """Core plugin class
+
+    Core plugins should be loadable at all times and not require a
+    specific software to run.
+
+    For subclassing: you have to implement **init** and **uninit**!
+    """
+    pass
+
+
+class JB_CoreStandalonePlugin(JB_StandalonePlugin, JB_CorePlugin):
+    """Core plugin for standalone addons.
+
+    Standalone addons feature a special run method an
+    can be run with the jukebox launcher.
+    The launcher will first initialize the plugin and then
+    call the run method.
+
+    For subclassing: you have to implement **init**, **unit** and **run**!
+    """
+    pass
+
+
+class JB_CoreStandaloneGuiPlugin(JB_StandaloneGuiPlugin, JB_CoreStandalonePlugin):
     """Core plugin for standalone addons that also need a gui.
 
     Standalone addons feature a special run method an
