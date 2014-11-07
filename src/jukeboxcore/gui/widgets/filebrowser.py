@@ -26,11 +26,13 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
     asset_taskfile_sel_changed = QtCore.Signal(TaskFileInfo)
     """Signal when the selection changes. Returns a :class:`TaskFileInfo` or None"""
 
-    def __init__(self, filetype, get_current_file=None, parent=None):
+    def __init__(self, filetype, releasetypes=None, get_current_file=None, parent=None):
         """Initialize a new file browser widget with the given parent
 
         :param filetype: the filetype the browser should display from :data:`djadapter.FILETYPES`
         :type filetypes: str
+        :param releasetypes: the releasetypes the browser should display.
+        :type releasetype: list of :data:`djadapter.RELEASETYPES`
         :param get_current_file: a function that should return the current open file as a :class:`jukeboxcore.filesys.TaskFileInfo`
         :type get_current_file: func|None
         :param parent: Optional - the parent of the window - default is None
@@ -39,6 +41,9 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         """
         super(FileBrowser, self).__init__(parent)
         self._filetype = filetype
+        self._releasetypes = releasetypes
+        # Map releasetypes to radiobuttons
+        self._releasetype_button_mapping = {}
         self.get_current_file = get_current_file
         self.setupUi(self)
         self.setup_ui()
@@ -87,7 +92,32 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         self.current_pb.setVisible(bool(self.get_current_file))
         self.shot_info_mapper = QtGui.QDataWidgetMapper()
         self.asset_info_mapper = QtGui.QDataWidgetMapper()
+        self.setup_releasetype_buttons()
         self.setup_icons()
+
+    def setup_releasetype_buttons(self, ):
+        """Create a radio button for every releasetype
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        # we insert the radiobuttons instead of adding them
+        # because there is already a spacer in the layout to
+        # keep the buttons to the left. To maintain the original order
+        # we insert them all to position 0 but in reversed order
+        for rt in reversed(self._releasetypes):
+            rb = QtGui.QRadioButton(rt)
+            self.releasetype_hbox.insertWidget(0, rb)
+            self._releasetype_button_mapping[rt] = rb
+        # set first radiobutton checked
+        if self._releasetypes:
+            rt = self._releasetypes[0]
+            rb = self._releasetype_button_mapping[rt]
+            rb.setChecked(True)
+        # if there is only one releasetype hide the buttons
+        if len(self._releasetypes) == 1:
+            self.releasetype_widget.setVisible(False)
 
     def setup_icons(self, ):
         """Set all icons on buttons
@@ -112,7 +142,8 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         """
         prjlvl = self.prjbrws.get_level(0)
         prjlvl.new_root.connect(self.update_browsers)
-        self.work_rb.toggled.connect(self.update_browsers)
+        for rb in self._releasetype_button_mapping.values():
+            rb.toggled.connect(self.releasetype_btn_toggled)
 
         shotdesclvl = self.shotbrws.get_level(3)
         shotselcb = partial(self.selection_changed,
@@ -328,6 +359,20 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         versionmodel = treemodel.TreeModel(rootitem)
         return versionmodel
 
+    def releasetype_btn_toggled(self, checked):
+        """Callback for when a certain releasetype is toggled
+
+        If the button is checked, update browsers
+
+        :param checked: the state of the button
+        :type checked: bool
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if checked:
+            self.update_browsers()
+
     def update_shot_browser(self, project, releasetype):
         """Update the shot browser to the given project
 
@@ -500,11 +545,9 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :rtype: str
         :raises: None
         """
-        if self.work_rb.isChecked():
-            releasetype = djadapter.RELEASETYPES['work']
-        else:
-            releasetype = djadapter.RELEASETYPES['release']
-        return releasetype
+        for rt, rb in self._releasetype_button_mapping.items():
+            if rb.isChecked():
+                return rt
 
     def asset_ver_sel_changed(self, index):
         """Callback for when the version selection has changed
@@ -610,10 +653,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :rtype: None
         :raises: None
         """
-        if releasetype == djadapter.RELEASETYPES['work']:
-            self.work_rb.setChecked(True)
-        else:
-            self.release_rb.setChecked(True)
+        self._releasetype_button_mapping[releasetype].setChecked(True)
 
     def set_level(self, browser, lvl, obj):
         """Set the given browser level selection to the one that matches with obj

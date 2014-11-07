@@ -80,7 +80,8 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         w = QtGui.QWidget(self)
         w.setLayout(self.central_vbox)
         self.setCentralWidget(w)
-        self.browser = FileBrowser(self._filetype, self.get_current_file, self)
+        releasetypes = [djadapter.RELEASETYPES['work'], djadapter.RELEASETYPES['release'], djadapter.RELEASETYPES['handoff']]
+        self.browser = FileBrowser(self._filetype, releasetypes, self.get_current_file, self)
         self.central_vbox.insertWidget(0, self.browser)
 
         self.asset_comment_pte = self.create_comment_edit()

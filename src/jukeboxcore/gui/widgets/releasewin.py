@@ -1,5 +1,6 @@
 from PySide import QtGui
 
+from jukeboxcore import djadapter
 from jukeboxcore.release import Release
 from jukeboxcore.action import ActionCollection
 from jukeboxcore.filesys import TaskFileInfo
@@ -42,7 +43,8 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         w = QtGui.QWidget(self)
         w.setLayout(self.central_vbox)
         self.setCentralWidget(w)
-        self.browser = FileBrowser(self.filetype, None, self)
+        releasetypes= [djadapter.RELEASETYPES["work"]]
+        self.browser = FileBrowser(self.filetype, releasetypes, None, self)
         self.central_vbox.insertWidget(0, self.browser)
 
         self.comment_pte = self.create_comment_edit()

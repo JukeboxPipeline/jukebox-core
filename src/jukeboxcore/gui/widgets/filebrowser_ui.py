@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\filebrowser.ui'
 #
-# Created: Mon Nov 03 13:13:39 2014
+# Created: Fri Nov 07 12:10:21 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,6 +13,7 @@ class Ui_FileBrowser(object):
     def setupUi(self, FileBrowser):
         FileBrowser.setObjectName("FileBrowser")
         FileBrowser.resize(742, 516)
+        FileBrowser.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.central_vbox = QtGui.QVBoxLayout(FileBrowser)
         self.central_vbox.setObjectName("central_vbox")
         self.prj_banner_lb = QtGui.QLabel(FileBrowser)
@@ -22,18 +23,15 @@ class Ui_FileBrowser(object):
         self.prj_banner_lb.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.prj_banner_lb.setObjectName("prj_banner_lb")
         self.central_vbox.addWidget(self.prj_banner_lb)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.work_rb = QtGui.QRadioButton(FileBrowser)
-        self.work_rb.setChecked(True)
-        self.work_rb.setObjectName("work_rb")
-        self.horizontalLayout.addWidget(self.work_rb)
-        self.release_rb = QtGui.QRadioButton(FileBrowser)
-        self.release_rb.setObjectName("release_rb")
-        self.horizontalLayout.addWidget(self.release_rb)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
-        self.central_vbox.addLayout(self.horizontalLayout)
+        self.releasetype_widget = QtGui.QWidget(FileBrowser)
+        self.releasetype_widget.setObjectName("releasetype_widget")
+        self.releasetype_hbox = QtGui.QHBoxLayout(self.releasetype_widget)
+        self.releasetype_hbox.setContentsMargins(0, 0, 0, 0)
+        self.releasetype_hbox.setContentsMargins(0, 0, 0, 0)
+        self.releasetype_hbox.setObjectName("releasetype_hbox")
+        spacerItem = QtGui.QSpacerItem(721, 13, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.releasetype_hbox.addItem(spacerItem)
+        self.central_vbox.addWidget(self.releasetype_widget)
         self.selection_tabw = QtGui.QTabWidget(FileBrowser)
         self.selection_tabw.setObjectName("selection_tabw")
         self.asset_widget = QtGui.QWidget()
@@ -197,8 +195,6 @@ class Ui_FileBrowser(object):
 
     def retranslateUi(self, FileBrowser):
         FileBrowser.setWindowTitle(QtGui.QApplication.translate("FileBrowser", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.work_rb.setText(QtGui.QApplication.translate("FileBrowser", "work", None, QtGui.QApplication.UnicodeUTF8))
-        self.release_rb.setText(QtGui.QApplication.translate("FileBrowser", "release", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_info_gb.setTitle(QtGui.QApplication.translate("FileBrowser", "Info", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_thumb_lb.setText(QtGui.QApplication.translate("FileBrowser", "File Snapshot", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_created_lb.setText(QtGui.QApplication.translate("FileBrowser", "Created:", None, QtGui.QApplication.UnicodeUTF8))
