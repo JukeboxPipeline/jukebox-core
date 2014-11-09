@@ -70,6 +70,15 @@ class JB_Plugin(object):
         """
         self.__status = self.__UNLOADED
 
+    def __str__(self, ):
+        """Return the plugin name
+
+        :returns: the plugin name
+        :rtype: str
+        :raises: None
+        """
+        return self.name
+
     def _load(self, ):
         """Loads the plugin
 
@@ -152,6 +161,16 @@ class JB_Plugin(object):
             return None
         confpath = os.path.join(PLUGIN_CONFIG_DIR, confname)
         return load_config(confpath, specpath)
+
+    @property
+    def name(self, ):
+        """Return the name of the plugin. Equivalent quering __class__.__name__
+
+        :returns: The name of the plugin
+        :rtype: str
+        :raises: None
+        """
+        return self.__class__.__name__
 
 
 class JB_StandalonePlugin(JB_Plugin):
