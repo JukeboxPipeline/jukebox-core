@@ -499,6 +499,17 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :rtype: None
         :raises: None
         """
+        # nothing changed. we can return.
+        # I noticed that when you set the model the very first time to None
+        # it printed a message:
+        # QObject::connect: Cannot connect (null)::dataChanged(QModelIndex,QModelIndex) to
+        # QDataWidgetMapper::_q_dataChanged(QModelIndex,QModelIndex)
+        # QObject::connect: Cannot connect (null)::destroyed() to
+        # QDataWidgetMapper::_q_modelDestroyed()
+        # I don't know exactly why. But these two lines get rid of the message and outcome is the same
+        if not mapper.model() and not model:
+            return
+
         mapper.setModel(model)
         if mapper is self.asset_info_mapper:
             if model is None:
