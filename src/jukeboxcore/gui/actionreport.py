@@ -88,7 +88,7 @@ class ActionItemData(ItemData):
         :raises: None
         """
         flags = super(ActionItemData, self).flags(column)
-        if column == 4:
+        if column in (3, 4):
             flags = flags | QtCore.Qt.ItemIsEditable
         return flags
 

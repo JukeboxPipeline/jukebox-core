@@ -6,7 +6,7 @@ from jukeboxcore.gui.widgets.commentwidget import CommentWidget
 class WidgetDelegate(QtGui.QStyledItemDelegate):
     """A delegate for drawing a arbitrary QWidget
 
-    When subclassing, reimplement set_widget_index, create_widget, createEditor, setEditorData, setModelData
+    When subclassing, reimplement set_widget_index, create_widget, create_editor_widget, setEditorData, setModelData
     to your liking.
     Make sure that the model returns the ItemIsEditable flag!
     I recommend using one of the views in this module, because they issue a left click, when
@@ -25,6 +25,7 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         super(WidgetDelegate, self).__init__(parent)
         self._widget = self.create_widget(parent)
         self._widget.setVisible(False)
+        self._edit_widget = None
 
     @property
     def widget(self):
@@ -96,10 +97,44 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
     def create_widget(self, parent=None):
         """Return a widget that should get painted by the delegate
 
-        You might want to use this in :meth:`WidgetDelegate.createEditor`
+        You might want to use this in :meth:`WidgetDelegate.create_editor_widget`
 
         :param parent: the parent widget
         :type parent: :class:`QtGui.QWidget` | None
+        :returns: The created widget | None
+        :rtype: :class:`QtGui.QWidget` | None
+        :raises: None
+        """
+        return None
+
+    def createEditor(self, parent, option, index):
+        """Return the editor to be used for editing the data item with the given index.
+
+        Note that the index contains information about the model being used.
+        The editor's parent widget is specified by parent, and the item options by option.
+
+        :param parent: the parent widget
+        :type parent: QtGui.QWidget
+        :param option: the options for painting
+        :type option: QtGui.QStyleOptionViewItem
+        :param index: the index to paint
+        :type index: QtCore.QModelIndex
+        :returns: The created widget | None
+        :rtype: :class:`QtGui.QWidget` | None
+        :raises: None
+        """
+        self._edit_widget = self.create_editor_widget(parent, option, index)
+        return self._edit_widget
+
+    def create_editor_widget(self, parent, option, index):
+        """Return a editor widget for the given index.
+
+        :param parent: the parent widget
+        :type parent: QtGui.QWidget
+        :param option: the options for painting
+        :type option: QtGui.QStyleOptionViewItem
+        :param index: the index to paint
+        :type index: QtCore.QModelIndex
         :returns: The created widget | None
         :rtype: :class:`QtGui.QWidget` | None
         :raises: None
@@ -121,6 +156,16 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         """
         self.commitData.emit(editor)
         self.closeEditor.emit(editor, endedithint)
+        self._edit_widget = None
+
+    def edit_widget(self, ):
+        """Return the current edit widget if there is one
+
+        :returns: The editor widget | None
+        :rtype: :class:`QtGui.QWidget` | None
+        :raises: None
+        """
+        return self._edit_widget
 
 
 class CommentDelegate(WidgetDelegate):
@@ -160,7 +205,7 @@ class CommentDelegate(WidgetDelegate):
         """
         self.widget.set_index(index)
 
-    def createEditor(self, parent, option, index):
+    def create_editor_widget(self, parent, option, index):
         """Return the editor to be used for editing the data item with the given index.
 
         Note that the index contains information about the model being used.
@@ -222,7 +267,9 @@ class WD_AbstractItemView(QtGui.QAbstractItemView):
         if not isinstance(delegate, WidgetDelegate):
             return
         self.edit(index)
-        widget = delegate.widget
+        widget = delegate.edit_widget()
+        if not widget:
+            return
         # try to find the relative position to the widget
         rect = self.visualRect(index)  # rect of the index
         p = self.viewport().mapToGlobal(rect.topLeft())
@@ -272,7 +319,9 @@ class WD_ListView(QtGui.QListView):
         if not isinstance(delegate, WidgetDelegate):
             return
         self.edit(index)
-        widget = delegate.widget
+        widget = delegate.edit_widget()
+        if not widget:
+            return
         # try to find the relative position to the widget
         rect = self.visualRect(index)  # rect of the index
         p = self.viewport().mapToGlobal(rect.topLeft())
@@ -322,7 +371,9 @@ class WD_TableView(QtGui.QTableView):
         if not isinstance(delegate, WidgetDelegate):
             return
         self.edit(index)
-        widget = delegate.widget
+        widget = delegate.edit_widget()
+        if not widget:
+            return
         # try to find the relative position to the widget
         rect = self.visualRect(index)  # rect of the index
         p = self.viewport().mapToGlobal(rect.topLeft())
