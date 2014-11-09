@@ -746,20 +746,22 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         osinter = get_interface()
         osinter.open_path(d)
 
-    def get_current_selection(self, ):
+    def get_current_selection(self, i=None):
         """Get the :class:`TaskFileInfo` for the file selected in the active tab
 
+        :param i: If None, returns selection of active tab. If 0, assetselection. If 1, shotselection
+        :type i:
         :returns: The taskfile info in the currently active tab
         :rtype: :class:`TaskFileInfo`|None
         :raises: None
         """
         taskfile = None
-        if self.selection_tabw.currentIndex() == 0:
+        if (i is None and self.selection_tabw.currentIndex() == 0) or (i is not None and i == 0):
             indexes = self.assetverbrws.selected_indexes(0)
             if indexes and indexes[0].isValid():
                 item = indexes[0].internalPointer()
                 taskfile = item.internal_data()
-        elif self.selection_tabw.currentIndex() == 1:
+        elif (i is None and self.selection_tabw.currentIndex() == 1) or (i is not None and i == 1):
             indexes = self.shotverbrws.selected_indexes(0)
             if indexes and indexes[0].isValid():
                 item = indexes[0].internalPointer()

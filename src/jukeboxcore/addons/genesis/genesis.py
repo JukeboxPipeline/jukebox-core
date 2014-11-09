@@ -217,17 +217,15 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :rtype: None
         :raises: None
         """
-        si = self.browser.shotverbrws.selected_indexes(0)
-        if not si:
+        tf = self.browser.get_current_selection(1)
+        if not tf:
             return
-        item = si[0].internalPointer()
-        taskfile = item.internal_data()
-        if not os.path.exists(taskfile.path):
-            msg = 'The selected shot does not exist: %s' % taskfile.path
+        if not os.path.exists(tf.path):
+            msg = 'The selected shot does not exist: %s' % tf.path
             log.error(msg)
             self.statusbar.showMessage(msg)
             return
-        self.open_shot(taskfile)
+        self.open_shot(tf)
 
     def asset_open_callback(self, *args, **kwargs):
         """Callback for the shot open button
@@ -236,17 +234,15 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :rtype: None
         :raises: None
         """
-        si = self.browser.assetverbrws.selected_indexes(0)
-        if not si:
+        tf = self.browser.get_current_selection(0)
+        if not tf:
             return
-        item = si[0].internalPointer()
-        taskfile = item.internal_data()
-        if not os.path.exists(taskfile.path):
-            msg = 'The selected asset does not exist: %s' % taskfile.path
+        if not os.path.exists(tf.path):
+            msg = 'The selected asset does not exist: %s' % tf.path
             log.error(msg)
             self.statusbar.showMessage(msg)
             return
-        self.open_asset(taskfile)
+        self.open_asset(tf)
 
     def shot_save_callback(self, *args, **kwargs):
         """Callback for the shot open button
