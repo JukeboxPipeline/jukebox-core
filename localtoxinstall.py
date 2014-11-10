@@ -30,7 +30,7 @@ if '--no-deps' not in sys.argv:
     args = ['sh', script]
     start_process(args)
 
-args = ['pip', 'install', '--pre']
+args = ['pip', 'install']
 args.extend(sys.argv[1:])
 print(args)
 start_process(args)
