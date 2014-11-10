@@ -18,3 +18,11 @@ History
 
 * Fix for missing dependency
 * Documentation hosted on pythonhosted.org
+
+2.0.0 (2014-11-10)
++++++++++++++++++++++++++++++++++++++++
+
+* Release mechanism.
+* Fixes for widgetdelegate.
+* Browser for taskfiles.
+* Qt resource files compilation and proper integration in stylesheets.
