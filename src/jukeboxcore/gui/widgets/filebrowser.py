@@ -763,7 +763,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :param i: If None, returns selection of active tab. If 0, assetselection. If 1, shotselection
         :type i:
         :returns: The taskfile info in the currently active tab
-        :rtype: :class:`TaskFileInfo`|None
+        :rtype: :class:`TaskFileInfo` | None
         :raises: None
         """
         taskfile = None

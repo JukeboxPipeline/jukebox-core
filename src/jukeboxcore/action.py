@@ -1,7 +1,7 @@
 """Module for performing arbitrary actions on objects
 
 A :class:`FileAction` object is a collection of multiple
-:class:`ActionUnit`s. When executing the :class:`FileAction` each :class:`ActionUnit` is run.
+:class:`ActionUnit`. When executing the :class:`FileAction` each :class:`ActionUnit` is run.
 Later you can query or display the result.
 """
 import traceback
@@ -132,15 +132,13 @@ class ActionUnit(object):
 
 
 class ActionCollection(object):
-    """Perform a collection of :class:`ActionUnit`s on a object.
+    """Perform a collection of :class:`ActionUnit` on a object.
 
     Actions get executed in the given order.
 
-    .. Note::
-
-       The given object must be ready to be processed. So if the object is a file, the file needs to be opened first,
-       create an action that opens the file, and put it as dependency for all other actions.
-       The same goes for closing or saving files.
+    .. Note:: The given object must be ready to be processed. So if the object is a file, the file needs to be opened first,
+              create an action that opens the file, and put it as dependency for all other actions.
+              The same goes for closing or saving files.
 
     You can access the action objects with these attributes:
 

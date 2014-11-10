@@ -173,7 +173,7 @@ class TaskFileInfo(FileInfo):
         :param comment: a comment for the task file entry
         :type comment: str
         :returns: The created TaskFile django instance and the comment. If the comment was empty, None is returned instead
-        :rtype: tuple of :class:`dj.models.TaskFile` and :class:`dj.models.Note`|None
+        :rtype: tuple of :class:`dj.models.TaskFile` and :class:`dj.models.Note` | None
         :raises: ValidationError, If the comment could not be created, the TaskFile is deleted and the Exception is propagated.
         """
         jbfile = JB_File(self)

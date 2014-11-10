@@ -153,7 +153,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """Callback for when the version selection has changed
 
         :param tf: the selected taskfileinfo
-        :type tf: :class:`TaskFileInfo`|None
+        :type tf: :class:`TaskFileInfo` | None
         :returns: None
         :rtype: None
         :raises: None
@@ -170,7 +170,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """Callback for when the version selection has changed
 
         :param tf: the selected taskfileinfo
-        :type tf: :class:`TaskFileInfo`|None
+        :type tf: :class:`TaskFileInfo` | None
         :returns: None
         :rtype: None
         :raises: None
@@ -190,7 +190,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         :param lineedit: the line edit to update with the descriptor
         :type lineedit: QLineEdit
         :param tf: the selected taskfileinfo
-        :type tf: :class:`TaskFileInfo`|None
+        :type tf: :class:`TaskFileInfo` | None
         :returns: None
         :rtype: None
         :raises: None

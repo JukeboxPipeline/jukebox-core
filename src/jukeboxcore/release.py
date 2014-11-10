@@ -106,7 +106,7 @@ class Release(object):
         :param comment: comment for the release
         :type comment: :class:`str`
         :returns: The created TaskFile django instance and the comment. If the comment was empty, None is returned instead
-        :rtype: tuple of :class:`dj.models.TaskFile` and :class:`dj.models.Note`|None
+        :rtype: tuple of :class:`dj.models.TaskFile` and :class:`dj.models.Note` | None
         :raises: ValidationError, If the comment could not be created, the TaskFile is deleted and the Exception is propagated.
         """
         tfi = f.get_obj()
@@ -175,7 +175,7 @@ class ReleaseActions(object):
         selects in this widget.
 
         :returns: a widget with options for the user
-        :rtype: :class:`PySide.QtGui.QWidget`|None
+        :rtype: :class:`PySide.QtGui.QWidget` | None
         :raises: None
         """
         pass
