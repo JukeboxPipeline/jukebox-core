@@ -70,7 +70,8 @@ STYLESHEET_PATH = _join(DATA_DIR, 'stylesheets')
 
 _main_stylesheet_data_path = _join(STYLESHEET_PATH, 'main.qss')
 MAIN_STYLESHEET = resource_filename('jukeboxcore', _main_stylesheet_data_path)
-"""The default or main stylesheet that should be used by all our guis. Usually :func:`jukeboxcore.gui.main.set_main_style` will do that for standalone apps."""
+"""The default or main stylesheet that should be used by all our guis.
+Usually :func:`jukeboxcore.gui.main.set_main_style` will do that for standalone apps."""
 
 MAYA_VERSION = "2015"
 """The supported maya version for jukebox."""

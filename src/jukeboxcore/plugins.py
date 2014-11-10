@@ -70,6 +70,15 @@ class JB_Plugin(object):
         """
         self.__status = self.__UNLOADED
 
+    def __str__(self, ):
+        """Return the plugin name
+
+        :returns: the plugin name
+        :rtype: str
+        :raises: None
+        """
+        return self.name
+
     def _load(self, ):
         """Loads the plugin
 
@@ -153,20 +162,19 @@ class JB_Plugin(object):
         confpath = os.path.join(PLUGIN_CONFIG_DIR, confname)
         return load_config(confpath, specpath)
 
+    @property
+    def name(self, ):
+        """Return the name of the plugin. Equivalent quering __class__.__name__
 
-class JB_CorePlugin(JB_Plugin):
-    """Core plugin class
-
-    Core plugins should be loadable at all times and not require a
-    specific software to run.
-
-    For subclassing: you have to implement **init** and **uninit**!
-    """
-    pass
+        :returns: The name of the plugin
+        :rtype: str
+        :raises: None
+        """
+        return self.__class__.__name__
 
 
-class JB_CoreStandalonePlugin(JB_CorePlugin):
-    """Core plugin for standalone addons.
+class JB_StandalonePlugin(JB_Plugin):
+    """Abstract plugin class for standalone addons.
 
     Standalone addons feature a special run method an
     can be run with the jukebox launcher.
@@ -188,7 +196,45 @@ class JB_CoreStandalonePlugin(JB_CorePlugin):
         pass
 
 
-class JB_CoreStandaloneGuiPlugin(JB_CoreStandalonePlugin):
+class JB_StandaloneGuiPlugin(JB_StandalonePlugin):
+    """Abstract plugin class for standalone addons that need a gui.
+
+    Standalone addons feature a special run method an
+    can be run with the jukebox launcher.
+    The launcher will first initialize the plugin and then
+    call the run method.
+    The launcher will also initialize the gui before running the plugin.
+
+    For subclassing: you have to implement **init**, **unit** and **run**!
+    """
+    pass
+
+
+class JB_CorePlugin(JB_Plugin):
+    """Core plugin class
+
+    Core plugins should be loadable at all times and not require a
+    specific software to run.
+
+    For subclassing: you have to implement **init** and **uninit**!
+    """
+    pass
+
+
+class JB_CoreStandalonePlugin(JB_StandalonePlugin, JB_CorePlugin):
+    """Core plugin for standalone addons.
+
+    Standalone addons feature a special run method an
+    can be run with the jukebox launcher.
+    The launcher will first initialize the plugin and then
+    call the run method.
+
+    For subclassing: you have to implement **init**, **unit** and **run**!
+    """
+    pass
+
+
+class JB_CoreStandaloneGuiPlugin(JB_StandaloneGuiPlugin, JB_CoreStandalonePlugin):
     """Core plugin for standalone addons that also need a gui.
 
     Standalone addons feature a special run method an

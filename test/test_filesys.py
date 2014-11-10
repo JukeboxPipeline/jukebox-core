@@ -1,5 +1,6 @@
 import os
 
+import pytest
 from nose.tools import eq_
 
 from jukeboxcore import filesys, djadapter
@@ -84,33 +85,13 @@ class Test_SoftwareElement():
         eq_(self.se.get_dir(self.tfio), 'Maya')
 
 
-class Test_TaskGroupElement():
-    @classmethod
-    def setup_class(cls):
-        cls.prj = djadapter.projects.create(name="Pixars Plants", short='plants', _path='plantpath', semester='SS14')
-        seq = djadapter.sequences.create(name='Seq01', project=cls.prj)
-        shot = djadapter.shots.create(name='Shot01', project=cls.prj, sequence=seq)
-        cls.at = djadapter.atypes.create(name='matte')
-        asset = djadapter.assets.create(name='background', atype=cls.at, project=cls.prj)
-        cls.dep1 = djadapter.departments.create(name="Layout", short="lay", assetflag=False)
-        cls.dep2 = djadapter.departments.create(name="Design", short="des", assetflag=True)
-        task1 = djadapter.tasks.create(department=cls.dep1, project=cls.prj, status='New', element=shot)
-        task2 = djadapter.tasks.create(department=cls.dep2, project=cls.prj, status='New', element=asset)
+def test_taskgroupelement_getdir(task1, task3):
+    tfio1 = filesys.TaskFileInfo(task1, 10, djadapter.RELEASETYPES['release'], 'mayamainscene')
+    tfio2= filesys.TaskFileInfo(task3, 10, djadapter.RELEASETYPES['release'], 'mayamainscene')
+    tge = filesys.TaskGroupElement()
 
-        cls.tfio1 = filesys.TaskFileInfo(task1, 10, djadapter.RELEASETYPES['release'], 'mayamainscene')
-        cls.tfio2= filesys.TaskFileInfo(task2, 10, djadapter.RELEASETYPES['release'], 'mayamainscene')
-        cls.tge = filesys.TaskGroupElement()
-
-    @classmethod
-    def teardown_class(cls):
-        cls.prj.delete()
-        cls.at.delete()
-        cls.dep1.delete()
-        cls.dep2.delete()
-
-    def test_getdir(self):
-        eq_(self.tge.get_dir(self.tfio1), os.path.normpath('shots/Seq01'))
-        eq_(self.tge.get_dir(self.tfio2), os.path.normpath('assets/matte'))
+    eq_(tge.get_dir(tfio1), os.path.normpath('shots/Seq01'))
+    eq_(tge.get_dir(tfio2), os.path.normpath('assets/matte'))
 
 
 class Test_ExtElement():
@@ -199,103 +180,118 @@ class Test_FileInfo():
             pass
 
 
-class Test_TaskFileInfo():
-    @classmethod
-    def setup_class(cls):
-        cls.prj = djadapter.projects.create(name="Pixars Plants", short='plants', _path='plantpath', semester='SS14')
-        cls.seq = djadapter.sequences.create(name='Seq01', project=cls.prj)
-        cls.shot = djadapter.shots.create(name='Shot01', project=cls.prj, sequence=cls.seq)
-        cls.dep1 = djadapter.departments.create(name="Design", short="des", assetflag=False)
-        cls.dep2 = djadapter.departments.create(name="Destruction", short="buum", assetflag=False)
-        cls.task1 = djadapter.tasks.create(department=cls.dep1, project=cls.prj, status='New', element=cls.shot)
-        cls.task2 = djadapter.tasks.create(department=cls.dep2, project=cls.prj, status='New', element=cls.shot)
-        cls.usr = djadapter.users.create_user(username='Uz')
-        cls.tf1 = djadapter.taskfiles.create(user=cls.usr, path='relpath1', task=cls.task1, version=1,
-                                             releasetype=djadapter.RELEASETYPES['release'],
-                                             typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
-        cls.tf2 = djadapter.taskfiles.create(user=cls.usr, path='relpath2', task=cls.task1, version=2,
-                                             releasetype=djadapter.RELEASETYPES['release'],
-                                             typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
-        cls.tf3 = djadapter.taskfiles.create(user=cls.usr, path='relpath3', task=cls.task1, version=3,
-                                             releasetype=djadapter.RELEASETYPES['release'],
-                                             typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
-        cls.tf4 = djadapter.taskfiles.create(user=cls.usr, path='workpath1', task=cls.task2, version=1,
-                                             releasetype=djadapter.RELEASETYPES['work'], descriptor='take1',
-                                             typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
-        cls.tf5 = djadapter.taskfiles.create(user=cls.usr, path='workpath2', task=cls.task2, version=2,
-                                             releasetype=djadapter.RELEASETYPES['work'], descriptor='take1',
-                                             typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
-        cls.tf6 = djadapter.taskfiles.create(user=cls.usr, path='workpath3', task=cls.task2, version=1,
-                                             releasetype=djadapter.RELEASETYPES['work'], descriptor='take2',
-                                             typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
-        #cls.tfio = filesys.TaskFileInfo(cls.task, 10, djadapter.RELEASETYPES['release'])
+@pytest.fixture(scope='module')
+def taskfiles(request, task1, task2, user):
+    tf1 = djadapter.taskfiles.create(user=user, path='relpath1', task=task1, version=1,
+                                         releasetype=djadapter.RELEASETYPES['release'],
+                                         typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
+    tf2 = djadapter.taskfiles.create(user=user, path='relpath2', task=task1, version=2,
+                                         releasetype=djadapter.RELEASETYPES['release'],
+                                         typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
+    tf3 = djadapter.taskfiles.create(user=user, path='relpath3', task=task1, version=3,
+                                         releasetype=djadapter.RELEASETYPES['release'],
+                                         typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
+    tf4 = djadapter.taskfiles.create(user=user, path='workpath1', task=task2, version=1,
+                                         releasetype=djadapter.RELEASETYPES['work'], descriptor='take1',
+                                         typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
+    tf5 = djadapter.taskfiles.create(user=user, path='workpath2', task=task2, version=2,
+                                         releasetype=djadapter.RELEASETYPES['work'], descriptor='take1',
+                                         typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
+    tf6 = djadapter.taskfiles.create(user=user, path='workpath3', task=task2, version=1,
+                                         releasetype=djadapter.RELEASETYPES['work'], descriptor='take2',
+                                         typ=filesys.TaskFileInfo.TYPES['mayamainscene'])
+    l = (tf1, tf2, tf3, tf4, tf5, tf6)
 
-    @classmethod
-    def teardown_class(cls):
-        cls.prj.delete()
-        cls.dep1.delete()
-        cls.dep2.delete()
-        cls.usr.delete()
+    def fin():
+        for i in l:
+            i.delete()
+    return l
 
-    def test_get_latest(self):
-        typ = filesys.TaskFileInfo.TYPES['mayamainscene']
-        latest1 = filesys.TaskFileInfo.get_latest(self.task1, djadapter.RELEASETYPES['release'], typ)
-        eq_(latest1.version, 3)
-        eq_(latest1.task, self.task1)
-        eq_(latest1.releasetype, djadapter.RELEASETYPES['release'])
-        eq_(latest1.descriptor, None)
-        eq_(latest1.typ, typ)
 
-        latest2 = filesys.TaskFileInfo.get_latest(self.task2, djadapter.RELEASETYPES['work'], typ, descriptor='take1')
-        eq_(latest2.version, 2)
-        eq_(latest2.task, self.task2)
-        eq_(latest2.releasetype, djadapter.RELEASETYPES['work'])
-        eq_(latest2.descriptor, 'take1')
-        eq_(latest2.typ, typ)
+def test_get_latest(task1, task2, taskfiles):
+    typ = filesys.TaskFileInfo.TYPES['mayamainscene']
+    latest1 = filesys.TaskFileInfo.get_latest(task1, djadapter.RELEASETYPES['release'], typ)
+    eq_(latest1.version, 3)
+    eq_(latest1.task, task1)
+    eq_(latest1.releasetype, djadapter.RELEASETYPES['release'])
+    eq_(latest1.descriptor, None)
+    eq_(latest1.typ, typ)
 
-        latest3 = filesys.TaskFileInfo.get_latest(self.task2, djadapter.RELEASETYPES['work'], typ, descriptor='take2')
-        eq_(latest3.version, 1)
-        eq_(latest3.task, self.task2)
-        eq_(latest3.releasetype, djadapter.RELEASETYPES['work'])
-        eq_(latest3.descriptor, 'take2')
-        eq_(latest3.typ, typ)
+    latest2 = filesys.TaskFileInfo.get_latest(task2, djadapter.RELEASETYPES['work'], typ, descriptor='take1')
+    eq_(latest2.version, 2)
+    eq_(latest2.task, task2)
+    eq_(latest2.releasetype, djadapter.RELEASETYPES['work'])
+    eq_(latest2.descriptor, 'take1')
+    eq_(latest2.typ, typ)
 
-        assert filesys.TaskFileInfo.get_latest(self.task2, djadapter.RELEASETYPES['handoff'], typ, descriptor='take2') is None
-        assert filesys.TaskFileInfo.get_latest(self.task2, djadapter.RELEASETYPES['work'], typ, descriptor='take3') is None
+    latest3 = filesys.TaskFileInfo.get_latest(task2, djadapter.RELEASETYPES['work'], typ, descriptor='take2')
+    eq_(latest3.version, 1)
+    eq_(latest3.task, task2)
+    eq_(latest3.releasetype, djadapter.RELEASETYPES['work'])
+    eq_(latest3.descriptor, 'take2')
+    eq_(latest3.typ, typ)
 
-    def test_get_next(self):
-        typ = filesys.TaskFileInfo.TYPES['mayamainscene']
-        next1 = filesys.TaskFileInfo.get_next(self.task1, djadapter.RELEASETYPES['release'], typ)
-        eq_(next1.version, 4)
-        eq_(next1.task, self.task1)
-        eq_(next1.releasetype, djadapter.RELEASETYPES['release'])
-        eq_(next1.descriptor, None)
-        eq_(next1.typ, typ)
+    assert filesys.TaskFileInfo.get_latest(task2, djadapter.RELEASETYPES['handoff'], typ, descriptor='take2') is None
+    assert filesys.TaskFileInfo.get_latest(task2, djadapter.RELEASETYPES['work'], typ, descriptor='take3') is None
 
-        next2 = filesys.TaskFileInfo.get_next(self.task2, djadapter.RELEASETYPES['work'], typ, descriptor='take1')
-        eq_(next2.version, 3)
-        eq_(next2.task, self.task2)
-        eq_(next2.releasetype, djadapter.RELEASETYPES['work'])
-        eq_(next2.descriptor, 'take1')
-        eq_(next2.typ, typ)
 
-        next3 = filesys.TaskFileInfo.get_next(self.task2, djadapter.RELEASETYPES['work'], typ, descriptor='take2')
-        eq_(next3.version, 2)
-        eq_(next3.task, self.task2)
-        eq_(next3.releasetype, djadapter.RELEASETYPES['work'])
-        eq_(next3.descriptor, 'take2')
-        eq_(next3.typ, typ)
+def test_get_next(task1, task2, taskfiles):
+    typ = filesys.TaskFileInfo.TYPES['mayamainscene']
+    next1 = filesys.TaskFileInfo.get_next(task1, djadapter.RELEASETYPES['release'], typ)
+    eq_(next1.version, 4)
+    eq_(next1.task, task1)
+    eq_(next1.releasetype, djadapter.RELEASETYPES['release'])
+    eq_(next1.descriptor, None)
+    eq_(next1.typ, typ)
 
-        next4 = filesys.TaskFileInfo.get_next(self.task2, djadapter.RELEASETYPES['handoff'], typ, descriptor='take2')
-        eq_(next4.version, 1)
-        eq_(next4.task, self.task2)
-        eq_(next4.releasetype, djadapter.RELEASETYPES['handoff'])
-        eq_(next4.descriptor, 'take2')
-        eq_(next4.typ, typ)
+    next2 = filesys.TaskFileInfo.get_next(task2, djadapter.RELEASETYPES['work'], typ, descriptor='take1')
+    eq_(next2.version, 3)
+    eq_(next2.task, task2)
+    eq_(next2.releasetype, djadapter.RELEASETYPES['work'])
+    eq_(next2.descriptor, 'take1')
+    eq_(next2.typ, typ)
 
-        next5 = filesys.TaskFileInfo.get_next(self.task2, djadapter.RELEASETYPES['work'], typ, descriptor='take3')
-        eq_(next5.version, 1)
-        eq_(next5.task, self.task2)
-        eq_(next5.releasetype, djadapter.RELEASETYPES['work'])
-        eq_(next5.descriptor, 'take3')
-        eq_(next5.typ, typ)
+    next3 = filesys.TaskFileInfo.get_next(task2, djadapter.RELEASETYPES['work'], typ, descriptor='take2')
+    eq_(next3.version, 2)
+    eq_(next3.task, task2)
+    eq_(next3.releasetype, djadapter.RELEASETYPES['work'])
+    eq_(next3.descriptor, 'take2')
+    eq_(next3.typ, typ)
+
+    next4 = filesys.TaskFileInfo.get_next(task2, djadapter.RELEASETYPES['handoff'], typ, descriptor='take2')
+    eq_(next4.version, 1)
+    eq_(next4.task, task2)
+    eq_(next4.releasetype, djadapter.RELEASETYPES['handoff'])
+    eq_(next4.descriptor, 'take2')
+    eq_(next4.typ, typ)
+
+    next5 = filesys.TaskFileInfo.get_next(task2, djadapter.RELEASETYPES['work'], typ, descriptor='take3')
+    eq_(next5.version, 1)
+    eq_(next5.task, task2)
+    eq_(next5.releasetype, djadapter.RELEASETYPES['work'])
+    eq_(next5.descriptor, 'take3')
+    eq_(next5.typ, typ)
+
+
+def test_create_db_entry(task1, task2, taskfiles, user):
+    tfi = filesys.TaskFileInfo(task1, 99, djadapter.RELEASETYPES['release'], filesys.TaskFileInfo.TYPES['mayamainscene'])
+    tf, note = tfi.create_db_entry()
+    assert note is None
+    assert tf.task == task1
+    assert tf.version == 99
+    assert tf.releasetype == djadapter.RELEASETYPES['release']
+    assert tf.descriptor is None
+    assert tf.typ == filesys.TaskFileInfo.TYPES['mayamainscene']
+    tf.delete()
+
+    tfi = filesys.TaskFileInfo(task2, 99, djadapter.RELEASETYPES['release'], filesys.TaskFileInfo.TYPES['mayamainscene'])
+    comment = "A comment!"
+    tf, note = tfi.create_db_entry(comment)
+    assert note.content == comment
+    assert tf.task == task2
+    assert tf.version == 99
+    assert tf.releasetype == djadapter.RELEASETYPES['release']
+    assert tf.descriptor is None
+    assert tf.typ == filesys.TaskFileInfo.TYPES['mayamainscene']
+    tf.delete()
+    note.delete()

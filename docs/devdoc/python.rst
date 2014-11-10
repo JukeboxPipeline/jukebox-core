@@ -72,6 +72,17 @@ Here is a list for the most common widgets and layouts:
 
 Some widgets in the designer have internal layouts. These layouts can often be renamed directly in the designer. Especially the ones under ``container``.
 
+~~~~~~~~~~~~~~~~~~~~~~~~
+Compiling Designer Files
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+With QtDesigner you can easily create widgets with a WYSIWYG editor. But in order to use these files, you have to compile them first. The convention is, that ui-files are placed in the same directory as the compiled python file.
+The compiled file name has the suffix ``_ui`` followed by the python file extension. For easy compiling you can use the ``compileUi`` module. To use is in commandline execute the following::
+
+  $ jukebox compileui path/to/uifile.ui
+
+This will the compile the specified uifile and place the compiled file in the same path. In this case it would be named ``uifile_ui.py``.
+
 
 --------------------------
 Project Structure Overview

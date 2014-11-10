@@ -48,7 +48,7 @@ def setup_testdatabase():
     from django.conf import settings
     logging.disable(logging.INFO)
     # autoclobber ignores if a test db with the same name already exists
-    django.db.connection.creation.create_test_db(autoclobber=False)
+    django.db.connection.creation.create_test_db(autoclobber=True)
     os.environ['TEST_DB'] = settings.DATABASES['default']['NAME']
     logging.disable(logging.NOTSET)
 

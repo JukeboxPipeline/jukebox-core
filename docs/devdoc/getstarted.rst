@@ -26,6 +26,9 @@ follow this guide:
   7. Commit your code. If tests are successful merge your branch in dev. See ref:`git` for more information
      on the branching model we use.
 
+.. Note:: When increasing the version number you might have to reinstall jukeboxcore in development mode in order to make the launcher work again.
+          pkg_resources might raise a pkg_resources.DistributionNotFound error because the launcher was registered to another version.
+
 
 ------------------------------
 Developing a addon for jukebox

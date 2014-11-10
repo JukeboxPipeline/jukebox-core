@@ -108,6 +108,18 @@ class PlatformInterface(object):
         """
         pass
 
+    @abc.abstractmethod
+    def open_path(self, path):
+        """Open the given path in the file browser
+
+        :param path: the path to open
+        :type path: str
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        pass
+
 
 class WindowsInterface(PlatformInterface):
     """Interface for all windows related operations
@@ -198,6 +210,17 @@ class WindowsInterface(PlatformInterface):
         pytk = opj(pylib, "lib-tk")
         path = os.pathsep.join((pyzip, pydll, pylib, pyplat, pytk, mb, pydir, msp))
         return path
+
+    def open_path(self, path):
+        """Open the given path in the file browser
+
+        :param path: the path to open
+        :type path: str
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        os.startfile(path)
 
 
 interfaces = {'Windows': WindowsInterface}

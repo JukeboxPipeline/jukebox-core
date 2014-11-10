@@ -40,7 +40,7 @@ with open(initfile) as fp:
 
 long_description = read('README.rst', 'HISTORY.rst')
 install_requires = ['pyside', 'configobj', 'django>=1.7', 'psycopg2', 'jukedj']
-tests_require = ['pytest', 'nose']
+tests_require = ['pytest', 'pytest-cov', 'mock', 'nose']
 
 
 setup(
@@ -70,7 +70,7 @@ setup(
         ]
     },
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',

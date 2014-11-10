@@ -7,9 +7,10 @@ That way all the plugins have a consistent look.
 """
 
 import os
-import sys
 import weakref
 import pkg_resources
+import pkgutil
+import sys
 
 try:
     import shiboken
@@ -17,7 +18,10 @@ except ImportError:
     from PySide import shiboken
 from PySide import QtGui, QtCore
 
+from jukeboxcore.log import get_logger
+log = get_logger(__name__)
 from jukeboxcore.constants import MAIN_STYLESHEET, ICON_PATH
+from jukeboxcore.gui import resources
 
 app = None
 """The QApplication app instance when using :func:`jukebox.core.gui.main.get_qapp`"""
@@ -33,8 +37,25 @@ def get_qapp():
     global app
     app = QtGui.QApplication.instance()
     if app is None:
-        app = QtGui.QApplication(sys.argv)
+        app = QtGui.QApplication([], QtGui.QApplication.GuiClient)
     return app
+
+
+def load_all_resources():
+    """Load all resources inside this package
+
+    When compiling qt resources, the compiled python file will register the resource
+    on import.
+
+    .. Warning:: This will simply import all modules inside this package
+    """
+    pkgname = resources.__name__
+    for importer, mod_name, _ in pkgutil.iter_modules(resources.__path__):
+        full_mod_name = '%s.%s' % (pkgname, mod_name)
+        if full_mod_name not in sys.modules:
+            module = importer.find_module(mod_name
+                        ).load_module(full_mod_name)
+            log.debug("Loaded resource from: %s" % module)
 
 
 def set_main_style(widget):
@@ -47,6 +68,7 @@ def set_main_style(widget):
     :rtype: None
     :raises: None
     """
+    load_all_resources()
     with open(MAIN_STYLESHEET, 'r') as qss:
         sheet = qss.read()
     widget.setStyleSheet(sheet)
@@ -60,6 +82,7 @@ def init_gui():
     :raises: None
     """
     app = get_qapp()
+    app.setStyle("plastique")
     set_main_style(app)
 
 
@@ -138,7 +161,7 @@ class JB_Gui(object):
     instances of its own class+subclasses
     """
 
-    _allinstances = weakref.WeakSet()
+    _allinstances = set()
 
     def __init__(self, *args, **kwargs):
         """Constructs a new JB_Gui that will be tracked
@@ -204,3 +227,24 @@ class JB_MainWindow(JB_Gui, QtGui.QMainWindow):
         super(JB_MainWindow, self).__init__(*args, **kwargs)
         set_main_style(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, on=True)
+        jb_icon = get_icon('JB_Icon_32x32.png',asicon=True)
+        self.setWindowIcon(jb_icon)
+
+
+class JB_Dialog(JB_Gui, QtGui.QDialog):
+    """A dialog class that should be used for all generic dialogs
+
+    It is useful for tracking all dialogs and we can already set common
+    attributes.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Constructs a new JB_MainWindow. Arguments are passed on to QMainWindow
+
+        :raises: None
+        """
+        super(JB_Dialog, self).__init__(*args, **kwargs)
+        set_main_style(self)
+        jb_icon = get_icon('JB_Icon_32x32.png',asicon=True)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose, on=True)
+        self.setWindowIcon(jb_icon)
