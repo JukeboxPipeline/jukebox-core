@@ -169,11 +169,9 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         """
         return self._edit_widget
 
-    def editor_destroyed(self, obj):
+    def editor_destroyed(self, *args, **kwargs):
         """Callback for when the editor widget gets destroyed. Set edit_widget to None
 
-        :param obj: the destroyed object. In this case it should be the editor widget.
-        :type obj: :class:`QtCore.QObject`
         :returns: None
         :rtype: None
         :raises: None
