@@ -88,7 +88,7 @@ class ActionItemData(ItemData):
         :raises: None
         """
         flags = super(ActionItemData, self).flags(column)
-        if column in (3, 4):
+        if (column == 3 and self._au.status.message) or (column == 4 and self._au.status.traceback):
             flags = flags | QtCore.Qt.ItemIsEditable
         return flags
 

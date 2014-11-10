@@ -124,6 +124,8 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         :raises: None
         """
         self._edit_widget = self.create_editor_widget(parent, option, index)
+        if self._edit_widget:
+            self._edit_widget.destroyed.connect(self.editor_destroyed)
         return self._edit_widget
 
     def create_editor_widget(self, parent, option, index):
@@ -166,6 +168,19 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         :raises: None
         """
         return self._edit_widget
+
+    def editor_destroyed(self, *args, **kwargs):
+        """Callback for when the editor widget gets destroyed. Set edit_widget to None
+
+        :param *args:
+        :type *args:
+        :param **kwargs:
+        :type **kwargs:
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self._edit_widget = None
 
 
 class CommentDelegate(WidgetDelegate):
@@ -277,6 +292,9 @@ class WD_AbstractItemView(QtGui.QAbstractItemView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -323,6 +341,9 @@ class WD_AbstractItemView(QtGui.QAbstractItemView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -369,6 +390,9 @@ class WD_AbstractItemView(QtGui.QAbstractItemView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -428,6 +452,9 @@ class WD_ListView(QtGui.QListView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -474,6 +501,9 @@ class WD_ListView(QtGui.QListView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -520,6 +550,9 @@ class WD_ListView(QtGui.QListView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -579,6 +612,9 @@ class WD_TableView(QtGui.QTableView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -625,6 +661,9 @@ class WD_TableView(QtGui.QTableView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -671,6 +710,9 @@ class WD_TableView(QtGui.QTableView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -730,6 +772,9 @@ class WD_TreeView(QtGui.QTreeView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -776,6 +821,9 @@ class WD_TreeView(QtGui.QTreeView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
@@ -822,6 +870,9 @@ class WD_TreeView(QtGui.QTreeView):
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
             self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
