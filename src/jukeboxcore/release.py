@@ -10,6 +10,8 @@ Step 2. is the same for every file. Only 1. and 3. vary
 """
 import abc
 
+from jukeboxcore.log import get_logger
+log = get_logger(__name__)
 from jukeboxcore.djadapter import RELEASETYPES
 from jukeboxcore.filesys import TaskFileInfo, JB_File, copy_file, delete_file
 from jukeboxcore.action import ActionStatus
@@ -58,17 +60,25 @@ class Release(object):
         :rtype: bool
         :raises: None
         """
+        log.info("Releasing: %s", self._workfile.get_fullpath())
         self.sanity_check(self._workfile, self._checks)
         if not self._checks.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(self._checks):
                 return False
         copy_file(self._workfile, self._releasefile)
+        log.info("Create database entry with comment: %s", self.comment)
+        tf, note = self.create_db_entry(self._releasefile, self.comment)
+        log.info("Performing cleanup.")
         self.cleanup(self._releasefile, self._cleanup)
         if not self._cleanup.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(self._cleanup):
                 delete_file(self._releasefile)
+                log.info("Delete database entry for file.")
+                tf.delete()
+                if note:
+                    log.info("Delete database entry for comment.")
+                    note.delete()
                 return False
-        self.create_db_entry(self._releasefile, self.comment)
         return True
 
     def sanity_check(self, f, checks):
