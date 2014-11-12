@@ -64,11 +64,14 @@ class Release(object):
                 return False
         copy_file(self._workfile, self._releasefile)
         self.cleanup(self._releasefile, self._cleanup)
+        tf, note = self.create_db_entry(self._releasefile, self.comment)
         if not self._cleanup.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(self._cleanup):
                 delete_file(self._releasefile)
+                tf.delete()
+                if note:
+                    note.delete()
                 return False
-        self.create_db_entry(self._releasefile, self.comment)
         return True
 
     def sanity_check(self, f, checks):
