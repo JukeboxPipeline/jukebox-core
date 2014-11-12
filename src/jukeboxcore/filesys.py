@@ -23,6 +23,7 @@ def copy_file(old, new):
     """
     oldp = old.get_fullpath()
     newp = new.get_fullpath()
+    log.info("Copying %s to %s", oldp, newp)
     new.create_directory()
     shutil.copy(oldp, newp)
 
@@ -36,7 +37,9 @@ def delete_file(f):
     :rtype: None
     :raises: :class:`OSError`
     """
-    os.remove(f.get_fullpath())
+    fp = f.get_fullpath()
+    log.info("Deleting file %s", fp)
+    os.remove(fp)
 
 
 class FileInfo(object):
