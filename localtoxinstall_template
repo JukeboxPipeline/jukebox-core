@@ -16,3 +16,4 @@
 # First line will take care of psycopg2 dependency. There are nice binaries on the web.
 # The second line will install jukedj in development mode. This is nice, because then I 
 # can develop on both projects simultaniously.
+
