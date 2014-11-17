@@ -14,4 +14,5 @@
 # easy_install path/tp/psycopg2-2.5.4.win-amd64-py2.7-pg9.3.5-release.exe
 # pip install -e path/to/jukedj
 # First line will take care of psycopg2 dependency. There are nice binaries on the web.
-# The second line will install jukedj in development mode. This is nice, because then i can develop on both projects simultaniously
+# The second line will install jukedj in development mode. This is nice, because then I 
+# can develop on both projects simultaniously.
