@@ -6,7 +6,7 @@
 # This is useful if you are developing for example on jukebox-core but make changes to
 # a dependency of jukebox-core (jukedj for example).
 # To test against the local version of jukedj put a pip install -e command with the path
-# of your local jukedj project in this file. 
+# of your local jukedj project in this file.
 # Insert pip install commands below
 # e.g.
 # pip install -e <path to project>
