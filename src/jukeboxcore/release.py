@@ -66,7 +66,7 @@ class Release(object):
         if not self._checks.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(self._checks):
                 return False
-        if not os.path.exists(self._workfile):
+        if not os.path.exists(self._workfile.get_fullpath()):
             log.error("The workfile %s does not exist!", self._workfile)
             raise OSError("The workfile %s does not exist!" % self._workfile)
         copy_file(self._workfile, self._releasefile)
