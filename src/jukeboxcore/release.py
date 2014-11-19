@@ -74,7 +74,7 @@ class Release(object):
             log.info("Create database entry with comment: %s", self.comment)
             tf, note = self.create_db_entry(self._releasefile, self.comment)
         except Exception as e:
-            log.exception("Unexcepted Exception!")
+            log.exception("Unexpected Exception! Deleting released file.")
             delete_file(self._releasefile)
             raise e
         log.info("Performing cleanup.")

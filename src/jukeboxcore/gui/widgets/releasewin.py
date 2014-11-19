@@ -103,6 +103,9 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         self.statusbar.showMessage("Release in progress...")
         try:
             success = r.release()
+        except OSError:
+            self.statusbar.showMessage("Could not copy workfile!")
+            return
         except Exception as e:
             self.statusbar.showMessage("%s" % e)
             return
