@@ -8,6 +8,7 @@ The release process in general works like this:
 
 Step 2. is the same for every file. Only 1. and 3. vary
 """
+import os
 import abc
 
 from jukeboxcore.log import get_logger
@@ -65,9 +66,17 @@ class Release(object):
         if not self._checks.status().value == ActionStatus.SUCCESS:
             if not self.confirm_check_result(self._checks):
                 return False
+        if not os.path.exists(self._workfile):
+            log.error("The workfile %s does not exist!", self._workfile)
+            raise OSError("The workfile %s does not exist!" % self._workfile)
         copy_file(self._workfile, self._releasefile)
-        log.info("Create database entry with comment: %s", self.comment)
-        tf, note = self.create_db_entry(self._releasefile, self.comment)
+        try:
+            log.info("Create database entry with comment: %s", self.comment)
+            tf, note = self.create_db_entry(self._releasefile, self.comment)
+        except Exception as e:
+            log.exception("Unexcepted Exception!")
+            delete_file(self._releasefile)
+            raise e
         log.info("Performing cleanup.")
         self.cleanup(self._releasefile, self._cleanup)
         if not self._cleanup.status().value == ActionStatus.SUCCESS:

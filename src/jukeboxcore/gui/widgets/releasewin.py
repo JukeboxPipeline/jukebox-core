@@ -101,7 +101,11 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         comment = self.get_comment()
         r = Release(tfi, checks, cleanups, comment)
         self.statusbar.showMessage("Release in progress...")
-        success = r.release()
+        try:
+            success = r.release()
+        except Exception as e:
+            self.statusbar.showMessage("%s" % e)
+            return
         if success:
             self.statusbar.showMessage("Success!")
         else:
