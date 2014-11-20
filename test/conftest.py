@@ -6,11 +6,15 @@ import pytest
 import django
 
 from jukeboxcore.action import ActionStatus
+from PySide import QtGui
 
 
 @pytest.fixture(scope='session', autouse=True)
 def setup_package(request):
     os.environ['JUKEBOX_TESTING'] = 'True'
+    # create a QtGui Application just in case a module needs it.
+    if QtGui.qApp is None:
+        QtGui.QApplication([], QtGui.QApplication.GuiClient)
 
     def fin():
         test_db = os.environ.get('TEST_DB', None)

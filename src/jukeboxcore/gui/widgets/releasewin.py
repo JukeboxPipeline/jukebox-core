@@ -112,7 +112,7 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         if success:
             self.statusbar.showMessage("Success!")
         else:
-            self.statusbar.showMessage("Release canceled by user!")
+            self.statusbar.showMessage("Release failed!")
 
     def set_release_actions(self, actions):
         """Set the widget that gives users options about the release, e.g. importing references

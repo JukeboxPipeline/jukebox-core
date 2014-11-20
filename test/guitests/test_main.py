@@ -6,9 +6,6 @@ from PySide import QtCore, QtGui
 
 from jukeboxcore.gui import main
 
-if QtGui.qApp is None:
-    QtGui.QApplication([])
-
 
 class Test_JBGui():
     @classmethod
