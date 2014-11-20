@@ -1,5 +1,6 @@
 import os
 
+import mock
 import pytest
 
 from jukeboxcore import release
@@ -55,7 +56,7 @@ def fail_cleanup(failf):
 
 @pytest.fixture(scope='function',
                 params=[("success_checks", "success_cleanup"),
-                        ("fail_checks", "fail_cleanup")])
+                        pytest.mark.xfail(("fail_checks", "fail_cleanup"))])
 def release_instance(request, tfi):
     """Return a Release that should have successing checks and successing cleanups.
 
@@ -63,13 +64,10 @@ def release_instance(request, tfi):
     """
     check = request.getfuncargvalue(request.param[0])
     cleanup = request.getfuncargvalue(request.param[1])
-    r = release.Release(tfi, check, cleanup, "A comment.")
-
-    def returnTrue(*args, **kwargs):
-        return True
-    r.confirm_check_result = returnTrue
-    return r
+    return release.Release(tfi, check, cleanup, "A comment.")
 
 
-def test_release(release_instance):
-    release_instance.release()
+@mock.patch.object(release.ActionReportDialog, 'exec_')
+def test_release(mock_exec, release_instance):
+    mock_exec.return_value = False # if something fails, mock that the user did not confirm
+    assert release_instance.release()
