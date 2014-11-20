@@ -150,7 +150,6 @@ class Release(object):
         """
         workfp = release._workfile.get_fullpath()
         releasefp = release._releasefile.get_fullpath()
-        log.info("Copying workfile %s to %s", workfp, releasefp)
         copy_file(release._workfile, release._releasefile)
         return ActionStatus(ActionStatus.SUCCESS,
                             msg="Copied %s to %s location." % (workfp,
