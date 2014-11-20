@@ -225,7 +225,10 @@ class WidgetToolTip(QtGui.QWidget):
         """
         if w is None:
             return
-        w.show()
+        if w.isMinimized():
+            w.showNormal()
+        else:
+            w.show()
         w.activateWindow()
         w.setFocus()
 
