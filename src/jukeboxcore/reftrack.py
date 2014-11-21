@@ -11,6 +11,9 @@ Depending on the type of the entity (e.g. an Asset, Alembic, Shader, Camera etc)
 is used for actions like referencing, loading, unloading, importing, deleting the actual content of the entity.
 E.g. for shaders you might want to assing them to objects on load.
 """
+import abc
+
+from jukeboxcore.filesys import TaskFileInfo
 
 
 class Reftrack(object):
@@ -70,7 +73,6 @@ class Reftrack(object):
             raise TypeError("Refobject given. Providing a typ, element or parent is invalid. \
 The Refobject provides the necessary info.")
         self._refobjinter = refobjinter
-        self._typinter = None
         self._refobj = None
         self._taskfileinfo = None  # the taskfileinfo that the refobj represents
         self._typ = None
@@ -140,8 +142,6 @@ The Refobject provides the necessary info.")
     def set_typ(self, typ):
         """Set the type of the entity
 
-        This will set the typ_interface of the :class:`Reftrack` instance
-
         :param typ: the type of the entity
         :type typ: str
         :returns: None
@@ -149,19 +149,6 @@ The Refobject provides the necessary info.")
         :raises: None
         """
         self._typ = typ
-        self._typinter = self.get_refobjinter().get_typinter(typ)
-
-    def get_typinter(self, ):
-        """Return the type interface
-
-        The type interface is responsible for manipulating the content of the entity.
-        Depending on the typ it will assing shaders, group objects etc.
-
-        :returns: the type interface
-        :rtype: :class:`ReftypeInterface`
-        :raises: None
-        """
-        return self._typinter
 
     def get_refobjinter(self, ):
         """Return the refobject interface
@@ -255,6 +242,7 @@ The Refobject provides the necessary info.")
             oldparent.removeChild(self)
         self._parent = parent
         if parent:
+            self.get_refobjinter().setParent(self.get_refobj(), parent.get_refobj())
             self._parent.addChild(self)
 
     def addChild(self, reftrack):
@@ -300,13 +288,13 @@ The Refobject provides the necessary info.")
         """Set and return the options for possible files to
         load, replace etc. The stored element will determine the options.
 
-        The typinterface is responsible for providing the options
+        The refobjinterface and typinterface are responsible for providing the options
 
         :returns: the options
         :rtype: :class:`jukeboxcore.gui.treemodel.Treemodel`
         :raises: None
         """
-        self._options = self.get_typinter().fetch_options(self._element)
+        self._options = self.get_refobjinter().fetch_options(self.get_typ(), self._element)
         return self._options
 
     def uptodate(self, ):
@@ -416,8 +404,9 @@ The Refobject provides the necessary info.")
         """
         assert self.status() is None,\
             "Can only reference, if the entity is not already referenced/imported. Use replace instead."
-        refobj = self.get_refobjinter().create(self.get_typ(), self.get_parent())
-        self.get_typinter().reference(taskfileinfo, refobj)
+        refobjinter = self.get_refobjinter()
+        refobj = refobjinter.create(self.get_typ(), self.get_parent())
+        refobjinter.reference(taskfileinfo, refobj)
         self.set_refobj(refobj)
 
     def load(self, ):
@@ -429,7 +418,7 @@ The Refobject provides the necessary info.")
         """
         assert self.status() == self.UNLOADED,\
             "Cannot load if there is no unloaded reference. Use reference instead."
-        self.get_typinterface().load(self._refobj)
+        self.get_refobjinter().load(self._refobj)
         self.set_status(self.LOADED)
 
     def unload(self, ):
@@ -442,7 +431,7 @@ The Refobject provides the necessary info.")
         assert self.status() == self.LOADED,\
             "Cannot unload if there is no loaded reference. \
 Use delete if you want to get rid of a reference or import."
-        self.get_typinterface().unload(self._refobj)
+        self.get_refobjinter().unload(self._refobj)
         self.set_status(self.UNLOADED)
 
     def import_entity(self, taskfileinfo=None):
@@ -457,16 +446,16 @@ Use delete if you want to get rid of a reference or import."
         """
         assert self.status() is not self.IMPORTED,\
             "Entity is already imported. Use replace instead."
-        typinter = self.get_typinter()
+        refobjinter = self.get_refobjinter()
         if self.status() is None:
             assert taskfileinfo,\
                 "Can only import an already referenced entity \
 or a given taskfileinfo. No taskfileinfo was given though"
             refobj = self.get_refobjinter().create(self.get_typ(), self.get_parent())
-            typinter.import_taskfile(taskfileinfo, refobj)
+            refobjinter.import_taskfile(refobj, taskfileinfo)
             self.set_refobj(refobj)
         else:
-            typinter.import_reference(self.get_refobj())
+            refobjinter.import_reference(self.get_refobj())
         self.set_status(self.IMPORTED)
 
     def replace(self, taskfileinfo):
@@ -480,9 +469,10 @@ or a given taskfileinfo. No taskfileinfo was given though"
         """
         assert self.status() is not None,\
             "Can only replace entities that are already in the scene."
-        typinter = self.get_typinter()
-        if typinter.is_replaceable(self.get_refobj()):
-            typinter.replace(taskfileinfo)
+        refobjinter = self.get_refobjinter()
+        refobj = self.get_refobj()
+        if refobjinter.is_replaceable(refobj):
+            refobjinter.replace(refobj, taskfileinfo)
             self.fetch_uptodate()
         else:
             status = self.status()
@@ -521,3 +511,550 @@ or a given taskfileinfo. No taskfileinfo was given though"
         :raises: None
         """
         return self.__class__(self.get_refobjinter(), typ=self.get_typ(), element=self.get_element(), parent=self.get_parent())
+
+
+class RefobjInterface(object):
+    """Interface to interact with a reference object that is in your scene.
+
+    This interface is abstract. You should implement it for every software where you need
+    a reference workflow.
+    To interact with the content of each entity, there is a special reftyp interface that
+    is not only software specific but also handles only a certain type of entity.
+    You can register additional type interfaces, so plugins can introduce their own entity types.
+    """
+
+    types = {}
+    """A dictionary that maps types of entities (strings) to the reftypinterface class"""
+
+    def __init__(self, ):
+        """Initialize a new refobjinterface.
+
+        :raises: None
+        """
+        pass
+
+    @classmethod
+    def register_type(cls, typ, interface):
+        """Register a new typ with the given interface class
+
+        :param typ: the entity typ that you want to register
+        :type typ: str
+        :param interface: the interface class
+        :type interface: :class:`ReftypeInterface`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        cls.types[typ] = interface
+
+    def get_typ_interface(self, typ):
+        """Return an appropriate interface for the given entity type
+
+        :param typ: the entity type
+        :type typ: str
+        :returns: a interface instance
+        :rtype: :class:`ReftypeInterface`
+        :raises: KeyError
+        """
+        return self.types[typ](self)
+
+    @abc.abstractmethod
+    def get_parent(self, refobj):
+        """Return the refobj of the parent of the given refobj
+
+        :param refobj: a reference object to query
+        :type refobj: refobj
+        :returns: the parent refobj
+        :rtype: refobj | None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def set_parent(self, child, parent):
+        """Set the parent of the child refobj
+
+        :param child: the child refobject
+        :type child: refobj
+        :param parent: the parent refobject
+        :type parent: refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_children(self, refobj):
+        """Get the children refobjects of the given refobject
+
+        :param refobj: the parent refobj
+        :type refobj: refobj
+        :returns: a list with children refobjects
+        :rtype: list
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_typ(self, refobj):
+        """Return the entity type of the given refobject
+
+        See: :data:`RefobjInterface.types`.
+
+        :param refobj: the refobj to query
+        :type refobj: refobj
+        :returns: the entity type
+        :rtype: str
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def set_typ(self, refobj, typ):
+        """Set the type of the given refobj
+
+        :param refobj: the refobj to query
+        :type refobj: refobj
+        :param typ: the entity type
+        :type typ: str
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def create_refobj(self, ):
+        """Create and return a new refobj
+
+        :returns: the new refobj
+        :rtype: refobj
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def referenced(self, refobj):
+        """Return whether the given refobj is referenced.
+
+        :param refobj: the refobj to query
+        :type refobj: refobj
+        :returns: True if referenced, False if imported
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    def create(self, typ, parent=None):
+        """Create a new refobj with the given typ and parent
+
+        :param typ: the entity type
+        :type typ: str
+        :param parent: the parent refobject
+        :type parent: refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        refobj = self.create_refobj()
+        self.set_typ(refobj, typ)
+        if parent:
+            self.set_parent(refobj, parent)
+
+    @abc.abstractmethod
+    def delete_refobj(self, refobj):
+        """Delete the given refobj
+
+        :param refobj: the refobj to delete
+        :type refobj: refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    def delete(self, refobj):
+        """Delete the given refobj and all of it\'s children
+        that should be deleted as well.
+
+        :param refobj: the refobj to delete
+        :type refobj: refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        refobjs = self.get_children(refobj)
+        refobjs = [r for r in refobjs if self.referenced(r)]
+        refobjs.append(refobj)
+        for r in refobjs:
+            i = self.get_typ_interface(self.get_typ(r))
+            i.delete(r)
+            self.delete_refobj(r)
+
+    @abc.abstractmethod
+    def get_all_refobjs(self, ):
+        """Return all refobjs in the scene
+
+        :returns: all refobjs in the scene
+        :rtype: list
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_current_element(self, ):
+        """Return the currenty open Shot or Asset
+
+        :returns: the currently open element
+        :rtype: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot` | None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def set_reference(self, refobj, reference):
+        """Set the reference of the given refobj to reference
+
+        This will be called by the typinterface after the reference
+        has been made. The typinterface should deliver an appropriate
+        object as reference that can be used to track the reference
+        in the scene. If you query refobj afterwards it should say, that
+        it is referenced.
+
+        :param refobj: the refobj to update
+        :type refobj: refobj
+        :param reference: the value for the refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_reference(self, refobj):
+        """Return the reference that the refobj represents
+
+        E.g. in Maya this would return the linked reference node.
+
+        :param refobj: the refobj to query
+        :type refobj: refobj
+        :returns: the reference object in the scene
+        :raises: None
+        """
+        raise NotImplementedError
+
+    def reference(self, taskfileinfo, refobj):
+        """Reference the given taskfile info and
+        set the created reference on the refobj
+
+        :param taskfileinfo: The taskfileinfo that holds the information for what to reference
+        :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
+        :param refobj: the refobj that should represent the new reference
+        :type refobj: refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        inter = self.get_typ_interface(self.get_type(refobj))
+        ref = inter.reference(taskfileinfo)
+        self.set_reference(refobj, ref)
+
+    def load(self, refobj):
+        """Load the given refobject
+
+        Load in this case means, that a reference is already in the scene
+        but it is not in a loaded state.
+        Loading the reference means, that the actual data will be read.
+
+        :param refobj: the refobject
+        :type refobj: refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        inter = self.get_typ_interface(self.get_type(refobj))
+        ref = self.get_reference(refobj)
+        inter.load(ref)
+
+    def unload(self, refobj):
+        """Load the given refobject
+
+        Unload in this case means, that a reference is stays in the scene
+        but it is not in a loaded state.
+        So there is a reference, but data is not read from it.
+
+        :param refobj: the refobject
+        :type refobj: refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        inter = self.get_typ_interface(self.get_type(refobj))
+        ref = self.get_reference(refobj)
+        inter.unload(ref)
+
+    def replace(self, refobj, taskfileinfo):
+        """Replace the given refobjs reference with the taskfileinfo
+
+        :param refobj: the refobject
+        :type refobj: refobj
+        :param taskfileinfo: the taskfileinfo that will replace the old entity
+        :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        inter = self.get_typ_interface(self.get_type(refobj))
+        ref = self.get_reference(refobj)
+        inter.replace(ref, taskfileinfo)
+
+    def is_replaceable(self, refobj):
+        """Return whether the given reference of the refobject is replaceable or
+        if it should just get deleted and loaded again.
+
+        :param refobj: the refobject to query
+        :type refobj: refobj
+        :returns: True, if replaceable
+        :rtype: bool
+        :raises: None
+        """
+        inter = self.get_typ_interface(self.get_type(refobj))
+        return inter.is_replaceable(refobj)
+
+    def import_reference(self, refobj):
+        """Import the reference of the given refobj
+
+        :param refobj: the refobj with a reference
+        :type refobj: refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        inter = self.get_typ_interface(self.get_type(refobj))
+        ref = self.get_reference(refobj)
+        inter.import_reference(ref)
+
+    def import_taskfile(self, refobj, taskfileinfo):
+        """Import the given taskfileinfo and update the refobj
+
+        :param refobj: the refobject
+        :type refobj: refobject
+        :param taskfileinfo: the taskfileinfo to reference
+        :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        inter = self.get_typ_interface(self.get_type(refobj))
+        inter.import_taskfile(refobj, taskfileinfo)
+
+    @abc.abstractmethod
+    def get_status(self, refobj):
+        """Return the status of the given refobj
+
+        See: :data:`Reftrack.LOADED`, :data:`Reftrack.UNLOADED`, :data:`Reftrack.IMPORTED`.
+
+        :param refobj: the refobj to query
+        :type refobj: refobj
+        :returns: the status of the given refobj
+        :rtype: str
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_taskfile(self, refobj):
+        """Return the taskfile that is loaded and represented by the refobj
+
+        :param refobj: the refobj to query
+        :type refobj: refobj
+        :returns: The taskfile that is loaded in the scene
+        :rtype: :class:`jukeboxcore.djadapter.TaskFile`
+        :raises: None
+        """
+        raise NotImplementedError
+
+    def get_taskfileinfo(self, refobj):
+        """Return the :class:`jukeboxcore.filesys.TaskFileInfo` that is loaded
+        by the refobj
+
+        :param refobj: the refobject to query
+        :type refobj: refobj
+        :returns: the taskfileinfo that is loaded in the scene
+        :rtype: :class:`jukeboxcore.filesys.TaskFileInfo`
+        :raises: None
+        """
+        tf = self.get_taskfile(refobj)
+        return TaskFileInfo(task=tf.task,
+                            version=tf.version,
+                            releasetype=tf.releasetype,
+                            typ=tf.typ,
+                            descriptor=tf.descriptor)
+
+    def fetch_options(self, typ, element):
+        """Fetch the options for possible files to
+        load replace etc for the given element.
+
+        :param typ: the typ of options. E.g. Asset, Alembic, Camera etc
+        :type typ: str
+        :param element: The element for which the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: the options
+        :rtype: :class:`jukeboxcore.gui.treemodel.Treemodel`
+        :raises: None
+        """
+        inter = self.get_typ_interface(typ)
+        return inter.fetch_options(element)
+
+
+class ReftypeInterface(object):
+    """Interface for manipulating the content of an entity in the scene
+
+    This interface is abstract. You should implement it for every software and
+    type where you need a reference workflow.
+    The ReftypeInterface is responsible for the main reference workflow actions
+    like loading, referencing and importing.
+    Depending on the type of your entity, additional actions may be appropriate.
+    E.g. if the type is a shader, then you might want to assign the shader
+    to the parent of the shader refobject.
+    """
+
+    def __init__(self, refobjinter):
+        """Initialize a new ReftypeInterface
+
+        :param refobjinter: the refobject interface
+        :type refobjinter: :class:`RefobjInterface`
+        :raises: None
+        """
+        self._refobjinter = refobjinter
+
+    def get_refobjinter(self, ):
+        """Return the :class:`RefobjInterface` that initialized the interface
+
+        :returns: the refobj interface that initialized the interface
+        :rtype: :class:`RefobjInterface`
+        :raises: None
+        """
+        return self._refobjinter
+
+    @abc.abstractmethod
+    def reference(self, taskfileinfo):
+        """Reference the given taskfileinfo into the scene and return the created reference object
+
+        The created reference object will be used on :meth:`RefobjInterface.set_reference` to
+        set the reference on a refobj. E.g. in Maya, one would return the reference node
+        so the RefobjInterface can link the refobj with the refernce object.
+
+        :param taskfileinfo: The taskfileinfo that holds the information for what to reference
+        :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
+        :returns: the reference that was created and should set on the appropriate refobj
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def load(self, reference):
+        """Load the given reference
+
+        Load in this case means, that a reference is already in the scene
+        but it is not in a loaded state.
+        Loading the reference means, that the actual data will be read.
+
+        :param reference: the reference object. E.g. in Maya a reference node
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def unload(self, reference):
+        """Unload the given reference
+
+        Unload in this case means, that a reference is stays in the scene
+        but it is not in a loaded state.
+        So there is a reference, but data is not read from it.
+
+        :param reference: the reference object. E.g. in Maya a reference node
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def replace(self, reference, taskfileinfo):
+        """Replace the given reference with the given taskfileinfo
+
+        :param reference: the reference object. E.g. in Maya a reference node
+        :param taskfileinfo: the taskfileinfo that will replace the old entity
+        :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def delete(self, refobj):
+        """Delete the content of the given refobj
+
+        :param refobj: the refobj that represents the content that should be deleted
+        :type refobj: refobj
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def import_reference(self, reference):
+        """Import the given reference
+
+        :param reference: the reference object. E.g. in Maya a reference node
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def import_taskfile(self, refobj, taskfileinfo):
+        """Import the given taskfileinfo and update the refobj
+
+        :param refobj: the refobject
+        :type refobj: refobject
+        :param taskfileinfo: the taskfileinfo to reference
+        :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def is_replaceable(self, refobj):
+        """Return whether the given reference of the refobject is replaceable or
+        if it should just get deleted and loaded again.
+
+        :param refobj: the refobject to query
+        :type refobj: refobj
+        :returns: True, if replaceable
+        :rtype: bool
+        :raises: None
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def fetch_options(self, element):
+        """Fetch the options for possible files to
+        load replace etc for the given element.
+
+        :param element: The element for which the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: the options
+        :rtype: :class:`jukeboxcore.gui.treemodel.Treemodel`
+        :raises: None
+        """
+        raise NotImplementedError
