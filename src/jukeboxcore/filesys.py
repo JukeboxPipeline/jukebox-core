@@ -169,6 +169,16 @@ class TaskFileInfo(FileInfo):
             ver = 1
         return TaskFileInfo(task=task, version=ver, releasetype=releasetype, typ=typ, descriptor=descriptor)
 
+    def is_latest(self, ):
+        """Return True, if the version is the newest.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        latest = self.get_latest(self.task, self.releasetype, self.typ, self.descriptor)
+        return latest.version == self.version
+
     def create_db_entry(self, comment=''):
         """Create a db entry for this task file info
         and link it with a optional comment
