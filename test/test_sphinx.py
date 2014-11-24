@@ -12,7 +12,7 @@ def doctreedir():
     return path.join(__file__, "..", "docs")
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def htmldir(tmpdir):
     """Return a path for building the sphinx documentation
 
