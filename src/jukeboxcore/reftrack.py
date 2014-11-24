@@ -39,6 +39,7 @@ class Reftrack(object):
        :uptodate: If the current loaded version is the newest (does not consider other departments!)
        :alien: If the reftrack does not belongs to the currently open scene and is not linked as such in the database.
        :status: :data:`Reftrack.LOADED`, :data:`Reftrack.UNLOADED`, :data:`Reftrack.IMPORTED`, None (If there is no refobj in the scene)
+
     """
 
     LOADED = "Loaded"
@@ -521,6 +522,24 @@ class RefobjInterface(object):
     To interact with the content of each entity, there is a special reftyp interface that
     is not only software specific but also handles only a certain type of entity.
     You can register additional type interfaces, so plugins can introduce their own entity types.
+
+    Methods to implement:
+
+      :meth:`RefobjInterface.get_parent`
+      :meth:`RefobjInterface.set_parent`
+      :meth:`RefobjInterface.get_children`
+      :meth:`RefobjInterface.get_typ`
+      :meth:`RefobjInterface.set_typ`
+      :meth:`RefobjInterface.create_refobj`
+      :meth:`RefobjInterface.referenced`
+      :meth:`RefobjInterface.delete_refobj`
+      :meth:`RefobjInterface.get_all_refobj`
+      :meth:`RefobjInterface.get_current_element`
+      :meth:`RefobjInterface.set_reference`
+      :meth:`RefobjInterface.get_reference`
+      :meth:`RefobjInterface.get_status`
+      :meth:`RefobjInterface.get_taskfile`
+
     """
 
     types = {}
@@ -918,6 +937,19 @@ class ReftypeInterface(object):
     Depending on the type of your entity, additional actions may be appropriate.
     E.g. if the type is a shader, then you might want to assign the shader
     to the parent of the shader refobject.
+
+    Methods to implement:
+
+      :meth:`ReftypeInterface.reference`
+      :meth:`ReftypeInterface.load`
+      :meth:`ReftypeInterface.unload`
+      :meth:`ReftypeInterface.replace`
+      :meth:`ReftypeInterface.delete`
+      :meth:`ReftypeInterface.import_reference`
+      :meth:`ReftypeInterface.import_taskfile`
+      :meth:`ReftypeInterface.is_replaceable`
+      :meth:`ReftypeInterface.fetch_options`
+
     """
 
     def __init__(self, refobjinter):
