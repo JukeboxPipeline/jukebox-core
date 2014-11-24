@@ -269,10 +269,11 @@ class TreeModel(QtCore.QAbstractItemModel):
     def __init__(self, root, parent=None):
         """Constructs a new tree model with the given root treeitem
 
-        :param root:
-        :type root:
-        :param parent:
-        :type parent:
+        :param root: the root tree item. The root tree item is responsible for the headers.
+                     A :class:`ListItemData` with the headers is suitable as data for the item.
+        :type root: :class:`TreeItem`
+        :param parent: the parent for the model
+        :type parent: :class:`QtCore.QObject`
         :raises: None
         """
         super(TreeModel, self).__init__(parent)
@@ -439,3 +440,36 @@ class TreeModel(QtCore.QAbstractItemModel):
             return item.flags(index)
         else:
             super(TreeModel, self).flags(index)
+
+    def index_of_item(self, item):
+        """Get the index for the given TreeItem
+
+        :param item: the treeitem to query
+        :type item: :class:`TreeItem`
+        :returns: the index of the item
+        :rtype: :class:`QtCore.QModelIndex`
+        :raises: ValueError
+        """
+        # root has an invalid index
+        if item == self._root:
+            return QtCore.QModelIndex()
+        # find all parents to get their index
+        parents = [item]
+        i = item
+        while True:
+            parent = i.parent()
+            # break if parent is root because we got all parents we need
+            if parent == self._root:
+                break
+            # a new parent was found and we are still not at root
+            # search further until we get to root
+            i = parent
+            parents.append(parent)
+
+        # get the parent indexes until
+        index = QtCore.QModelIndex()
+        for treeitem in reversed(parents):
+            parent = treeitem.parent()
+            row = parent.childItems.index(treeitem)
+            index = self.index(row, 0, index)
+        return index

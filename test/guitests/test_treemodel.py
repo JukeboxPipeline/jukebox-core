@@ -115,6 +115,8 @@ class Test_TreeModel():
         cls.c1 = treemodel.TreeItem(StubItemData2(), cls.root)
         cls.c2 = treemodel.TreeItem(StubItemData2(), cls.root)
         cls.c3 = treemodel.TreeItem(StubItemData1(), cls.c2)
+        cls.c4 = treemodel.TreeItem(StubItemData1(), cls.c2)
+        cls.c5 = treemodel.TreeItem(StubItemData1(), cls.c4)
         cls.m = treemodel.TreeModel(cls.root)
 
     def test_index(self):
@@ -142,7 +144,7 @@ class Test_TreeModel():
         c3i = self.m.index(0, 0, c2i)
         eq_(self.m.rowCount(QtCore.QModelIndex()), 2)
         eq_(self.m.rowCount(c1i), 0)
-        eq_(self.m.rowCount(c2i), 1)
+        eq_(self.m.rowCount(c2i), 2)
         eq_(self.m.rowCount(c3i), 0)
 
     def test_column_count(self):
@@ -207,3 +209,31 @@ class Test_TreeModel():
         eq_(m.index(0, 0, parent).internalPointer(), newi2)
         eq_(m.index(1, 0, parent).internalPointer(), newi1)
         eq_(m.index(2, 0, parent).internalPointer(), newi3)
+
+    def test_index_of_item(self, ):
+        assert self.root
+        i1 = self.m.index_of_item(self.root)
+        assert i1.row() == -1
+        assert i1.column() == -1
+        assert not i1.isValid()
+        assert not i1.parent().isValid()
+        i2 = self.m.index_of_item(self.c1)
+        assert i2.row() == 0
+        assert i2.column() == 0
+        assert i2.parent() == i1
+        i3 = self.m.index_of_item(self.c2)
+        assert i3.row() == 1
+        assert i3.column() == 0
+        assert i3.parent() == i1
+        i4 = self.m.index_of_item(self.c3)
+        assert i4.row() == 0
+        assert i4.column() == 0
+        assert i4.parent() == i3
+        i5 = self.m.index_of_item(self.c4)
+        assert i5.row() == 1
+        assert i5.column() == 0
+        assert i5.parent() == i3
+        i6 = self.m.index_of_item(self.c5)
+        assert i6.row() == 0
+        assert i6.column() == 0
+        assert i6.parent() == i5
