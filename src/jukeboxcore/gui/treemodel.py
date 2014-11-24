@@ -403,7 +403,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                      If not it will defeat the purpose of this function.
         :type item: :class:`TreeItem`
         :param parent: the parent
-        :type parent: class:`QtCore.QModelIndex`
+        :type parent: :class:`QtCore.QModelIndex`
         :returns: Returns true if the row is inserted; otherwise returns false.
         :rtype: bool
         :raises: None
@@ -411,9 +411,26 @@ class TreeModel(QtCore.QAbstractItemModel):
         parentitem = parent.internalPointer()
         self.beginInsertRows(parent, row, row)
         item._parent = parentitem
-        parentitem.childItems.insert(row, item)
+        parentitem.childItems.insert(row, item) # TODO this will produce bugs
         self.endInsertRows()
         # self.insertRows(len(parentitem.childItems), 1, parent)
+        return True
+
+    def removeRow(self, row, parent):
+        """Remove row from parent
+
+        :param row: the row index
+        :type row: int
+        :param parent: the parent index
+        :type parent: :class:`QtCore.QModelIndex`
+        :returns: True if row is inserted; otherwise returns false.
+        :rtype: bool
+        :raises: None
+        """
+        parentitem = parent.internalPointer()
+        self.beginRemoveRows(parent, row, row)
+        del parentitem.childItems[row]  # TODO this will produce bugs
+        self.endRemoveRows()
         return True
 
     @property

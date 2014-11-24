@@ -14,7 +14,7 @@ E.g. for shaders you might want to assing them to objects on load.
 import abc
 
 from jukeboxcore.filesys import TaskFileInfo
-from jukeboxcore.gui.treemodel import Treemodel
+from jukeboxcore.gui.treemodel import Treemodel, TreeItem
 
 
 class ReftrackRoot(object):
@@ -42,13 +42,32 @@ class ReftrackRoot(object):
         :type itemdataclass: :class:`jukebox.core.gui.treemodel.ItemData`
         :raises: None
         """
-        self.model = Treemodel(rootitem)
+        self._model = Treemodel(rootitem)
+        self._rootitem = rootitem
         self._idataclass = itemdataclass
         self._reftracks = set()  # a list of all reftracks in belonging to the root
         self._parentsearchdict = {}
         """Keys are the refobjs of the Reftrack and the values are the Reftrack objects.
         So you can easily find the parent Reftrack for a parent refobj.
         """
+
+    def get_model(self, ):
+        """Return the treemodel that contains all reftracks of this root
+
+        :returns: The treemodel
+        :rtype: :class:`Treemodel`
+        :raises: None
+        """
+        return self._model
+
+    def get_rootitem(self, ):
+        """Return the rootitem of the treemodel
+
+        :returns: the rootitem
+        :rtype: :class:`TreeItem`
+        :raises: None
+        """
+        return self._rootitem
 
     def add_reftrack(self, reftrack):
         """Add a reftrack object to the root.
@@ -163,6 +182,12 @@ class Reftrack(object):
         """Initialize a new container with a reftrack object interface and either a reftrack object
         or typ, element, and an optional parent.
 
+        .. Warning:: If you initialize with typ, element and parent, never set the parent
+                     later.
+                     Only when you provide a refobj, you should call :meth:`Reftrack.set_parent`
+                     after you created all :class:`Reftrack` objects for all refobjs in your scene.
+                     In this case it is adviced to use :meth:`Reftrack.wrap`
+
         :param root: the root that groups all reftracks and makes it possible to search for parents
         :type root: :class:`ReftrackRoot`
         :param refobjinter: a programm specific reftrack object interface
@@ -206,6 +231,15 @@ The Refobject provides the necessary info.")
             self.set_parent(parent)
 
         self._root.add_reftrack(self)
+
+    def get_root(self, ):
+        """Return the ReftrackRoot this instance belongs to
+
+        :returns: the root
+        :rtype: :class:`ReftrackRoot`
+        :raises: None
+        """
+        return self._root
 
     def get_refobj(self, ):
         """Return the reftrack object, the physical representation of your :class:`Reftrack` object in the scene.
@@ -361,16 +395,23 @@ The Refobject provides the necessary info.")
             "Cannot change the parent. Can only set from None."
         self._parent = parent
         if parent:
-            self.get_refobjinter().setParent(self.get_refobj(), parent.get_refobj())  # TODO might be called double, initialize a reftrack with given ref object that already has a parent
-            self._parent.addChild(self)
-            self._treeitem = self.create_treeitem()
-            root = self.get_root()
-            root.add_reftrack(self)
-            m = root.get_model()
-            parentitem = self._parent.get_treeitem()
-            pos = parentitem.child_count()  # insert at last position
-            parentindex = m.get_index_of_item(parentitem)
-            m.insertRow(pos, self._treeitem, parentindex)
+            refobjinter = self.get_refobjinter()
+            refobj = self.get_refobj()
+            # set the parent of the refobj only if it is not already set
+            # and only if there is one! oO
+            if refobj and not refobjinter.get_parent(refobj):
+                refobjinter.set_parent(refobj, parent.get_refobj())
+            # add to parent
+            self._parent.add_child(self)
+        # insert row in treemodel
+        self._treeitem = self.create_treeitem()
+        root = self.get_root()
+        root.add_reftrack(self)
+        m = root.get_model()
+        parentitem = self._parent.get_treeitem()
+        pos = parentitem.child_count()  # insert at last position
+        parentindex = m.get_index_of_item(parentitem)
+        m.insertRow(pos, self._treeitem, parentindex)
 
     def create_treeitem(self, ):
         """Create a new treeitem for this reftrack instance.
@@ -390,9 +431,20 @@ The Refobject provides the necessary info.")
         else:
             pitem = root.get_rootitem()
         idata = root.create_itemdata(self)
-        TreeItem(idata, parent=pitem)
+        return TreeItem(idata, parent=pitem)
 
-    def addChild(self, reftrack):
+    def get_treeitem(self, ):
+        """Return the treeitem that wraps this instance.
+
+        There is only a treeitem if the parent has been set once.
+
+        :returns: the treeitem for this instance
+        :rtype: :class:`TreeItem` | None
+        :raises: None
+        """
+        return self._treeitem
+
+    def add_child(self, reftrack):
         """Add the given reftrack object as child
 
         .. Note:: Does not set the parent of the child!
@@ -405,7 +457,7 @@ The Refobject provides the necessary info.")
         """
         self._children.append(reftrack)
 
-    def removeChild(self, reftrack):
+    def remove_child(self, reftrack):
         """Remove the given reftrack from children
 
         .. Note:: Does not set the parent of the child to None!
@@ -645,7 +697,14 @@ or a given taskfileinfo. No taskfileinfo was given though"
             refobjinter.delete(r)
         self.set_refobj(None)
         if self.alien():
-            self.get_parent().removeChild(self)
+            self.get_parent().remove_child(self)
+            # remove from root
+            root = self.get_root()
+            root.remove_reftrack(self)
+            # remove in model
+            m = self.root.get_model()
+            # call removeRow on the model
+            raise NotImplementedError
         else:
             self._children = []
 
