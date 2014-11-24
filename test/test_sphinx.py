@@ -1,34 +1,39 @@
 """ This file tests the sphinx-build """
-
-import py
 from os import path
 import subprocess
 
+import pytest
 
-class Test_SphinxBuild(object):
-    """Test sphinx build by wrapping sphinx build 
-       commands into a test class
+
+@pytest.fixture(scope='module')
+def doctreedir():
+    """Return the dir of the documenation
     """
+    return path.join(__file__, "..", "docs")
 
-    def __init__(self, tmpdir):
-        """Setup environment variables
 
-        :param tmpdir: a pytest fixture pointing to a temp directory
-        """
+@pytest.fixture(scope='module')
+def htmldir(tmpdir):
+    """Return a path for building the sphinx documentation
 
-        self.doctreedir = path.join(__file__, "..", "docs") 
-        self.htmldir    = path.join(tmpdir, "dist", "docs") 
+    :param tempdir: pytest fixture for a temporary dir
+    :type tempdir: str
+    :returns: the path. a tempdir path
+    :rtype: str
+    :raises: None
+    """
+    return path.join(tmpdir, "dist", "docs")
 
-    def test_linkcheck(self):
-        """performs a linkcheck on sphinx build """
 
-        subprocess.check_call(
-            ["sphinx-build", "-b", "linkcheck",
-              str(self.doctreedir), str(htmldir)])
-    
-    def test_build_docs(self):
-        """Performs a build check using sphinx build """
+def test_linkcheck(doctreedir, htmldir):
+    """performs a linkcheck on sphinx build """
+    subprocess.check_call(
+        ["sphinx-build", "-b", "linkcheck",
+         str(doctreedir), str(htmldir)])
 
-        subprocess.check_call([
-            "sphinx-build", "-b", "html",
-              str(self.doctreedir), str(htmldir)])
+
+def test_build_docs(doctreedir, htmldir):
+    """Performs a build check using sphinx build """
+    subprocess.check_call([
+        "sphinx-build", "-b", "html",
+        str(doctreedir), str(htmldir)])
