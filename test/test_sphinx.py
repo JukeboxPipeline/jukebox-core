@@ -9,7 +9,7 @@ import pytest
 def doctreedir():
     """Return the dir of the documenation
     """
-    return path.join(__file__, "..", "docs")
+    return path.join(path.dirname(__file__), "..", "docs")
 
 
 @pytest.fixture(scope='function')
