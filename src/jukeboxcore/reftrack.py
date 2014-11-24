@@ -224,13 +224,39 @@ The Refobject provides the necessary info.")
         """A treeitem for the model of the root. Will get set when parents gets set!"""
 
         # initialize reftrack
-        self.set_refobject(refobj)  # TODO do not set parent here!!!!!!!!!
         if not refobj:
             self.set_typ(typ)
             self.set_element(element)
             self.set_parent(parent)
+        else:
+            self.set_typ(refobjinter.get_typ(self._refobj))
+            self.set_taskfileinfo(refobjinter.get_taskfileinfo(self._refobj))
+            self.set_element(refobjinter.get_element(self._refobj))
+            self.set_status(refobjinter.get_status(self._refobj))
+            root.update_refobj(None, refobj, self)
+            self.fetch_uptodate()
 
         self._root.add_reftrack(self)
+
+    @classmethod
+    def wrap(cls, root, refobjinter, refobjects):
+        """Wrap the given refobjects in a :class:`Reftrack` instance
+        and set the right parents
+
+        :param refobjects: list of refobjects
+        :type refobjects: list
+        :returns: list with the wrapped :class:`Reftrack` instances
+        :rtype: list
+        :raises: None
+        """
+        tracks = []
+        for r in refobjects:
+            track = cls(root=root, refobjinter=refobjinter, refobj=r)
+            tracks.append(track)
+        for t in tracks:
+            parentrefobj = refobjinter.get_parent(t._refobj)
+            parentreftrack = root.get_reftrack(parentrefobj)
+            t.set_parent(parentreftrack)
 
     def get_root(self, ):
         """Return the ReftrackRoot this instance belongs to
