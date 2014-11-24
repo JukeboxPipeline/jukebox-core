@@ -403,15 +403,7 @@ The Refobject provides the necessary info.")
                 refobjinter.set_parent(refobj, parent.get_refobj())
             # add to parent
             self._parent.add_child(self)
-        # insert row in treemodel
         self._treeitem = self.create_treeitem()
-        root = self.get_root()
-        root.add_reftrack(self)
-        m = root.get_model()
-        parentitem = self._parent.get_treeitem()
-        pos = parentitem.child_count()  # insert at last position
-        parentindex = m.get_index_of_item(parentitem)
-        m.insertRow(pos, self._treeitem, parentindex)
 
     def create_treeitem(self, ):
         """Create a new treeitem for this reftrack instance.
@@ -701,11 +693,10 @@ or a given taskfileinfo. No taskfileinfo was given though"
             # remove from root
             root = self.get_root()
             root.remove_reftrack(self)
-            # remove in model
-            m = self.root.get_model()
-            # call removeRow on the model
-            raise NotImplementedError
+            self._treeitem.parent().remove_child(self._treeitem)
         else:
+            for c in self._children:
+                self._treeitem.remove_child(c._treeitem)
             self._children = []
 
     def duplicate(self, ):
