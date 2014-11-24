@@ -201,14 +201,65 @@ class Test_TreeModel():
         parent = m.index(0, 0)
         eq_(parent.internalPointer(), i1)
         m.insertRow(0, newi1, parent)
+        assert newi1._model is m
+        assert newi1._parent is i1
+        assert i1.childItems[0] is newi1
         eq_(m.index(0, 0, parent).internalPointer(), newi1)
         m.insertRow(0, newi2, parent)
+        assert newi2._model is m
+        assert newi2._parent is i1
+        assert i1.childItems[0] is newi2
         eq_(m.index(0, 0, parent).internalPointer(), newi2)
         eq_(m.index(1, 0, parent).internalPointer(), newi1)
         m.insertRow(2, newi3, parent)
+        assert newi3._model is m
+        assert newi3._parent is i1
+        assert i1.childItems[2] is newi3
         eq_(m.index(0, 0, parent).internalPointer(), newi2)
         eq_(m.index(1, 0, parent).internalPointer(), newi1)
         eq_(m.index(2, 0, parent).internalPointer(), newi3)
+
+        newi4 = treemodel.TreeItem(treemodel.ListItemData(['4']))
+        newi5 = treemodel.TreeItem(treemodel.ListItemData(['5']), newi4)
+        newi3.add_child(newi4)
+        assert newi4._model is m
+        assert newi5._model is m
+        assert newi4._parent is newi3
+        assert newi5._parent is newi4
+        assert newi3.childItems[0] is newi4
+        assert newi4.childItems[0] is newi5
+        newi3index = m.index(2, 0, parent)
+        newi4index = m.index(0, 0, newi3index)
+        newi5index = m.index(0, 0, newi4index)
+        assert newi4index.internalPointer() is newi4
+        assert newi5index.internalPointer() is newi5
+
+    def test_removeRow(self):
+        root = treemodel.TreeItem(None)
+        i1 = treemodel.TreeItem(StubItemData2(), root)
+        m = treemodel.TreeModel(root)
+        newi1 = treemodel.TreeItem(treemodel.ListItemData(['1']), i1)
+        newi2 = treemodel.TreeItem(treemodel.ListItemData(['2']), i1)
+        newi3 = treemodel.TreeItem(treemodel.ListItemData(['3']), i1)
+        newi4 = treemodel.TreeItem(treemodel.ListItemData(['4']), newi3)
+        parent = m.index(0, 0)
+        assert newi1._model is m
+        assert newi1._parent is i1
+        assert i1.childItems[0] is newi1
+        i1.remove_child(newi1)
+        assert i1.childItems[0] is newi2
+        assert newi1._model is None
+        assert newi1._parent is None
+        m.removeRow(0, parent)
+        assert i1.childItems[0] is newi3
+        assert newi2._model is None
+        assert newi2._parent is None
+        m.removeRow(0, parent)
+        assert len(i1.childItems) == 0
+        assert newi3._model is None
+        assert newi3._parent is None
+        assert newi4._model is None
+        assert newi4._parent is newi3
 
     def test_index_of_item(self, ):
         assert self.root

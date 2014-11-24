@@ -144,6 +144,12 @@ class TreeItem(object):
     Even if you have multiple top level items, they are all grouped under one
     root. The data for the root item can be None but it is advised to use
     a ListItemData so you can provide horizontal headers.
+
+    TreeItems should always belong to only one model.
+    Once a new TreeModel gets initialized all TreeItems will share the same model.
+    When you add a new Item or delete one, the model gets automatically updated.
+    You do not need to call TreeModel insertRow or removeRow. Just use add_child, remove_child
+    or create a new TreeItem and provide a parent item to the constructor.
     """
 
     def __init__(self, data, parent=None):
@@ -156,11 +162,62 @@ class TreeItem(object):
         :type parent: :class:`jukeboxcore.gui.treemodel.TreeItem`
         :raises: None
         """
+        self._model = None
         self._data = data
         self._parent = parent
-        if self._parent is not None:
-            self._parent.childItems.append(self)
         self.childItems = []
+        if self._parent is not None:
+            self._parent.add_child(self)
+
+    def set_model(self, model):
+        """Set the model the item belongs to
+
+        A TreeItem can only belong to one model.
+
+        :param model: the model the item belongs to
+        :type model: :class:`Treemodel`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self._model = model
+        print model, self
+        for c in self.childItems:
+            c.set_model(model)
+
+    def add_child(self, child):
+        """Add child to children of this TreeItem
+
+        :param child: the child TreeItem
+        :type child: :class:`TreeItem`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        child.set_model(self._model)
+        if self._model:
+            row = len(self.childItems)
+            parentindex = self._model.index_of_item(self)
+            self._model.insertRow(row, child, parentindex)
+        else:
+            self.childItems.append(child)
+
+    def remove_child(self, child):
+        """Remove the child from this TreeItem
+
+        :param child: the child TreeItem
+        :type child: :class:`TreeItem`
+        :returns: None
+        :rtype: None
+        :raises: ValueError
+        """
+        child.set_model(None)
+        if self._model:
+            row = self.childItems.index(child)
+            parentindex = self._model.index_of_item(self)
+            self._model.removeRow(row, parentindex)
+        else:
+            self.childItems.remove(child)
 
     def child(self, row):
         """Return the child at the specified row
@@ -278,6 +335,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         """
         super(TreeModel, self).__init__(parent)
         self._root = root
+        self._root.set_model(self)
 
     def index(self, row, column, parent=None):
         """Returns the index of the item in the model specified by the given row, column and parent index.
@@ -408,6 +466,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         :rtype: bool
         :raises: None
         """
+        item.set_model(self)
         parentitem = parent.internalPointer()
         self.beginInsertRows(parent, row, row)
         item._parent = parentitem
@@ -429,6 +488,9 @@ class TreeModel(QtCore.QAbstractItemModel):
         """
         parentitem = parent.internalPointer()
         self.beginRemoveRows(parent, row, row)
+        item = parentitem.childItems[row]
+        item.set_model(None)
+        item._parent = None
         del parentitem.childItems[row]  # TODO this will produce bugs
         self.endRemoveRows()
         return True
