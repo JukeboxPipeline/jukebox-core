@@ -14,6 +14,114 @@ E.g. for shaders you might want to assing them to objects on load.
 import abc
 
 from jukeboxcore.filesys import TaskFileInfo
+from jukeboxcore.gui.treemodel import Treemodel
+
+
+class ReftrackRoot(object):
+    """Groups a collection of :class:`Reftrack` objects.
+
+    Enables the search for parents via the refobject.
+    Provides a :class:`jukeboxcore.gui.treemodel.Treemodel` that can be used
+    in views, to display all reftracks.
+
+    """
+    def __init__(self, rootitem, itemdataclass):
+        """Initialize a new Reftrack root with a given root tree item and
+        a :class:`jukeboxcore.gui.treemodel.ItemData` class to wrap
+        the :class:`Reftrack` objects.
+
+        The ItemData class should accept a :class:`Reftrack` object as
+        first argument in the constructor.
+
+        :param rootitem: the root tree item for the treemodel.
+                         The root tree item will be responsible for the headers in a view.
+        :type rootitem: :class:`jukeboxcore.gui.treemodel.TreeItem`
+        :param itemdataclass: the itemdata subclass to be used for wrapping the :class:`Reftrack` objects
+                              in the model. Not an instance! A class! The constructor should accept
+                              a :class:`Reftrack` object as first argument.
+        :type itemdataclass: :class:`jukebox.core.gui.treemodel.ItemData`
+        :raises: None
+        """
+        self.model = Treemodel(rootitem)
+        self._idataclass = itemdataclass
+        self._reftracks = set()  # a list of all reftracks in belonging to the root
+        self._parentsearchdict = {}
+        """Keys are the refobjs of the Reftrack and the values are the Reftrack objects.
+        So you can easily find the parent Reftrack for a parent refobj.
+        """
+
+    def add_reftrack(self, reftrack):
+        """Add a reftrack object to the root.
+
+        This will not handle row insertion in the model!
+
+        :param reftrack: the reftrack object to add
+        :type reftrack: :class:`Reftrack`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self._reftracks.add(reftrack)
+        refobj = reftrack.get_refobj()
+        if refobj:
+            self._parentsearchdict[refobj] = reftrack
+
+    def remove_reftrack(self, reftrack):
+        """Remove the reftrack from the root.
+
+        This will not handle row deletion in the model!
+
+        :param reftrack: the reftrack object to remove
+        :type reftrack: :class:`Reftrack`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self._reftrack.remove(reftrack)
+        refobj = reftrack.get_refobj()
+        if refobj and refobj in self._parentsearchdict:
+            del self._parentsearchdict[refobj]
+
+    def update_refobj(self, old, new, reftrack):
+        """Update the parent search dict so that the reftrack can be found
+        with the new refobj and delete the entry for the old refobj
+
+        :param old: the old refobj of reftrack
+        :param new: the new refobj of reftrack
+        :param reftrack: The reftrack, which refobj was updated
+        :type reftrack: :class:`Reftrack`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if old:
+            del self._parentsearchdict[old]
+        if new:
+            self._parentsearchdict[new] = reftrack
+
+    def get_reftrack(self, refobj):
+        """Return a the Reftrack instance that wraps around the given
+        refobj
+
+        :param refobj: a ref object. See :meth:`Reftrack.get_refobj`
+        :returns: The reftrack instance that wraps the given refobj.
+                  If no instance is found in this root, a KeyError is raised.
+        :rtype: :class:`Reftrack`
+        :raises: :class:`KeyError`
+        """
+        return self._parentsearchdict[refobj]
+
+    def create_itemdata(self, reftrack):
+        """Return a itemdata for the given reftrack
+
+        :param reftrack: the reftrack to wrap in a itemdata
+        :type reftrack: :class:`Reftrack`
+        :returns: a Itemdata with the reftrack wrapped. The ItemData class depends on what was provided for
+                  initialisation of the root.
+        :rtype: :class:`jukeboxcore.gui.treemodel.ItemData`
+        :raises: None
+        """
+        return self._idataclass(reftrack)
 
 
 class Reftrack(object):
@@ -51,10 +159,12 @@ class Reftrack(object):
     IMPORTED = "Imported"
     """Status for when the entity is imported."""
 
-    def __init__(self, refobjinter, refobj=None, typ=None, element=None, parent=None):
+    def __init__(self, root, refobjinter, typ=None, element=None, parent=None, refobj=None):
         """Initialize a new container with a reftrack object interface and either a reftrack object
         or typ, element, and an optional parent.
 
+        :param root: the root that groups all reftracks and makes it possible to search for parents
+        :type root: :class:`ReftrackRoot`
         :param refobjinter: a programm specific reftrack object interface
         :type refobjinter: :class:`RefobjInterface`
         :param refobj: a physical representation in your scene of the entity, if it already exists.
@@ -65,7 +175,7 @@ class Reftrack(object):
         :param element: the element the entity represents, e.g. an Asset or a Shot.
         :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
         :param parent: the parent :class:`Reftrack` object. All children will be deleted automatically, when the parent gets deleted.
-        :type parent: :class;`Reftrack`
+        :type parent: :class:`Reftrack` | None
         :raises: TypeError
         """
         if not (refobj or (typ and element)):
@@ -73,6 +183,7 @@ class Reftrack(object):
         if refobj and (parent or typ or element):
             raise TypeError("Refobject given. Providing a typ, element or parent is invalid. \
 The Refobject provides the necessary info.")
+        self._root = root
         self._refobjinter = refobjinter
         self._refobj = None
         self._taskfileinfo = None  # the taskfileinfo that the refobj represents
@@ -84,13 +195,17 @@ The Refobject provides the necessary info.")
         self._uptodate = None
         self._alien = True
         self._status = None
+        self._treeitem = None  # a treeitem for the model of the root
+        """A treeitem for the model of the root. Will get set when parents gets set!"""
 
         # initialize reftrack
-        self.set_refobject(refobj)
+        self.set_refobject(refobj)  # TODO do not set parent here!!!!!!!!!
         if not refobj:
             self.set_typ(typ)
             self.set_element(element)
             self.set_parent(parent)
+
+        self._root.add_reftrack(self)
 
     def get_refobj(self, ):
         """Return the reftrack object, the physical representation of your :class:`Reftrack` object in the scene.
@@ -115,18 +230,23 @@ The Refobject provides the necessary info.")
         :rtype: None
         :raises: None
         """
+        root = self.get_root()
+        old = self._refobj
         self._refobj = refobj
         refobjinter = self.get_refobjinter()
         if self._refobj:
             self.set_typ(refobjinter.get_typ(self._refobj))
             self.set_taskfileinfo(refobjinter.get_taskfileinfo(self._refobj))
             self.set_element(refobjinter.get_element(self._refobj))
-            self.set_parent(refobjinter.get_parent(self._refobj))
+            parentrefobj = refobjinter.get_parent(self._refobj)
+            parentreftrack = root.get_reftrack(parentrefobj)
+            self.set_parent(parentreftrack)
             self.set_status(refobjinter.get_status(self._refobj))
         else:
             self.set_taskfileinfo(None)
             self.set_parent(None)
             self.set_status(None)
+        root.update_refobj(old, refobj, self)
         self.fetch_uptodate()
 
     def get_typ(self, ):
@@ -229,22 +349,48 @@ The Refobject provides the necessary info.")
 
         If a parent gets deleted, the children will be deleted too.
 
-        .. Note:: Adds the instance to the children of the parent
-                  and removes it from the old parent
+        .. Note:: Once the parent is set, it cannot be set again!
 
         :param parent: the parent reftrack object
         :type parent: :class:`Reftrack` | None
         :returns: None
         :rtype: None
-        :raises: None
+        :raises: AssertionError
         """
-        oldparent = self._parent
-        if oldparent:
-            oldparent.removeChild(self)
+        assert self._parent is None,\
+            "Cannot change the parent. Can only set from None."
         self._parent = parent
         if parent:
-            self.get_refobjinter().setParent(self.get_refobj(), parent.get_refobj())
+            self.get_refobjinter().setParent(self.get_refobj(), parent.get_refobj())  # TODO might be called double, initialize a reftrack with given ref object that already has a parent
             self._parent.addChild(self)
+            self._treeitem = self.create_treeitem()
+            root = self.get_root()
+            root.add_reftrack(self)
+            m = root.get_model()
+            parentitem = self._parent.get_treeitem()
+            pos = parentitem.child_count()  # insert at last position
+            parentindex = m.get_index_of_item(parentitem)
+            m.insertRow(pos, self._treeitem, parentindex)
+
+    def create_treeitem(self, ):
+        """Create a new treeitem for this reftrack instance.
+
+        .. Note:: Parent should be set, Parent should already have a treeitem.
+                  If there is no parent, the root tree item is used as parent for the treeitem.
+
+        :returns: a new treeitem that contains a itemdata with the reftrack instanec.
+        :rtype: :class:`TreeItem`
+        :raises: None
+        """
+        p = self.get_parent()
+        root = self.get_root()
+        if p:
+            pitem = p.get_treeitem()
+            assert pitem, "No TreeItem was set in the parent!"
+        else:
+            pitem = root.get_rootitem()
+        idata = root.create_itemdata(self)
+        TreeItem(idata, parent=pitem)
 
     def addChild(self, reftrack):
         """Add the given reftrack object as child
@@ -511,7 +657,11 @@ or a given taskfileinfo. No taskfileinfo was given though"
         :rtype: :class:`Reftrack`
         :raises: None
         """
-        return self.__class__(self.get_refobjinter(), typ=self.get_typ(), element=self.get_element(), parent=self.get_parent())
+        return self.__class__(root=self.get_root(),
+                              refobjinter=self.get_refobjinter(),
+                              typ=self.get_typ(),
+                              element=self.get_element(),
+                              parent=self.get_parent())
 
 
 class RefobjInterface(object):
