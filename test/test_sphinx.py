@@ -22,7 +22,7 @@ def htmldir(tmpdir):
     :rtype: str
     :raises: None
     """
-    return path.join(tmpdir, "dist", "docs")
+    return tmpdir.mkdir("dist", "docs")
 
 
 def test_linkcheck(doctreedir, htmldir):
