@@ -19,4 +19,3 @@ Documentation
 -------------
 
 The documentation can be found under http://pythonhosted.org/jukebox-core.
-
