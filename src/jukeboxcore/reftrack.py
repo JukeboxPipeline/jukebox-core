@@ -1,27 +1,150 @@
 """This module features classes and interfaces to track references and loaded data and manipulate it.
 
 It is the main lib for the reference workflow of the pipeline.
-It revoles around a :class:`Reftrack`
-:class:`Reftrack` object which stores all necessary information of one entity.
-To interact with the programm, :class:`Reftrack` uses two interfaces.
-The first is responsible create, delete, edit and query an object in your programm which
-represents the entity. For example in Maya, one would create a special node, that stores information about
-an entity. The interface interacts with this node and delivers the data to the :class:`Reftrack` object.
-Depending on the type of the entity (e.g. an Asset, Alembic, Shader, Camera etc) a second interface
-is used for actions like referencing, loading, unloading, importing, deleting the actual content of the entity.
-E.g. for shaders you might want to assing them to objects on load.
+It revoles around a :class:`Reftrack` object.
+Each :class:`Reftrack` instance is responsible for one entity.
+It holds information about the entity, can query the entity and manipulate the entity.
+
+One entity might be a character asset, an alembic cache for the character, a camera or a lightrig.
+The :class:`Reftrack` instance can reference, load, unload, import, replace or delete the entity.
+Once an entity is loaded into your programm, the :class:`Reftrack` object holds a refobject.
+
+A refobject can be anything, from a node that is in your programm, to a simple string.
+Important is, that it can be used by the :class:`RefobjInterface` to identify the entity in your scene
+and query information. E.g. in Maya, one would create a special Node for each loaded entity.
+The node can be used to query the reference status, it can identify what entity is loaded etc.
+So in this case the refobj would be either the node, or the name of the node. Whatever your :class:`RefobjInterface`
+accepts.
+
+Again, the :class:`RefobjInterface` is used to identify the entity, query the parent, status, create new refobjects
+and manipulate them. It is specific for each software you use. So there should be one implementation of the
+:class:`RefobjInterface` for each software. The :class:`Reftrack` object will interact with the interface
+to manipulate the scene.
+
+Each entity has a certain type. For example one type might be ``"Asset"`` and another might be ``"Shader"``.
+Depending on the type and of course the software you are in (or in this case simply the :class:`RefobjInterface`),
+you want to perform different actions on loading or deleting the entity. E.g. when loading a shader, you might want
+to apply the shaders to another entity etc. Or for each type you have special nodes in your software you want to use.
+The :class:`Reftrack` object simply asks the :class:`RefobjInterface` to reference, load, delete or whatever the entity.
+The :class:`RefobjInterface` will decide upon the type of the :class:`Reftrack` to use another interface.
+This interface is called :class:`ReftypeInterface`.
+
+The :class:`ReftypeInterface` should be implemented for each type of entities for each software. So if your software
+supports assets, shaders and alembic caches as types then you need 3 implementations of the :class:`ReftypeInterface`
+for this software. The interface actually manipulates the content of the entity. For example, in Maya it will
+create a reference node and group the loaded data under a transform node for assets. For shaders it might also assing the
+shaders to certain objects. Make sure that your :class:`ReftypeInterface` classes are registered at the appropriate
+:class:`RefobjInterface`. Use the classmethod :meth:`RefobjInterface.register_type` on your refobj interface subclass
+or but them directly in :data:`RefobjInterface.types` when defining the class.
+
+Each :class:`Reftrack` object can have a parent. A parent is another :class:`Reftack` object and is responsible
+for its children. If the parent is deleted, all other children should be deleted too. This might be the case for a shader.
+Imagine assigning a shader to an asset. The asset would be the parent and the shader the child. If the asset gets deleted
+the shader should be deleted to. Of course, if the shader is already referenced in the asset, it will get deleted automaitcally.
+The :class:`Reftrack` objects handle such cases by themselves.
+
+There is also a :class:`ReftrackRoot` class. It is important to group all reftracks of your current scene under the same root.
+The root object is mainly used to find parent :class:`Reftrack` objects. But it also provides a Qt model that you can use
+for views. It holds all :class:`Reftrack` objects in a tree model.
+
+You can create a :class:`Reftrack` objects on two ways.
+
+  First case would be, you have a scene with refobjs. This would mean, you want to wrap all refobjs in a :class:`Reftrack` object.
+  There is only a slight problem. If you want to wrap a refobj that defines a shader and has a parent refobj (e.g. an asset) you
+  cannot create set the parent on initialisation, beacause the parent refobj might not be wrapped in a :class:`Reftrack` object.
+  So you have to wrap all refobjs first, and in a second step find the parent :class:`Reftrack` and set it.
+  For convenience, there is a class method :meth:`Reftrack.wrap`. It wraps all refobjs and finds the parents afterwards.
+  This is also why the :class:`ReftrackRoot` is so important.
+
+  The second case would be, you want to add a new :class:`Reftrack` that is not in your scene. The user would see, that it is
+  not loaded and could choose to reference it or import it. In this case you initialize a :class:`Reftrack` with a type, element and parent.
+  The type is for example ``"Shader"``. The element would be either a Shot or Asset in your database. So you would choose the character asset.
+  The parent would be an already existing :class:`Reftrack` of the character asset with type ``"Asset"``. In other cases, you do not need a parent.
+  E.g. you create a new :class:`Reftrack` for the character asset. It would have no parent.
+
+If you have implementations for each interface, it should be fairly easy to use:
+
+  Create a new :class:`RefobjInterface` instance::
+
+    refobjinter = RefobjInterface()  # use a subclass that implemented the abstract methods here.
+
+  Create a new :class:`ReftrackRoot` instance. It needs a root :class:`jukeboxcore.gui.treemodel.TreeItem` for the model and and
+  a :class:`jukeboxcore.gui.treemodel.ItemData` subclass to create new items. The item data subclass should accept a :class:`Reftrack` object
+  for the initialisation and returns data for several attributes of the :class:`Reftrack` instance.
+  You do not have to specify a rootitem or itemdataclass necessarily. If you do not the root object will create standard ones.
+  Only if you need custom ones you can specify them::
+
+    from jukeboxcore.gui.treemodel import TreeItem, ListItemData
+    rootdata = ListItemData(["Name", "Status", "Version"])  # root data will be used for headers in views
+    rootitem = TreeItem(rootdata)
+    reftrackroot = ReftrackRoot(rootitem, myitemdataclass)  # use your ItemData subclass here.
+
+  Now lets create new :class:`Reftrack` instances. First lets create a reftrack for every refobj in the current scene::
+
+    # get all refobjs in the scene
+    refobjs = refobjinter.get_all_refobjs()
+    # wrap them in reftrack instances
+    reftracks = Reftrack.wrap(reftrackroot, refobjinter, refobjs)
+
+  Done. Now to display that in a view you can get the model of the root::
+
+    model = reftrackroot.get_model()
+    # set it on a view. we assume you already have a subclass of QtGui.QAbstractItemView
+    view.setModel(model)
+
+  Now lets say the scene is incomplete. You want to add a new asset (e.g. a tree asset) to the scene.
+  First we need to create a :class:`Reftrack` object::
+
+    # get the tree asset from the database
+    tree = ...
+    reftrack = Reftrack(reftrackroot, refobjinter, typ="Asset", element=tree, parent=None)
+
+  The model will get updated automatically and the view should automatically update. Lets say you want to
+  reference the tree into your scene. An asset has different deparments or tasks and in each task there are
+  multiple releases. Each :class:`Reftrack` object can give you options from which to choose a file to load or replace.
+  The options are a :class:`jukeboxcore.gui.treemodel.TreeModel` with :class:`jukeboxcore.filesys.TaskFileInfo` as leafes.
+  I explicitly say leafes because the options might be sorted in a tree like strucure. So the user could first select a task
+  and then the apropriate release.
+  You can take the model and display it to the user so he can select a file.::
+
+    # get the treemodel for the options
+    options = reftrack.get_options()
+    # put it in another view
+    optionsview.setModel(options)
+    # let the user select a option
+    # get the selected index (make sure it is a leaf)
+    sel = optionsview.selectedIndexes()
+    # sel might be a empty list if the user has not made an selection!
+    # but lets assume he has selected one index
+    index = sel[0]
+    # get the TaskFileInfo for this index.
+    taskfileinfo = index.internalPointer().internal_data()
+    reftrack.reference(taskfileinfo)
+
+So before you start, here is a list of things to do:
+
+  1. Implement a :class:`ReftypeInterface` for each type.
+  2. Implement :class:`RefobjInterface`. Make sure it has
+     all the types registered. See :meth:`RefobjInterface.register_type`.
+  3. Think about creating your custom :class:`jukeboxcore.gui.treemodel.ItemData`
+     for :class:`Reftrack` objects.
+  4. Create a :class:`RefobjInterface` instance.
+  5. Create a :class:`ReftrackRoot` instance.
+  6. For refobjs in your scene use :meth:`Reftrack.wrap`.
+  7. Add new reftracks.
+
 """
 import abc
 
 from jukeboxcore.filesys import TaskFileInfo
-from jukeboxcore.gui.treemodel import Treemodel, TreeItem
+from jukeboxcore.gui.treemodel import TreeModel, TreeItem
 
 
 class ReftrackRoot(object):
     """Groups a collection of :class:`Reftrack` objects.
 
     Enables the search for parents via the refobject.
-    Provides a :class:`jukeboxcore.gui.treemodel.Treemodel` that can be used
+    Provides a :class:`jukeboxcore.gui.treemodel.TreeModel` that can be used
     in views, to display all reftracks.
 
     """
@@ -42,7 +165,7 @@ class ReftrackRoot(object):
         :type itemdataclass: :class:`jukebox.core.gui.treemodel.ItemData`
         :raises: None
         """
-        self._model = Treemodel(rootitem)
+        self._model = TreeModel(rootitem)
         self._rootitem = rootitem
         self._idataclass = itemdataclass
         self._reftracks = set()  # a list of all reftracks in belonging to the root
@@ -55,7 +178,7 @@ class ReftrackRoot(object):
         """Return the treemodel that contains all reftracks of this root
 
         :returns: The treemodel
-        :rtype: :class:`Treemodel`
+        :rtype: :class:`TreeModel`
         :raises: None
         """
         return self._model
@@ -257,6 +380,7 @@ The Refobject provides the necessary info.")
             parentrefobj = refobjinter.get_parent(t._refobj)
             parentreftrack = root.get_reftrack(parentrefobj)
             t.set_parent(parentreftrack)
+        return tracks
 
     def get_root(self, ):
         """Return the ReftrackRoot this instance belongs to
@@ -489,14 +613,14 @@ The Refobject provides the necessary info.")
         self._children.remove(reftrack)
 
     def get_options(self, ):
-        """Return a :class:`jukeboxcore.gui.treemodel.Treemodel` with possible options
+        """Return a :class:`jukeboxcore.gui.treemodel.TreeModel` with possible options
         for the reftrack to load, replace, import etc.
 
-        The leafes of the :class:`jukeboxcore.gui.treemodel.Treemodel`
+        The leafes of the :class:`jukeboxcore.gui.treemodel.TreeModel`
         should be TreeItems with TaskFileInfo as internal data.
 
         :returns: a treemodel with options
-        :rtype: :class:`jukeboxcore.gui.treemodel.Treemodel`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
         return self._options
@@ -508,7 +632,7 @@ The Refobject provides the necessary info.")
         The refobjinterface and typinterface are responsible for providing the options
 
         :returns: the options
-        :rtype: :class:`jukeboxcore.gui.treemodel.Treemodel`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
         self._options = self.get_refobjinter().fetch_options(self.get_typ(), self._element)
@@ -751,20 +875,20 @@ class RefobjInterface(object):
 
     Methods to implement:
 
-      :meth:`RefobjInterface.get_parent`
-      :meth:`RefobjInterface.set_parent`
-      :meth:`RefobjInterface.get_children`
-      :meth:`RefobjInterface.get_typ`
-      :meth:`RefobjInterface.set_typ`
-      :meth:`RefobjInterface.create_refobj`
-      :meth:`RefobjInterface.referenced`
-      :meth:`RefobjInterface.delete_refobj`
-      :meth:`RefobjInterface.get_all_refobj`
-      :meth:`RefobjInterface.get_current_element`
-      :meth:`RefobjInterface.set_reference`
-      :meth:`RefobjInterface.get_reference`
-      :meth:`RefobjInterface.get_status`
-      :meth:`RefobjInterface.get_taskfile`
+      * :meth:`RefobjInterface.get_parent`
+      * :meth:`RefobjInterface.set_parent`
+      * :meth:`RefobjInterface.get_children`
+      * :meth:`RefobjInterface.get_typ`
+      * :meth:`RefobjInterface.set_typ`
+      * :meth:`RefobjInterface.create_refobj`
+      * :meth:`RefobjInterface.referenced`
+      * :meth:`RefobjInterface.delete_refobj`
+      * :meth:`RefobjInterface.get_all_refobj`
+      * :meth:`RefobjInterface.get_current_element`
+      * :meth:`RefobjInterface.set_reference`
+      * :meth:`RefobjInterface.get_reference`
+      * :meth:`RefobjInterface.get_status`
+      * :meth:`RefobjInterface.get_taskfile`
 
     """
 
@@ -1146,7 +1270,7 @@ class RefobjInterface(object):
         :param element: The element for which the options should be fetched.
         :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
         :returns: the options
-        :rtype: :class:`jukeboxcore.gui.treemodel.Treemodel`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
         inter = self.get_typ_interface(typ)
@@ -1166,15 +1290,15 @@ class ReftypeInterface(object):
 
     Methods to implement:
 
-      :meth:`ReftypeInterface.reference`
-      :meth:`ReftypeInterface.load`
-      :meth:`ReftypeInterface.unload`
-      :meth:`ReftypeInterface.replace`
-      :meth:`ReftypeInterface.delete`
-      :meth:`ReftypeInterface.import_reference`
-      :meth:`ReftypeInterface.import_taskfile`
-      :meth:`ReftypeInterface.is_replaceable`
-      :meth:`ReftypeInterface.fetch_options`
+      * :meth:`ReftypeInterface.reference`
+      * :meth:`ReftypeInterface.load`
+      * :meth:`ReftypeInterface.unload`
+      * :meth:`ReftypeInterface.replace`
+      * :meth:`ReftypeInterface.delete`
+      * :meth:`ReftypeInterface.import_reference`
+      * :meth:`ReftypeInterface.import_taskfile`
+      * :meth:`ReftypeInterface.is_replaceable`
+      * :meth:`ReftypeInterface.fetch_options`
 
     """
 
@@ -1312,7 +1436,7 @@ class ReftypeInterface(object):
         :param element: The element for which the options should be fetched.
         :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
         :returns: the options
-        :rtype: :class:`jukeboxcore.gui.treemodel.Treemodel`
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
         raise NotImplementedError
