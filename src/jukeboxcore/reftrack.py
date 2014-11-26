@@ -147,8 +147,19 @@ class ReftrackRoot(object):
     Provides a :class:`jukeboxcore.gui.treemodel.TreeModel` that can be used
     in views, to display all reftracks.
 
+    The model that is created and also updated uses the root item and itemdata class
+    you provided in the constructor. The root item is used for headers in your views.
+    So you could create a root item like this::
+
+      rootdata = ListItemData(["Name", "Status", "Version"])  # root data will be used for headers in views
+      rootitem = TreeItem(rootdata)
+
+    The itemdata class will be used to provide data for the model about :class:`Reftrack` object.
+    You can provide your own subclass or omit the rootitem and itemdataclass. Then a default
+    root item and itemdata class will be used.
+
     """
-    def __init__(self, rootitem, itemdataclass):
+    def __init__(self, rootitem=None, itemdataclass=None):
         """Initialize a new Reftrack root with a given root tree item and
         a :class:`jukeboxcore.gui.treemodel.ItemData` class to wrap
         the :class:`Reftrack` objects.
@@ -158,24 +169,35 @@ class ReftrackRoot(object):
 
         :param rootitem: the root tree item for the treemodel.
                          The root tree item will be responsible for the headers in a view.
-        :type rootitem: :class:`jukeboxcore.gui.treemodel.TreeItem`
+                         If no rootitem is provided, a default one is used.
+        :type rootitem: :class:`jukeboxcore.gui.treemodel.TreeItem` | None
         :param itemdataclass: the itemdata subclass to be used for wrapping the :class:`Reftrack` objects
                               in the model. Not an instance! A class! The constructor should accept
                               a :class:`Reftrack` object as first argument.
-        :type itemdataclass: :class:`jukebox.core.gui.treemodel.ItemData`
+                              If no class is provided, a default one is used.
+        :type itemdataclass: :class:`jukeboxcore.gui.treemodel.ItemData` | None
         :raises: None
         """
+        if rootitem is None:
+            raise NotImplementedError
+            # rootitem = default one
+        if itemdataclass is None:
+            raise NotImplementedError
+            # itemdataclass = default one
+
         self._model = TreeModel(rootitem)
         self._rootitem = rootitem
         self._idataclass = itemdataclass
         self._reftracks = set()  # a list of all reftracks in belonging to the root
         self._parentsearchdict = {}
         """Keys are the refobjs of the Reftrack and the values are the Reftrack objects.
-        So you can easily find the parent Reftrack for a parent refobj.
-        """
+        So you can easily find the parent Reftrack for a parent refobj."""
 
     def get_model(self, ):
         """Return the treemodel that contains all reftracks of this root
+
+        The model uses the provided :class:`jukeboxcore.gui.treem.ItemData`.
+        The model is automatically updated.
 
         :returns: The treemodel
         :rtype: :class:`TreeModel`
@@ -185,6 +207,10 @@ class ReftrackRoot(object):
 
     def get_rootitem(self, ):
         """Return the rootitem of the treemodel
+
+        The root item is responsible for the headers.
+        When adding new TreeItems to the root level use this
+        item as parent.
 
         :returns: the rootitem
         :rtype: :class:`TreeItem`
@@ -196,6 +222,7 @@ class ReftrackRoot(object):
         """Add a reftrack object to the root.
 
         This will not handle row insertion in the model!
+        It is automatically done when setting the parent of the :class:`Reftrack` object.
 
         :param reftrack: the reftrack object to add
         :type reftrack: :class:`Reftrack`
@@ -212,6 +239,7 @@ class ReftrackRoot(object):
         """Remove the reftrack from the root.
 
         This will not handle row deletion in the model!
+        It is automatically done when calling :meth:`Reftrack.delete`.
 
         :param reftrack: the reftrack object to remove
         :type reftrack: :class:`Reftrack`
@@ -226,7 +254,9 @@ class ReftrackRoot(object):
 
     def update_refobj(self, old, new, reftrack):
         """Update the parent search dict so that the reftrack can be found
-        with the new refobj and delete the entry for the old refobj
+        with the new refobj and delete the entry for the old refobj.
+
+        Old or new can also be None.
 
         :param old: the old refobj of reftrack
         :param new: the new refobj of reftrack
@@ -271,7 +301,7 @@ class Reftrack(object):
 
     Stores information like the status, options for replacing the entity etc.
     Delegates actions to the appropriate interfaces.
-    So no matter what kind of programm  you are in and type your entity is, the :class:`Reftrack` object
+    So no matter what kind of programm you are in and what type your entity is, the :class:`Reftrack` object
     can carry out all actions as long as you provide 2 interfaces.
 
     A refobj interface will interact will query information about the entity and can create
@@ -283,6 +313,10 @@ class Reftrack(object):
     The typ interface is programm and type specific. It manipulates the actual content of the entity.
     E.g. it will assign shaders upon loading, create references, connect nodes or group the referenced
     objects.
+
+    The :class:`Reftrack` object only interacts with the :class:`RefobjInterface`. The interface will interact
+    with the appropriate :class:`ReftypeInterface`. So whatever type your :class:`Reftrack` object will be,
+    make sure, your :class:`RefobjInterface` supports it.
 
     The reftrack has 3 different statuses:
 
@@ -306,7 +340,7 @@ class Reftrack(object):
         or typ, element, and an optional parent.
 
         .. Warning:: If you initialize with typ, element and parent, never set the parent
-                     later.
+                     later, because the parent cannot be changed. Only if the parent was None it is possible.
                      Only when you provide a refobj, you should call :meth:`Reftrack.set_parent`
                      after you created all :class:`Reftrack` objects for all refobjs in your scene.
                      In this case it is adviced to use :meth:`Reftrack.wrap`
@@ -324,7 +358,7 @@ class Reftrack(object):
         :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
         :param parent: the parent :class:`Reftrack` object. All children will be deleted automatically, when the parent gets deleted.
         :type parent: :class:`Reftrack` | None
-        :raises: TypeError
+        :raises: TypeError, ValueError
         """
         if not (refobj or (typ and element)):
             raise TypeError("Please provide either a refobj or a typ and element.")
@@ -366,6 +400,9 @@ The Refobject provides the necessary info.")
         """Wrap the given refobjects in a :class:`Reftrack` instance
         and set the right parents
 
+        This is the preferred method for creating refobjects. Because you cannot set
+        the parent of a :class:`Reftrack` before the parent has been wrapped itselfed.
+
         :param refobjects: list of refobjects
         :type refobjects: list
         :returns: list with the wrapped :class:`Reftrack` instances
@@ -383,7 +420,7 @@ The Refobject provides the necessary info.")
         return tracks
 
     def get_root(self, ):
-        """Return the ReftrackRoot this instance belongs to
+        """Return the ReftrackRoot this instance belongs to.
 
         :returns: the root
         :rtype: :class:`ReftrackRoot`
@@ -393,7 +430,7 @@ The Refobject provides the necessary info.")
 
     def get_refobj(self, ):
         """Return the reftrack object, the physical representation of your :class:`Reftrack` object in the scene.
-        If the entity is not loaded, None is returned
+        If the entity is not loaded, None is returned.
 
         :returns: the reftrack object
         :rtype: None | reftrack object
@@ -436,7 +473,8 @@ The Refobject provides the necessary info.")
     def get_typ(self, ):
         """Return the type of the entity
 
-        E.g. Asset, Alembic, Camera etc
+        E.g. Asset, Alembic, Camera etc.
+        The type will also be a key in :data:`RefobjInterface.types`.
 
         :returns: the type of the entity
         :rtype: str
@@ -447,12 +485,17 @@ The Refobject provides the necessary info.")
     def set_typ(self, typ):
         """Set the type of the entity
 
+        Make sure the type is registered in the :class:`RefobjInterface`.
+
         :param typ: the type of the entity
         :type typ: str
         :returns: None
         :rtype: None
-        :raises: None
+        :raises: ValueError
         """
+        if typ not in self._refobjinter.types:
+            raise ValueError("The given typ is not supported by RefobjInterface. Given %s, supported: %s" %
+                             (typ, self._refobjinter.types.keys()))
         self._typ = typ
 
     def get_refobjinter(self, ):
@@ -491,7 +534,12 @@ The Refobject provides the necessary info.")
 
         The element is either an Asset or a Shot.
         Depending on the type only certain files are considered for loading
-        or referencing.
+        or referencing. See :meth:`Reftrack.get_options` and :meth:`Reftrack.fetch_options`.
+        The :class:`ReftypeInterface.fetch_options` is responsible for providing a treemodel
+        with :class:`jukeboxcore.gui.treemodel.TaskFileInfo` as leaves.
+
+        So if the element is be a character asset and the type is "Shader", only the shading handoff
+        files for this asset would be considered.
 
         :returns: The element the reftrack represents
         :rtype: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
@@ -502,11 +550,15 @@ The Refobject provides the necessary info.")
     def set_element(self, element):
         """Set the element for the reftrack to represent.
 
-        The element is either an As
-
         The element is either an Asset or a Shot.
         Depending on the type only certain files are considered for loading
-        or referencing.
+        or referencing. See :meth:`Reftrack.get_options` and :meth:`Reftrack.fetch_options`.
+        The :class:`ReftypeInterface.fetch_options` is responsible for providing a treemodel
+        with :class:`jukeboxcore.gui.treemodel.TaskFileInfo` as leaves.
+
+        So if the element is be a character asset and the type is "Shader", only the shading handoff
+        files for this asset would be considered.
+
         This will also set the available options and set the alien status.
 
         :param element: The element the reftrack represents.
@@ -532,6 +584,8 @@ The Refobject provides the necessary info.")
         """Set the parent reftrack object
 
         If a parent gets deleted, the children will be deleted too.
+        Of course if the child is referenced by the parent it will be implicitly
+        deleted by deleting the parent.
 
         .. Note:: Once the parent is set, it cannot be set again!
 
@@ -579,6 +633,9 @@ The Refobject provides the necessary info.")
         """Return the treeitem that wraps this instance.
 
         There is only a treeitem if the parent has been set once.
+        If you use :meth:`Reftrack.wrap` or initialize a new Reftrack
+        object with type and element, it will have one.
+        TODO: WRITE DOC FROM HERE
 
         :returns: the treeitem for this instance
         :rtype: :class:`TreeItem` | None
