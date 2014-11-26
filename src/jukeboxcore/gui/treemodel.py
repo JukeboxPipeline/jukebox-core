@@ -540,6 +540,10 @@ class TreeModel(QtCore.QAbstractItemModel):
             # break if parent is root because we got all parents we need
             if parent == self._root:
                 break
+            if parent is None:
+                # No new parent but last parent wasn't root!
+                # This means that the item was not in the model!
+                return QtCore.QModelIndex()
             # a new parent was found and we are still not at root
             # search further until we get to root
             i = parent

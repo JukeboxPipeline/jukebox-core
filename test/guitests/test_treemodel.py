@@ -288,3 +288,9 @@ class Test_TreeModel():
         assert i6.row() == 0
         assert i6.column() == 0
         assert i6.parent() == i5
+        invalidi = treemodel.TreeItem(treemodel.ListItemData(['1']))
+        i7 = self.m.index_of_item(invalidi)
+        assert i7.row() == -1
+        assert i7.column() == -1
+        assert not i7.isValid()
+        assert not i7.parent().isValid()
