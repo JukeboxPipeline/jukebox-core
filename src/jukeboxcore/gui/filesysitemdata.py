@@ -3,9 +3,56 @@ e.g. a :class:`jukeboxcore.filesys.TaskFileInfo`
 """
 from PySide import QtCore
 
-from jukeboxcore.gui.main import dt_to_qdatetime
 from jukeboxcore.gui.treemodel import ItemData
 from jukeboxcore.filesys import JB_File
+
+
+def taskfileinfo_element_data(tfi, role):
+    """Return the data for the element (e.g. the Asset or Shot)
+
+    :param tfi: the :class:`jukeboxcore.filesys.TaskFileInfo` holds the data
+    :type tfi: :class:`jukeboxcore.filesys.TaskFileInfo`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the element
+    :rtype: depending on role
+    :raises: None
+    """
+    task = tfi.task
+    element = task.element
+    if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
+        return element.name
+
+
+def taskfileinfo_task_data(tfi, role):
+    """Return the data for task
+
+    :param tfi: the :class:`jukeboxcore.filesys.TaskFileInfo` holds the data
+    :type tfi: :class:`jukeboxcore.filesys.TaskFileInfo`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the task
+    :rtype: depending on role
+    :raises: None
+    """
+    task = tfi.task
+    if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
+        return task.name
+
+
+def taskfileinfo_descriptor_data(tfi, role):
+    """Return the data for descriptor
+
+    :param tfi: the :class:`jukeboxcore.filesys.TaskFileInfo` holds the data
+    :type tfi: :class:`jukeboxcore.filesys.TaskFileInfo`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the descriptor
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
+        return tfi.descriptor
 
 
 def taskfileinfo_path_data(tfi, role):
@@ -20,7 +67,7 @@ def taskfileinfo_path_data(tfi, role):
     :raises: None
     """
     if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
-        return JB_File(tfi)
+        return JB_File(tfi).get_fullpath()
 
 
 def taskfileinfo_version_data(tfi, role):
