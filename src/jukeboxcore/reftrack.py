@@ -1646,6 +1646,11 @@ class ReftypeInterface(object):
     def create_options_model(self, taskfileinfos):
         """Create a new treemodel that has the taskfileinfos as internal_data of the leaves.
 
+        I recommend using :class:`jukeboxcore.gui.filesysitemdata.TaskFileInfoItemData` for the leaves.
+        So a valid root item would be something like::
+
+          rootitem = jukeboxcore.gui.treemodel.ListItemData(["Asset/Shot", "Task", "Descriptor", "Version", "Releasetype"])
+
         :returns: the option model with :class:`TaskFileInfo` as internal_data of the leaves.
         :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: NotImplementedError
