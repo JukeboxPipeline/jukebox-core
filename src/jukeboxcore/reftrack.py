@@ -635,7 +635,8 @@ The Refobject provides the necessary info.")
         There is only a treeitem if the parent has been set once.
         If you use :meth:`Reftrack.wrap` or initialize a new Reftrack
         object with type and element, it will have one.
-        TODO: WRITE DOC FROM HERE
+        Only if you initialize a new Reftrack with a given refobj,
+        :meth:`Reftrack.set_parent` will not be called automatically.
 
         :returns: the treeitem for this instance
         :rtype: :class:`TreeItem` | None
@@ -647,6 +648,7 @@ The Refobject provides the necessary info.")
         """Add the given reftrack object as child
 
         .. Note:: Does not set the parent of the child!
+                  Use :meth:`Reftrack.set_parent` instead.
 
         :param reftrack: the child :class:`Reftrack` instance
         :type reftrack: :class:`Reftrack`
@@ -660,6 +662,7 @@ The Refobject provides the necessary info.")
         """Remove the given reftrack from children
 
         .. Note:: Does not set the parent of the child to None!
+                  Use :meth:`Reftrack.delete` instead.
 
         :param reftrack: the child :class:`Reftrack` instance
         :type reftrack: :class:`Reftrack`
@@ -792,7 +795,10 @@ The Refobject provides the necessary info.")
         return refobj
 
     def reference(self, taskfileinfo):
-        """Reference the entity into the scene. Only possible if the current status is None
+        """Reference the entity into the scene. Only possible if the current status is None.
+
+        This will create a new refobject, then call :meth:`RefobjInterface.reference` and
+        afterwards set the refobj on the :class:`Reftrack` instance.
 
         :param taskfileinfo: the taskfileinfo to reference
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
@@ -802,13 +808,17 @@ The Refobject provides the necessary info.")
         """
         assert self.status() is None,\
             "Can only reference, if the entity is not already referenced/imported. Use replace instead."
-        refobjinter = self.get_refobjinter()
-        refobj = refobjinter.create(self.get_typ(), self.get_parent())
-        refobjinter.reference(taskfileinfo, refobj)
+        refobj = self.create_refobject()
+        self.get_refobjinter().reference(taskfileinfo, refobj)
         self.set_refobj(refobj)
 
     def load(self, ):
         """If the reference is in the scene but unloaded, load it.
+
+        .. Note:: Do not confuse this with reference or import. Load means that it is already referenced.
+                  But the data from the reference was not read until now. Load loads the data from the reference.
+
+        This will call :meth:`RefobjInterface.load` and set the status to :data:`Reftrack.LOADED`.
 
         :returns: None
         :rtype: None
@@ -822,6 +832,11 @@ The Refobject provides the necessary info.")
     def unload(self, ):
         """If the reference is loaded, unload it.
 
+        .. Note:: Do not confuse this with a delete. This means, that the reference stays in the
+                  scene, but no data is read from the reference.
+
+        This will call :meth:`RefobjInterface.unload` and set the status to :data:`Reftrack.UNLOADED`
+
         :returns: None
         :rtype: None
         :raises: AssertionError
@@ -834,6 +849,11 @@ Use delete if you want to get rid of a reference or import."
 
     def import_entity(self, taskfileinfo=None):
         """Import the entity.
+
+        This will import the file for the given taskfileinfo. If no taskfileinfo is given,
+        then it is assumed, that you already referenced the :class:`Reftrack` and the reference
+        will be imported.
+        This will also update the status to :data:`Reftrack.IMPORTED`.
 
         :param taskfileinfo: the taskfileinfo to import. If None is given, try to import
                              the current reference
@@ -849,7 +869,7 @@ Use delete if you want to get rid of a reference or import."
             assert taskfileinfo,\
                 "Can only import an already referenced entity \
 or a given taskfileinfo. No taskfileinfo was given though"
-            refobj = self.get_refobjinter().create(self.get_typ(), self.get_parent())
+            refobj = self.create_refobject(self.get_typ(), self.get_parent())
             refobjinter.import_taskfile(refobj, taskfileinfo)
             self.set_refobj(refobj)
         else:
@@ -858,6 +878,10 @@ or a given taskfileinfo. No taskfileinfo was given though"
 
     def replace(self, taskfileinfo):
         """Replace the current reference or imported entity.
+
+        If the given refobj is not replaceable, e.g. it might be imported
+        or it is not possible to switch the data, then the entity will be deleted,
+        then referenced or imported again, depending on the current status.
 
         :param taskfileinfo: the taskfileinfo that will replace the old entity
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
@@ -883,6 +907,13 @@ or a given taskfileinfo. No taskfileinfo was given though"
     def delete(self, ):
         """Delete the current entity.
 
+        This will also call :meth:`RefobjInterface.get_children_to_delete` and
+        delete these children first then itself by calling :meth:`RefobjInterface.delete`.
+        Then the refobject will be set to None. If the :class:`Reftrack` object is an alien to
+        the current scene, because it is not linked in the database, it will also remove itself
+        from the root and from the treemodel.
+        If it is not an alien, it will just empty all of tis children and update its status.
+
         :returns: None
         :rtype: None
         :raises: AssertionError
@@ -905,10 +936,11 @@ or a given taskfileinfo. No taskfileinfo was given though"
             for c in self._children:
                 self._treeitem.remove_child(c._treeitem)
             self._children = []
+        self.set_status(None)
 
     def duplicate(self, ):
         """Return a new :class:`Reftrack` instance that has the same
-        typ, element and parent. The new reference will be unloaded!
+        typ, element and parent. The new reference will be not referenced or imported!
 
         :returns: a new reftrack instance with same typ, element and parent
         :rtype: :class:`Reftrack`
