@@ -40,12 +40,19 @@ or but them directly in :data:`RefobjInterface.types` when defining the class.
 Each :class:`Reftrack` object can have a parent. A parent is another :class:`Reftack` object and is responsible
 for its children. If the parent is deleted, all other children should be deleted too. This might be the case for a shader.
 Imagine assigning a shader to an asset. The asset would be the parent and the shader the child. If the asset gets deleted
-the shader should be deleted to. Of course, if the shader is already referenced in the asset, it will get deleted automaitcally.
-The :class:`Reftrack` objects handle such cases by themselves.
+the shader should be deleted to. The :class:`Reftrack` objects handle such cases by themselves.
 
 There is also a :class:`ReftrackRoot` class. It is important to group all reftracks of your current scene under the same root.
 The root object is mainly used to find parent :class:`Reftrack` objects. But it also provides a Qt model that you can use
 for views. It holds all :class:`Reftrack` objects in a tree model.
+
+At the moment :class:`Reftrack` does not support nested references. This means that when you reference a file,
+any references in this file should not be handled by the :class:`Reftrack` class.
+If you would like to support such thing, consider the following:
+
+  When loading data, you might get more than one new reference. You have to wrap all the new references.
+  When unloading or deleting an entity, you have to delete the children to. Some children might get implicitly deleted
+  so be careful. Also the status of a child might affect the status of a parent.
 
 You can create a :class:`Reftrack` objects on two ways.
 
@@ -120,6 +127,16 @@ If you have implementations for each interface, it should be fairly easy to use:
     # get the TaskFileInfo for this index.
     taskfileinfo = index.internalPointer().internal_data()
     reftrack.reference(taskfileinfo)
+
+  You could also simply get a list of the avaliable :class:`TaskFileInfo` of the options
+  by using::
+
+    # get all options
+    options = reftrack.get_option_taskfileinfos()
+    # assert that there are any available options
+    if options:
+        # pick one
+        reftrack.import_entity(options[0])
 
 So before you start, here is a list of things to do:
 
@@ -374,6 +391,7 @@ The Refobject provides the necessary info.")
         self._parent = None
         self._children = []
         self._options = None  # tree model of possible files to load
+        self._taskfileinfo_options = []  # list of taskfileinfos that are in options
         self._uptodate = None
         self._alien = True
         self._status = None
@@ -584,8 +602,6 @@ The Refobject provides the necessary info.")
         """Set the parent reftrack object
 
         If a parent gets deleted, the children will be deleted too.
-        Of course if the child is referenced by the parent it will be implicitly
-        deleted by deleting the parent.
 
         .. Note:: Once the parent is set, it cannot be set again!
 
@@ -695,8 +711,18 @@ The Refobject provides the necessary info.")
         :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
-        self._options = self.get_refobjinter().fetch_options(self.get_typ(), self._element)
+        self._options, self._taskfileinfo_options = self.get_refobjinter().fetch_options(self.get_typ(), self._element)
         return self._options
+
+    def get_option_taskfileinfos(self, ):
+        """Return a list of all :class:`TaskFileInfo` that are available as options for
+        referencing, importing, replacing etc.
+
+        :returns: list of TaskFileInfos
+        :rtype: :class:`TaskFileInfo`
+        :raises: None
+        """
+        return self._taskfileinfo_options
 
     def uptodate(self, ):
         """Return True, if the currently loaded entity is the newest version.
@@ -961,6 +987,9 @@ class RefobjInterface(object):
     To interact with the content of each entity, there is a special reftyp interface that
     is not only software specific but also handles only a certain type of entity.
     You can register additional type interfaces, so plugins can introduce their own entity types.
+    See :data:`RefobjInterface.types`. When subclassing you could replace it in your class with a
+    dictionary of :class:`ReftypeInterface`. Or you can call :meth:`RefobjInterface.register_type` at runtime.
+    A type could be "Asset", "Alembic", "Camera" etc.
 
     Methods to implement:
 
@@ -978,6 +1007,7 @@ class RefobjInterface(object):
       * :meth:`RefobjInterface.get_reference`
       * :meth:`RefobjInterface.get_status`
       * :meth:`RefobjInterface.get_taskfile`
+      * :meth:`RefobjInterface.is_referenced`
 
     """
 
@@ -993,7 +1023,7 @@ class RefobjInterface(object):
 
     @classmethod
     def register_type(cls, typ, interface):
-        """Register a new typ with the given interface class
+        """Register a new type with the given interface class
 
         :param typ: the entity typ that you want to register
         :type typ: str
@@ -1032,6 +1062,10 @@ class RefobjInterface(object):
     def set_parent(self, child, parent):
         """Set the parent of the child refobj
 
+        E.g. in Maya you would connect the two refobj nodes
+        so you can later query the connection when calling
+        :meth:`RefobjInterface.get_parent`
+
         :param child: the child refobject
         :type child: refobj
         :param parent: the parent refobject
@@ -1045,6 +1079,8 @@ class RefobjInterface(object):
     @abc.abstractmethod
     def get_children(self, refobj):
         """Get the children refobjects of the given refobject
+
+        It is the reverse query of :meth:`RefobjInterface.get_parent`
 
         :param refobj: the parent refobj
         :type refobj: refobj
@@ -1085,6 +1121,11 @@ class RefobjInterface(object):
     @abc.abstractmethod
     def create_refobj(self, ):
         """Create and return a new refobj
+
+        E.g. in Maya one would create a custom node that can store all
+        the necessary information in the scene.
+        The type and parent will be set automatically, because one would normally call
+        :meth:`RefobjInterface.create`.
 
         :returns: the new refobj
         :rtype: refobj
@@ -1152,7 +1193,10 @@ class RefobjInterface(object):
 
     @abc.abstractmethod
     def get_all_refobjs(self, ):
-        """Return all refobjs in the scene
+        """Return all refobjs in the scene that are not referenced
+
+        We do not support nested references at the moment!
+        So filter them with :meth:`RefobjInterface.is_referenced`.
 
         :returns: all refobjs in the scene
         :rtype: list
@@ -1191,13 +1235,13 @@ class RefobjInterface(object):
 
     @abc.abstractmethod
     def get_reference(self, refobj):
-        """Return the reference that the refobj represents
+        """Return the reference that the refobj represents or None if it is imported.
 
         E.g. in Maya this would return the linked reference node.
 
         :param refobj: the refobj to query
         :type refobj: refobj
-        :returns: the reference object in the scene
+        :returns: the reference object in the scene | None
         :raises: None
         """
         raise NotImplementedError
@@ -1205,6 +1249,8 @@ class RefobjInterface(object):
     def reference(self, taskfileinfo, refobj):
         """Reference the given taskfile info and
         set the created reference on the refobj
+
+        This will call :meth:`ReftypeInterface.reference`, then :meth:`ReftypeInterface.set_reference`.
 
         :param taskfileinfo: The taskfileinfo that holds the information for what to reference
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
@@ -1225,6 +1271,8 @@ class RefobjInterface(object):
         but it is not in a loaded state.
         Loading the reference means, that the actual data will be read.
 
+        This will call :meth:`ReftypeInterface.load`.
+
         :param refobj: the refobject
         :type refobj: refobj
         :returns: None
@@ -1242,6 +1290,8 @@ class RefobjInterface(object):
         but it is not in a loaded state.
         So there is a reference, but data is not read from it.
 
+        This will call :meth:`ReftypeInterface.unload`.
+
         :param refobj: the refobject
         :type refobj: refobj
         :returns: None
@@ -1254,6 +1304,8 @@ class RefobjInterface(object):
 
     def replace(self, refobj, taskfileinfo):
         """Replace the given refobjs reference with the taskfileinfo
+
+        This will call :meth:`ReftypeInterface.replace`.
 
         :param refobj: the refobject
         :type refobj: refobj
@@ -1271,6 +1323,8 @@ class RefobjInterface(object):
         """Return whether the given reference of the refobject is replaceable or
         if it should just get deleted and loaded again.
 
+        This will call :meth:`ReftypeInterface.is_replaceable`.
+
         :param refobj: the refobject to query
         :type refobj: refobj
         :returns: True, if replaceable
@@ -1282,6 +1336,11 @@ class RefobjInterface(object):
 
     def import_reference(self, refobj):
         """Import the reference of the given refobj
+
+        Here we assume, that the reference is already in the scene and
+        we break the encapsulation and pull the data from the reference into
+        the current scene.
+        This will call :meth:`ReftypeInterface.import_reference`.
 
         :param refobj: the refobj with a reference
         :type refobj: refobj
@@ -1295,6 +1354,8 @@ class RefobjInterface(object):
 
     def import_taskfile(self, refobj, taskfileinfo):
         """Import the given taskfileinfo and update the refobj
+
+        This will call :meth:`ReftypeInterface.import_taskfile`.
 
         :param refobj: the refobject
         :type refobj: refobject
@@ -1354,16 +1415,45 @@ class RefobjInterface(object):
         """Fetch the options for possible files to
         load replace etc for the given element.
 
+        This will call :meth:`ReftypeInterface.fetch_options`.
+
         :param typ: the typ of options. E.g. Asset, Alembic, Camera etc
         :type typ: str
         :param element: The element for which the options should be fetched.
         :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
-        :returns: the options
-        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
+        :returns: the option model and a list with all TaskFileInfos
+        :rtype: ( :class:`jukeboxcore.gui.treemodel.TreeModel`, list of :class:`TaskFileInfo` )
         :raises: None
         """
         inter = self.get_typ_interface(typ)
         return inter.fetch_options(element)
+
+    def fetch_option_taskfileinfos(self, typ, element):
+        """Fetch the options for possible files to load, replace etc for the given element.
+
+        Thiss will call :meth:`ReftypeInterface.fetch_option_taskfileinfos`.
+
+        :param typ: the typ of options. E.g. Asset, Alembic, Camera etc
+        :type typ: str
+        :param element: The element for which the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: The options
+        :rtype: list of :class:`TaskFileInfo`
+        """
+        inter = self.get_typ_interface(typ)
+        return inter.fetch_option_taskfileinfos(element)
+
+    @abc.abstractmethod
+    def is_referenced(self, refobj):
+        """Return whether the given refobject is referenced into the scene or it
+        was created in this scene.
+
+        :param refobj: the refobject to query
+        :returns: True if referenced, else False
+        :rtype: :class:`bool`
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
 
 
 class ReftypeInterface(object):
@@ -1387,7 +1477,8 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.import_reference`
       * :meth:`ReftypeInterface.import_taskfile`
       * :meth:`ReftypeInterface.is_replaceable`
-      * :meth:`ReftypeInterface.fetch_options`
+      * :meth:`ReftypeInterface.fetch_option_taskfileinfos`
+      * :meth:`ReftypeInterface.create_options_model`
 
     """
 
@@ -1420,7 +1511,7 @@ class ReftypeInterface(object):
         :param taskfileinfo: The taskfileinfo that holds the information for what to reference
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
         :returns: the reference that was created and should set on the appropriate refobj
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1435,7 +1526,7 @@ class ReftypeInterface(object):
         :param reference: the reference object. E.g. in Maya a reference node
         :returns: None
         :rtype: None
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1450,7 +1541,7 @@ class ReftypeInterface(object):
         :param reference: the reference object. E.g. in Maya a reference node
         :returns: None
         :rtype: None
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1463,7 +1554,7 @@ class ReftypeInterface(object):
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
         :returns: None
         :rtype: None
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1475,7 +1566,7 @@ class ReftypeInterface(object):
         :type refobj: refobj
         :returns: None
         :rtype: None
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1486,7 +1577,7 @@ class ReftypeInterface(object):
         :param reference: the reference object. E.g. in Maya a reference node
         :returns: None
         :rtype: None
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1500,7 +1591,7 @@ class ReftypeInterface(object):
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
         :returns: None
         :rtype: None
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1513,19 +1604,50 @@ class ReftypeInterface(object):
         :type refobj: refobj
         :returns: True, if replaceable
         :rtype: bool
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
-    @abc.abstractmethod
     def fetch_options(self, element):
         """Fetch the options for possible files to
         load replace etc for the given element.
 
+        Options from which to choose a file to load or replace.
+        The options are a :class:`jukeboxcore.gui.treemodel.TreeModel`
+        with :class:`jukeboxcore.filesys.TaskFileInfo` as leafes internal data.
+        I explicitly say leafes because the options might be sorted in a tree like strucure.
+        So the user could first select a task and then the apropriate release.
+        You can take the model and display it to the user so he can select a file.
+
         :param element: The element for which the options should be fetched.
         :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
-        :returns: the options
-        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
+        :returns: the option model and a list with all TaskFileInfos
+        :rtype: ( :class:`jukeboxcore.gui.treemodel.TreeModel`, list of :class:`TaskFileInfo` )
         :raises: None
+        """
+        tfis = self.fetch_option_taskfileinfos(element)
+        return self.create_options_model(tfis), tfis
+
+    @abc.abstractmethod
+    def fetch_option_taskfileinfos(self, element):
+        """Fetch the options for possible files to load, replace etc for the given element.
+
+        Options from which to choose a file to load or replace.
+
+        :param element: The element for which the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: The options
+        :rtype: list of :class:`TaskFileInfo`
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def create_options_model(self, taskfileinfos):
+        """Create a new treemodel that has the taskfileinfos as internal_data of the leaves.
+
+        :returns: the option model with :class:`TaskFileInfo` as internal_data of the leaves.
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
+        :raises: NotImplementedError
         """
         raise NotImplementedError
