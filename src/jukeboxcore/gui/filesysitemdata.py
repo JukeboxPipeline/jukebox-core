@@ -143,7 +143,7 @@ class TaskFileInfoItemData(ItemData):
         :rtype:
         :raises: None
         """
-        return self.columns[column](self._taskfile, role)
+        return self.columns[column](self._taskfileinfo, role)
 
     def internal_data(self, ):
         """Return the taskfile
@@ -152,4 +152,4 @@ class TaskFileInfoItemData(ItemData):
         :rtype: :class:`jukeboxcore.djadapter.models.TaskFile`
         :raises: None
         """
-        return self._taskfile
+        return self._taskfileinfo
