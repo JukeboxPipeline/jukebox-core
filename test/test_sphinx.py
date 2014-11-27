@@ -25,14 +25,14 @@ def htmldir(tmpdir):
     return tmpdir.mkdir("dist").mkdir("docs").strpath
 
 
-def test_linkcheck(doctreedir, htmldir):
+def test_linkcheck(notestdb, doctreedir, htmldir):
     """performs a linkcheck on sphinx build """
     subprocess.check_call(
         ["sphinx-build", "-b", "linkcheck",
          str(doctreedir), str(htmldir)])
 
 
-def test_build_docs(doctreedir, htmldir):
+def test_build_docs(notestdb, doctreedir, htmldir):
     """Performs a build check using sphinx build """
     subprocess.check_call([
         "sphinx-build", "-b", "html",
