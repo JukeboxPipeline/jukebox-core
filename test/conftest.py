@@ -6,6 +6,7 @@ import pytest
 import django
 
 from jukeboxcore.action import ActionStatus
+from jukeboxcore.filesys import TaskFileInfo
 from PySide import QtGui
 
 
@@ -154,6 +155,19 @@ def tfile(task1, user):
     """
     from jukeboxcore import djadapter as dj
     return dj.taskfiles.create(task=task1, version=5, releasetype='handoff', path='anicepath', user=user, typ=dj.FILETYPES['mayamainscene'])
+
+
+@pytest.fixture(scope='session')
+def taskfileinfo(tfile):
+    """Return a TaskFileInfo for the Taskfile of the taskfile fixture
+
+    task=task1, version=5, releasetype='handoff', user=user, typ=dj.FILETYPES['mayamainscene'], descriptor="desc1"
+    """
+    return TaskFileInfo(task=tfile.task,
+                        version=tfile.version,
+                        releasetype=tfile.releasetype,
+                        typ=tfile.typ,
+                        descriptor="desc1")
 
 
 @pytest.fixture(scope='session')
