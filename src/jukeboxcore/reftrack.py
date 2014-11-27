@@ -154,7 +154,8 @@ So before you start, here is a list of things to do:
 import abc
 
 from jukeboxcore.filesys import TaskFileInfo
-from jukeboxcore.gui.treemodel import TreeModel, TreeItem
+from jukeboxcore.gui.treemodel import TreeModel, TreeItem, ListItemData
+from jukeboxcore.gui.reftrackitemdata import ReftrackItemData
 
 
 class ReftrackRoot(object):
@@ -191,16 +192,24 @@ class ReftrackRoot(object):
         :param itemdataclass: the itemdata subclass to be used for wrapping the :class:`Reftrack` objects
                               in the model. Not an instance! A class! The constructor should accept
                               a :class:`Reftrack` object as first argument.
-                              If no class is provided, a default one is used.
+                              If no class is provided, a default one is used. See: :class:`ReftrackItemData`
         :type itemdataclass: :class:`jukeboxcore.gui.treemodel.ItemData` | None
         :raises: None
         """
         if rootitem is None:
-            raise NotImplementedError
-            # rootitem = default one
+            rootdata = ListItemData(["Seq/Atype",
+                                     "Shot/Asset",
+                                     "Task",
+                                     "Releasetype",
+                                     "Descriptor",
+                                     "Version",
+                                     "Status",
+                                     "Uptodate",
+                                     "Alien",
+                                     "Path"])
+            rootitem = TreeItem(rootdata)
         if itemdataclass is None:
-            raise NotImplementedError
-            # itemdataclass = default one
+            itemdataclass = ReftrackItemData
 
         self._model = TreeModel(rootitem)
         self._rootitem = rootitem

@@ -101,7 +101,7 @@ def taskfileinfo_rtype_data(tfi, role):
 
 
 class TaskFileInfoItemData(ItemData):
-    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a :class:`jukeboxcore.gui.treemodel.ItemData`
+    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a :class:`jukeboxcore.filesys.TaskFileInfo`
     """
 
     def __init__(self, taskfileinfo):
@@ -146,10 +146,10 @@ class TaskFileInfoItemData(ItemData):
         return self.columns[column](self._taskfileinfo, role)
 
     def internal_data(self, ):
-        """Return the taskfile
+        """Return the taskfileinfo
 
-        :returns: the taskfile
-        :rtype: :class:`jukeboxcore.djadapter.models.TaskFile`
+        :returns: the taskfileinfo
+        :rtype: :class:`jukeboxcore.filesys.TaskFileInfo`
         :raises: None
         """
         return self._taskfileinfo
