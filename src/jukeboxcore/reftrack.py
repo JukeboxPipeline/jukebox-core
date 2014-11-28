@@ -652,7 +652,6 @@ The Refobject provides the necessary info.")
         root = self.get_root()
         if p:
             pitem = p.get_treeitem()
-            assert pitem, "No TreeItem was set in the parent!"
         else:
             pitem = root.get_rootitem()
         idata = root.create_itemdata(self)
