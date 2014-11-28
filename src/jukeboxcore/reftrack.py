@@ -826,7 +826,7 @@ The Refobject provides the necessary info.")
         :rtype: scene object
         :raises: None
         """
-        refobj = self.get_refobjinter().create_refobject(self.get_typ(), self.get_parent())
+        refobj = self.get_refobjinter().create(self.get_typ(), self.get_parent())
         return refobj
 
     def reference(self, taskfileinfo):
@@ -1016,7 +1016,6 @@ class RefobjInterface(object):
       * :meth:`RefobjInterface.get_reference`
       * :meth:`RefobjInterface.get_status`
       * :meth:`RefobjInterface.get_taskfile`
-      * :meth:`RefobjInterface.is_referenced`
 
     """
 
@@ -1270,7 +1269,7 @@ class RefobjInterface(object):
         :raises: None
         """
         inter = self.get_typ_interface(self.get_type(refobj))
-        ref = inter.reference(taskfileinfo)
+        ref = inter.reference(refobj, taskfileinfo)
         self.set_reference(refobj, ref)
 
     def load(self, refobj):
@@ -1290,7 +1289,7 @@ class RefobjInterface(object):
         """
         inter = self.get_typ_interface(self.get_type(refobj))
         ref = self.get_reference(refobj)
-        inter.load(ref)
+        inter.load(refobj, ref)
 
     def unload(self, refobj):
         """Load the given refobject
@@ -1309,7 +1308,7 @@ class RefobjInterface(object):
         """
         inter = self.get_typ_interface(self.get_type(refobj))
         ref = self.get_reference(refobj)
-        inter.unload(ref)
+        inter.unload(refobj, ref)
 
     def replace(self, refobj, taskfileinfo):
         """Replace the given refobjs reference with the taskfileinfo
@@ -1326,7 +1325,7 @@ class RefobjInterface(object):
         """
         inter = self.get_typ_interface(self.get_type(refobj))
         ref = self.get_reference(refobj)
-        inter.replace(ref, taskfileinfo)
+        inter.replace(refobj, ref, taskfileinfo)
 
     def is_replaceable(self, refobj):
         """Return whether the given reference of the refobject is replaceable or
@@ -1349,7 +1348,8 @@ class RefobjInterface(object):
         Here we assume, that the reference is already in the scene and
         we break the encapsulation and pull the data from the reference into
         the current scene.
-        This will call :meth:`ReftypeInterface.import_reference`.
+        This will call :meth:`ReftypeInterface.import_reference` and set the
+        reference on the refobj to None.
 
         :param refobj: the refobj with a reference
         :type refobj: refobj
@@ -1359,7 +1359,8 @@ class RefobjInterface(object):
         """
         inter = self.get_typ_interface(self.get_type(refobj))
         ref = self.get_reference(refobj)
-        inter.import_reference(ref)
+        inter.import_reference(refobj, ref)
+        self.set_reference(refobj, None)
 
     def import_taskfile(self, refobj, taskfileinfo):
         """Import the given taskfileinfo and update the refobj
@@ -1452,18 +1453,6 @@ class RefobjInterface(object):
         inter = self.get_typ_interface(typ)
         return inter.fetch_option_taskfileinfos(element)
 
-    @abc.abstractmethod
-    def is_referenced(self, refobj):
-        """Return whether the given refobject is referenced into the scene or it
-        was created in this scene.
-
-        :param refobj: the refobject to query
-        :returns: True if referenced, else False
-        :rtype: :class:`bool`
-        :raises: NotImplementedError
-        """
-        raise NotImplementedError
-
 
 class ReftypeInterface(object):
     """Interface for manipulating the content of an entity in the scene
@@ -1510,13 +1499,15 @@ class ReftypeInterface(object):
         return self._refobjinter
 
     @abc.abstractmethod
-    def reference(self, taskfileinfo):
+    def reference(self, refobj, taskfileinfo):
         """Reference the given taskfileinfo into the scene and return the created reference object
 
         The created reference object will be used on :meth:`RefobjInterface.set_reference` to
         set the reference on a refobj. E.g. in Maya, one would return the reference node
         so the RefobjInterface can link the refobj with the refernce object.
+        Do not call :meth:`RefobjInterface.set_reference` yourself.
 
+        :param refobj: the refobj that will be  linked to the reference
         :param taskfileinfo: The taskfileinfo that holds the information for what to reference
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
         :returns: the reference that was created and should set on the appropriate refobj
@@ -1525,13 +1516,14 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def load(self, reference):
+    def load(self, refobj, reference):
         """Load the given reference
 
         Load in this case means, that a reference is already in the scene
         but it is not in a loaded state.
         Loading the reference means, that the actual data will be read.
 
+        :param refobj: the refobj that is linked to the reference
         :param reference: the reference object. E.g. in Maya a reference node
         :returns: None
         :rtype: None
@@ -1540,13 +1532,14 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def unload(self, reference):
+    def unload(self, refobj, reference):
         """Unload the given reference
 
         Unload in this case means, that a reference is stays in the scene
         but it is not in a loaded state.
         So there is a reference, but data is not read from it.
 
+        :param refobj: the refobj that is linked to the reference
         :param reference: the reference object. E.g. in Maya a reference node
         :returns: None
         :rtype: None
@@ -1555,9 +1548,10 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def replace(self, reference, taskfileinfo):
+    def replace(self, refobj, reference, taskfileinfo):
         """Replace the given reference with the given taskfileinfo
 
+        :param refobj: the refobj that is linked to the reference
         :param reference: the reference object. E.g. in Maya a reference node
         :param taskfileinfo: the taskfileinfo that will replace the old entity
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
@@ -1580,9 +1574,13 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def import_reference(self, reference):
+    def import_reference(self, refobj, reference):
         """Import the given reference
 
+        The reference of the refobj will be set to None automatically afterwards with
+        :meth:`RefobjInterface.set_reference`
+
+        :param refobj: the refobj that is linked to the reference
         :param reference: the reference object. E.g. in Maya a reference node
         :returns: None
         :rtype: None
@@ -1658,7 +1656,8 @@ class ReftypeInterface(object):
         I recommend using :class:`jukeboxcore.gui.filesysitemdata.TaskFileInfoItemData` for the leaves.
         So a valid root item would be something like::
 
-          rootitem = jukeboxcore.gui.treemodel.ListItemData(["Asset/Shot", "Task", "Descriptor", "Version", "Releasetype"])
+          rootdata = jukeboxcore.gui.treemodel.ListItemData(["Asset/Shot", "Task", "Descriptor", "Version", "Releasetype"])
+          rootitem = jukeboxcore.gui.treemodel.TreeItem(rootdata)
 
         :returns: the option model with :class:`TaskFileInfo` as internal_data of the leaves.
         :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
