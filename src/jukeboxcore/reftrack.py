@@ -440,13 +440,18 @@ The Refobject provides the necessary info.")
         for r in refobjects:
             track = cls(root=root, refobjinter=refobjinter, refobj=r)
             tracks.append(track)
+
+        # set the parent of the parent first
+        for t in tracks:
+            parentrefobj = refobjinter.get_parent(t._refobj)
+            if not parentrefobj:
+                t.set_parent(None)
+        # TODO DO IT rekursivly or something clever
         for t in tracks:
             parentrefobj = refobjinter.get_parent(t._refobj)
             if parentrefobj:
                 parentreftrack = root.get_reftrack(parentrefobj)
-            else:
-                parentreftrack = None
-            t.set_parent(parentreftrack)
+                t.set_parent(parentreftrack)
         return tracks
 
     def get_root(self, ):

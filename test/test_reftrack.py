@@ -457,6 +457,15 @@ def test_wrap(djprj):
     for tf in djprj.assettaskfiles:
         refobj = Refobj('Asset', None, None, tf, False)
         l.append(refobj)
+    l[0].parent = l[1]
+    l[2].parent = l[1]
+    l[3].parent = l[2]
+    l[1].parent = l[4]
+
     root = ReftrackRoot()
     tracks = Reftrack.wrap(root, refobjinter, l)
-    assert not len(tracks)
+    assert tracks[0].get_parent() is tracks[1]
+    assert tracks[1].get_parent() is tracks[4]
+    assert tracks[2].get_parent() is tracks[1]
+    assert tracks[3].get_parent() is tracks[2]
+    assert tracks[4].get_parent() is None
