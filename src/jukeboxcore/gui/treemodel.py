@@ -469,9 +469,9 @@ class TreeModel(QtCore.QAbstractItemModel):
         parentitem = parent.internalPointer()
         self.beginInsertRows(parent, row, row)
         item._parent = parentitem
-        parentitem.childItems.insert(row, item) # TODO this will produce bugs
+        if parentitem:
+            parentitem.childItems.insert(row, item)
         self.endInsertRows()
-        # self.insertRows(len(parentitem.childItems), 1, parent)
         return True
 
     def removeRow(self, row, parent):
@@ -490,7 +490,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         item = parentitem.childItems[row]
         item.set_model(None)
         item._parent = None
-        del parentitem.childItems[row]  # TODO this will produce bugs
+        del parentitem.childItems[row]
         self.endRemoveRows()
         return True
 
