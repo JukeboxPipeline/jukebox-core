@@ -458,4 +458,5 @@ def test_wrap(djprj):
         refobj = Refobj('Asset', None, None, tf, False)
         l.append(refobj)
     root = ReftrackRoot()
-    Reftrack.wrap(root, refobjinter, l)
+    tracks = Reftrack.wrap(root, refobjinter, l)
+    assert not len(tracks)
