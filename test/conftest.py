@@ -50,7 +50,7 @@ class DjangoProjectContainer(object):
         self.sequences = []
         self.shots = []
         self.atypes = []
-        self.asset = []
+        self.assets = []
         self.shotdepartments = []
         self.assetdepartments = []
         self.shottasks = []
@@ -62,7 +62,7 @@ class DjangoProjectContainer(object):
 
 
 @pytest.fixture(scope='session')
-def djprj(setup_package):
+def djprj(setup_package, user):
     from jukeboxcore import djadapter as dj
     c = DjangoProjectContainer()
     prjpath = os.path.join(tempfile.gettempdir(), "avatar3")
@@ -73,14 +73,14 @@ def djprj(setup_package):
                  {'name': 'Seq02', 'description': 'smurfs fighting cg crap'}]
     shotparams = [{'name': 'Shot01', 'description': 'smurfs face'},
                   {'name': 'Shot02', 'description': 'more smurfing'}]
-    atypeparams = [{'name': 'prop', 'description': 'props'},
-                   {'name': 'char', 'description': 'character'}]
+    atypeparams = [{'name': 'coolprop', 'description': 'cooler props'},
+                   {'name': 'coolchar', 'description': 'cooler characters'}]
     assetparams = [{'name': 'smurf', 'description': 'blue disney character'},
                    {'name': 'gijoe', 'description': 'the stereotypes!'}]
-    adepparams = [{'name': 'Shading', 'short': 'shd'},
-                  {'name': 'Modeling', 'short': 'mod'}]
-    sdepparams = [{'name': 'Animation', 'short': 'ani'},
-                  {'name': 'Rendering', 'short': 'render'}]
+    adepparams = [{'name': 'Texturing', 'short': 'tex'},
+                  {'name': 'Sculpting', 'short': 'scp'}]
+    sdepparams = [{'name': 'Tracking', 'short': 'trck'},
+                  {'name': 'Cleaning', 'short': 'cl'}]
     stfparams = [{'version': 1, 'releasetype': 'release', 'typ': dj.FILETYPES['mayamainscene'], 'descriptor': None},
                  {'version': 2, 'releasetype': 'release', 'typ': dj.FILETYPES['mayamainscene'], 'descriptor': None},
                  {'version': 3, 'releasetype': 'release', 'typ': dj.FILETYPES['mayamainscene'], 'descriptor': None},
@@ -101,11 +101,11 @@ def djprj(setup_package):
         seq = dj.sequences.create(project=prj, **seqparam)
         c.sequences.append(seq)
         for shotparam in shotparams:
-            shot = dj.shots.create(project=prj, **shotparam)
+            shot = dj.shots.create(project=prj, sequence=seq, **shotparam)
             c.shots.append(shot)
 
     for atypeparam in atypeparams:
-        atype = dj.atype.create(**atypeparam)
+        atype = dj.atypes.create(**atypeparam)
         atype.projects.add(prj)
         atype.save()
         c.atypes.append(atype)
@@ -120,7 +120,11 @@ def djprj(setup_package):
             for stfparam in stfparams:
                 tfile = dj.taskfiles.create(task=task,
                                             user=user,
-                                            path="%s%s%s%s" % (prj.name, dep.short, stfparam['releasetype'], stfparam['version']),
+                                            path="%s%s%s%s%s%s" % (prj.name,
+                                                                   s.sequence.name,
+                                                                   s.name, dep.short,
+                                                                   stfparam['releasetype'],
+                                                                   stfparam['version']),
                                             **stfparam)
                 c.shottaskfiles.append(tfile)
                 tfileinfo = TaskFileInfo(task=tfile.task,
@@ -136,7 +140,12 @@ def djprj(setup_package):
             for atfparam in atfparams:
                 tfile = dj.taskfiles.create(task=task,
                                             user=user,
-                                            path="%s%s%s%s" % (prj.name, dep.short, atfparam['releasetype'], atfparam['version']),
+                                            path="%s%s%s%s%s%s" % (prj.name,
+                                                                   a.atype.name,
+                                                                   a.name,
+                                                                   dep.short,
+                                                                   atfparam['releasetype'],
+                                                                   atfparam['version']),
                                             **atfparam)
                 c.assettaskfiles.append(tfile)
                 tfileinfo = TaskFileInfo(task=tfile.task,
@@ -146,7 +155,11 @@ def djprj(setup_package):
                                          descriptor=tfile.descriptor)
                 c.assettfis.append(tfileinfo)
 
-    # TODO link asset and shots
+    for shot in c.shots:
+        for asset in c.assets[:-2]:
+            shot.assets.add(asset)
+
+    return c
 
 
 @pytest.fixture(scope='session')

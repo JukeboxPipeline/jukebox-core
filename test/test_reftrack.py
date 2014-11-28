@@ -1,9 +1,10 @@
 """Tets the functionality of the :mod:`jukeboxcore.reftrack` module"""
-from jukeboxcore.reftrack import Reftrack, RefobjInterface, ReftypeInterface
+from jukeboxcore.reftrack import Reftrack, RefobjInterface, ReftypeInterface, ReftrackRoot
 from jukeboxcore import djadapter
 from jukeboxcore.filesys import TaskFileInfo
 from jukeboxcore.gui.treemodel import TreeItem, TreeModel, ListItemData
 from jukeboxcore.gui.filesysitemdata import TaskFileInfoItemData
+from django.contrib.contenttypes.models import ContentType
 
 
 class Reference(object):
@@ -50,7 +51,8 @@ class Refobj(object):
         self.typ = typ
         self.parent = parent
         self.children = []
-        parent.children.append(self)
+        if parent:
+            parent.children.append(self)
         self.reference = reference
         self.taskfile = taskfile
         self.referenced = referenced
@@ -111,8 +113,9 @@ class TestRefobjInterface(RefobjInterface):
         """
         if refobj.parent:
             refobj.parent.children.remove(refobj)
+        if parent:
+            parent.children.append(refobj)
         refobj.parent = parent
-        parent.children.append(refobj)
 
     def get_children(self, refobj):
         """Return the children of the refobj
@@ -414,7 +417,8 @@ class AssetReftypeInterface(ReftypeInterface):
         :rtype: list of :class:`TaskFileInfo`
         :raises: NotImplementedError
         """
-        tfs = djadapter.taskfiles.filter(task__element=element,
+        tfs = djadapter.taskfiles.filter(task__content_type=ContentType.objects.get_for_model(element),
+                                         task__object_id=element.pk,
                                          typ=djadapter.FILETYPES['mayamainscene'],
                                          releasetype=djadapter.RELEASETYPES['release'])
         l = []
@@ -442,3 +446,16 @@ class AssetReftypeInterface(ReftypeInterface):
             tfidata = TaskFileInfoItemData(tfi)
             TreeItem(tfidata, parent=rootitem)
         return TreeModel(rootitem)
+
+RefobjInterface.register_type('Asset', AssetReftypeInterface)
+
+
+def test_wrap(djprj):
+    current = djprj.shots[0]
+    refobjinter = TestRefobjInterface(current)
+    l = []
+    for tf in djprj.assettaskfiles:
+        refobj = Refobj('Asset', None, None, tf, False)
+        l.append(refobj)
+    root = ReftrackRoot()
+    Reftrack.wrap(root, refobjinter, l)

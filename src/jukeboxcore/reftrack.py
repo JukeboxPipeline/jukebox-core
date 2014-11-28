@@ -393,7 +393,7 @@ class Reftrack(object):
 The Refobject provides the necessary info.")
         self._root = root
         self._refobjinter = refobjinter
-        self._refobj = None
+        self._refobj = refobj
         self._taskfileinfo = None  # the taskfileinfo that the refobj represents
         self._typ = None
         self._element = None
@@ -442,7 +442,10 @@ The Refobject provides the necessary info.")
             tracks.append(track)
         for t in tracks:
             parentrefobj = refobjinter.get_parent(t._refobj)
-            parentreftrack = root.get_reftrack(parentrefobj)
+            if parentrefobj:
+                parentreftrack = root.get_reftrack(parentrefobj)
+            else:
+                parentreftrack = None
             t.set_parent(parentreftrack)
         return tracks
 
@@ -755,7 +758,7 @@ The Refobject provides the necessary info.")
         """
         tfi = self.get_taskfileinfo()
         if tfi:
-            self._uptodate = tfi.isLatest()
+            self._uptodate = tfi.is_latest()
         else:
             self._uptodate = None
         return self._uptodate
@@ -783,7 +786,7 @@ The Refobject provides the necessary info.")
         if not current:
              self._alien = True
         else:
-            assets = current.assets
+            assets = current.assets.all()
             self._alien = self.get_element() not in assets
         return self._alien
 
@@ -1420,6 +1423,20 @@ class RefobjInterface(object):
                             releasetype=tf.releasetype,
                             typ=tf.typ,
                             descriptor=tf.descriptor)
+
+    def get_element(self, refobj):
+        """Return the element the refobj represents.
+
+        The element is either an Asset or a Shot.
+
+        :param refobj: the refobject to query
+        :type refobj: refobj
+        :returns: The element the reftrack represents
+        :rtype: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :raises: None
+        """
+        tf = self.get_taskfile(refobj)
+        return tf.task.element
 
     def fetch_options(self, typ, element):
         """Fetch the options for possible files to

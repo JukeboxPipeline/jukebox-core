@@ -181,7 +181,6 @@ class TreeItem(object):
         :raises: None
         """
         self._model = model
-        print model, self
         for c in self.childItems:
             c.set_model(model)
 
