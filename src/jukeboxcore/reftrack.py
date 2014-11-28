@@ -404,7 +404,7 @@ The Refobject provides the necessary info.")
         self._uptodate = None
         self._alien = True
         self._status = None
-        self._treeitem = None  # a treeitem for the model of the root
+        self._treeitem = self.create_treeitem()  # a treeitem for the model of the root
         """A treeitem for the model of the root. Will get set when parents gets set!"""
 
         # initialize reftrack
@@ -441,17 +441,13 @@ The Refobject provides the necessary info.")
             track = cls(root=root, refobjinter=refobjinter, refobj=r)
             tracks.append(track)
 
-        # set the parent of the parent first
-        for t in tracks:
-            parentrefobj = refobjinter.get_parent(t._refobj)
-            if not parentrefobj:
-                t.set_parent(None)
-        # TODO DO IT rekursivly or something clever
         for t in tracks:
             parentrefobj = refobjinter.get_parent(t._refobj)
             if parentrefobj:
                 parentreftrack = root.get_reftrack(parentrefobj)
-                t.set_parent(parentreftrack)
+            else:
+                parentreftrack = None
+            t.set_parent(parentreftrack)
         return tracks
 
     def get_root(self, ):
