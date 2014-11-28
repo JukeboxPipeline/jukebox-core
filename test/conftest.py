@@ -24,16 +24,6 @@ def setup_package(request):
     request.addfinalizer(fin)
 
 
-@pytest.fixture(scope='function')
-def notestdb(request):
-    """Set an environment variable to prevent creating a test database.
-    Might be necessary for subprocesses."""
-    os.environ['NO_TEST_DB'] = "True"
-
-    def fin():
-        os.environ['NO_TEST_DB'] = ""
-    request.addfinalizer(fin)
-
 @pytest.fixture(scope='session')
 def user(setup_package):
     from jukeboxcore.djadapter import users
@@ -72,24 +62,25 @@ class DjangoProjectContainer(object):
 
 
 @pytest.fixture(scope='session')
-def djprj(setup_package, prjpath):
+def djprj(setup_package):
     from jukeboxcore import djadapter as dj
     c = DjangoProjectContainer()
-    prj = dj.projects.create(name="Pixars Plants", short='plants', _path=prjpath, semester='SS14', scale="cm")
+    prjpath = os.path.join(tempfile.gettempdir(), "avatar3")
+    prj = dj.projects.create(name="Avatar3", short='av3', _path=prjpath, semester='SS14', scale="cm")
     c.prjs.append(prj)
 
-    seqparams = [{'name': 'Seq01', 'description': 'plants everywhere'},
-                 {'name': 'Seq02', 'description': 'little less plants'}]
-    shotparams = [{'name': 'Shot01', 'description': 'closeup of plant'},
-                  {'name': 'Shot02', 'description': 'roots of plant'}]
-    atypeparams = [{'name': 'matte', 'description': 'matte paintings'},
+    seqparams = [{'name': 'Seq01', 'description': 'smurfs dancing'},
+                 {'name': 'Seq02', 'description': 'smurfs fighting cg crap'}]
+    shotparams = [{'name': 'Shot01', 'description': 'smurfs face'},
+                  {'name': 'Shot02', 'description': 'more smurfing'}]
+    atypeparams = [{'name': 'prop', 'description': 'props'},
                    {'name': 'char', 'description': 'character'}]
-    assetparams = [{'name': 'piranha plant', 'description': 'eats mario'},
-                   {'name': 'mario', 'description': 'stomps plants'}]
-    adepparams = [{'name': 'Matte', 'short': 'matte'},
+    assetparams = [{'name': 'smurf', 'description': 'blue disney character'},
+                   {'name': 'gijoe', 'description': 'the stereotypes!'}]
+    adepparams = [{'name': 'Shading', 'short': 'shd'},
                   {'name': 'Modeling', 'short': 'mod'}]
-    sdepparams = [{'name': 'Design', 'short': 'des'},
-                  {'name': 'Destruction', 'short': 'buum'}]
+    sdepparams = [{'name': 'Animation', 'short': 'ani'},
+                  {'name': 'Rendering', 'short': 'render'}]
     stfparams = [{'version': 1, 'releasetype': 'release', 'typ': dj.FILETYPES['mayamainscene'], 'descriptor': None},
                  {'version': 2, 'releasetype': 'release', 'typ': dj.FILETYPES['mayamainscene'], 'descriptor': None},
                  {'version': 3, 'releasetype': 'release', 'typ': dj.FILETYPES['mayamainscene'], 'descriptor': None},
