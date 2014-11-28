@@ -3,7 +3,7 @@ from jukeboxcore.reftrack import Reftrack, RefobjInterface, ReftypeInterface
 from jukeboxcore import djadapter
 from jukeboxcore.filesys import TaskFileInfo
 from jukeboxcore.gui.treemodel import TreeItem, TreeModel, ListItemData
-from jukeboxcore.gui.filesysitemdata import TaskFileInfoData
+from jukeboxcore.gui.filesysitemdata import TaskFileInfoItemData
 
 
 class Reference(object):
@@ -439,6 +439,6 @@ class AssetReftypeInterface(ReftypeInterface):
         rootdata = ListItemData(["Asset/Shot", "Task", "Descriptor", "Version", "Releasetype"])
         rootitem = TreeItem(rootdata)
         for tfi in taskfileinfos:
-            tfidata = TaskFileInfoData(tfi)
+            tfidata = TaskFileInfoItemData(tfi)
             TreeItem(tfidata, parent=rootitem)
         return TreeModel(rootitem)
