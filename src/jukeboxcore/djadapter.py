@@ -30,8 +30,8 @@ from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 
 if not os.environ.get("DJANGO_SETTINGS_MODULE"):
-   import jukeboxcore.main
-   jukeboxcore.main.init_environment()
+    import jukeboxcore.main
+    jukeboxcore.main.init_environment()
 
 django.setup()
 
@@ -42,6 +42,8 @@ def setup_testdatabase():
     We have to do some setup manually. ``manage.py test`` does that usually.
     Writes the db in the env var ``TEST_DB``. This can be torn down afterwards.
     """
+    if os.environ.get("NO_TEST_DB", None):
+        return
     # create a test db. django somehow logs a lot of debug stuff
     # because the log config does not say different
     # so we disable it for the moment
@@ -54,6 +56,7 @@ def setup_testdatabase():
 
 # only setup a testdb if we are testing and if there isnt a test db already
 if os.environ.get('JUKEBOX_TESTING', None):
+    os.environ['TEST_DB'] = ''
     setup_testdatabase()
 
 # now we can import the models

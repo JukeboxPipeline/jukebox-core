@@ -740,7 +740,7 @@ class WD_TreeView(QtGui.QTreeView):
 
         :raises: None
         """
-        super(WD_TableView, self).__init__(parent)
+        super(WD_TreeView, self).__init__(parent)
 
     def mouseDoubleClickEvent(self, event):
         """If a widgetdelegate is double clicked,

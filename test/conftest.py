@@ -24,6 +24,16 @@ def setup_package(request):
     request.addfinalizer(fin)
 
 
+@pytest.fixture(scope='function')
+def notestdb(request):
+    """Set an environment variable to prevent creating a test database.
+    Might be necessary for subprocesses."""
+    os.environ['NO_TEST_DB'] = "True"
+
+    def fin():
+        os.environ['NO_TEST_DB'] = ""
+    request.addfinalizer(fin)
+
 @pytest.fixture(scope='session')
 def user(setup_package):
     from jukeboxcore.djadapter import users
