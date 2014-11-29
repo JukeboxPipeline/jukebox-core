@@ -518,14 +518,17 @@ def test_delete(djprj, reftrackroot, refobjinter):
     robj3 = Refobj('Asset', robj2, None, djprj.assettaskfiles[0], False)
     robj4 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], False)
     robj5 = Refobj('Asset', robj4, None, djprj.assettaskfiles[0], True)
-    tracks = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2, robj3, robj4, robj5])
+    robj6 = Refobj('Asset', robj4, None, djprj.assettaskfiles[0], False)
+    tracks = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2, robj3, robj4, robj5, robj6])
 
     assert tracks[2].get_children_to_delete() == [tracks[3]]
-    assert tracks[0].get_children_to_delete() == [tracks[4], tracks[3]]
-    assert tracks[4].get_children_to_delete() == []
+    assert tracks[0].get_children_to_delete() == [tracks[4]]
+    assert tracks[4].get_children_to_delete() == [tracks[6]]
     tracks[2].delete()
 
     assert tracks[2]._children == []
+    assert tracks[2].get_refobj() is None
+    assert tracks[3].get_refobj() is None
     assert tracks[3].get_parent() is None
     assert robj3.deleted
 

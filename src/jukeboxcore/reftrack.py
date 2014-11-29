@@ -954,7 +954,8 @@ or a given taskfileinfo. No taskfileinfo was given though"
         """Delete the current entity.
 
         This will also call :meth:`RefobjInterface.get_children_to_delete` and
-        delete these children first then itself by calling :meth:`RefobjInterface.delete`.
+        delete these children first by calling :meth:`Reftrack.delete`.
+        To delete the content it will call :meth:`RefobjInterface.delete`.
         Then the refobject will be set to None. If the :class:`Reftrack` object is an alien to
         the current scene, because it is not linked in the database, it will also remove itself
         from the root and from the treemodel.
@@ -967,10 +968,10 @@ or a given taskfileinfo. No taskfileinfo was given though"
         assert self.status() is not None,\
             "Can only delete entities that are already in the scene."
         refobjinter = self.get_refobjinter()
-        refobjs = [r.get_refobj() for r in self.get_children_to_delete()]
-        refobjs.append(self.get_refobj())
-        for r in refobjs:
-            refobjinter.delete(r)
+        children = self.get_children_to_delete()
+        for c in children:
+            c.delete()
+        refobjinter.delete(self.get_refobj())
         self.set_refobj(None, setParent=False)
         if self.alien():
             self.get_parent().remove_child(self)
@@ -1008,16 +1009,6 @@ or a given taskfileinfo. No taskfileinfo was given though"
         """
         refobjinter = self.get_refobjinter()
         children = self._children
-        oldlen = 0
-        newlen = len(children)
-        while oldlen != newlen:
-            start = oldlen
-            oldlen = len(children)
-            for i in range(start, len(children)):
-                print i
-                children.extend(children[i]._children)
-            newlen = len(children)
-        print children
         return [c for c in children if c.get_refobj() and not refobjinter.referenced(c.get_refobj())]
 
 
