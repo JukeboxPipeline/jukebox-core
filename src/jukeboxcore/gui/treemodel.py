@@ -467,6 +467,8 @@ class TreeModel(QtCore.QAbstractItemModel):
         """
         item.set_model(self)
         parentitem = parent.internalPointer()
+        if not parentitem:
+            parentitem = self._root
         self.beginInsertRows(parent, row, row)
         item._parent = parentitem
         if parentitem:

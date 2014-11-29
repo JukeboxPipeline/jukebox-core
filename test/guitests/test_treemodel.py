@@ -112,12 +112,12 @@ class Test_TreeModel():
     @classmethod
     def setup_class(cls):
         cls.root = treemodel.TreeItem(None)
+        cls.m = treemodel.TreeModel(cls.root)
         cls.c1 = treemodel.TreeItem(StubItemData2(), cls.root)
         cls.c2 = treemodel.TreeItem(StubItemData2(), cls.root)
         cls.c3 = treemodel.TreeItem(StubItemData1(), cls.c2)
         cls.c4 = treemodel.TreeItem(StubItemData1(), cls.c2)
         cls.c5 = treemodel.TreeItem(StubItemData1(), cls.c4)
-        cls.m = treemodel.TreeModel(cls.root)
 
     def test_index(self):
         c1i = self.m.index(0, 0, QtCore.QModelIndex())

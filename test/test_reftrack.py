@@ -1,4 +1,6 @@
 """Tets the functionality of the :mod:`jukeboxcore.reftrack` module"""
+import pytest
+
 from jukeboxcore.reftrack import Reftrack, RefobjInterface, ReftypeInterface, ReftrackRoot
 from jukeboxcore import djadapter
 from jukeboxcore.filesys import TaskFileInfo
@@ -450,11 +452,20 @@ class AssetReftypeInterface(ReftypeInterface):
 RefobjInterface.register_type('Asset', AssetReftypeInterface)
 
 
-def test_wrap(djprj):
+@pytest.fixture(scope='function')
+def reftrackroot():
+    return ReftrackRoot()
+
+
+@pytest.fixture(scope='function')
+def refobjinter(djprj):
     current = djprj.shots[0]
-    refobjinter = TestRefobjInterface(current)
+    return TestRefobjInterface(current)
+
+
+def test_wrap(djprj, reftrackroot, refobjinter):
     l = []
-    for tf in djprj.assettaskfiles:
+    for tf in djprj.assettaskfiles[:6]:
         refobj = Refobj('Asset', None, None, tf, False)
         l.append(refobj)
     l[0].parent = l[1]
@@ -462,10 +473,20 @@ def test_wrap(djprj):
     l[3].parent = l[2]
     l[1].parent = l[4]
 
-    root = ReftrackRoot()
-    tracks = Reftrack.wrap(root, refobjinter, l)
+    tracks = Reftrack.wrap(reftrackroot, refobjinter, l)
     assert tracks[0].get_parent() is tracks[1]
     assert tracks[1].get_parent() is tracks[4]
     assert tracks[2].get_parent() is tracks[1]
     assert tracks[3].get_parent() is tracks[2]
     assert tracks[4].get_parent() is None
+
+    for t in tracks:
+        assert t is reftrackroot.get_reftrack(t.get_refobj())
+
+
+def test_create_empty(djprj, reftrackroot, refobjinter):
+    r1 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0])
+    r2 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[1], parent=r1)
+    assert r1 in reftrackroot._reftracks
+    assert r2 in reftrackroot._reftracks
+    assert r2.get_treeitem().parent() is r1.get_treeitem()

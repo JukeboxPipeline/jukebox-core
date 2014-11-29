@@ -655,7 +655,8 @@ The Refobject provides the necessary info.")
         else:
             pitem = root.get_rootitem()
         idata = root.create_itemdata(self)
-        return TreeItem(idata, parent=pitem)
+        item = TreeItem(idata, parent=pitem)
+        return item
 
     def get_treeitem(self, ):
         """Return the treeitem that wraps this instance.
