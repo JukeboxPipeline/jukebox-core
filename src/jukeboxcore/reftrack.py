@@ -469,7 +469,7 @@ The Refobject provides the necessary info.")
         """
         return self._refobj
 
-    def set_refobj(self, refobj):
+    def set_refobj(self, refobj, setParent=True):
         """Set the reftrack object.
 
         The reftrack object interface will determine typ, element, taskfileinfo, status and parent and set these values.
@@ -478,6 +478,8 @@ The Refobject provides the necessary info.")
 
         :param refobj: a reftrack object or None
         :type refobj: None | reftrack object
+        :param setParent: If True, set also the parent
+        :type setParent: :class:`bool`
         :returns: None
         :rtype: None
         :raises: None
@@ -490,13 +492,15 @@ The Refobject provides the necessary info.")
             self.set_typ(refobjinter.get_typ(self._refobj))
             self.set_taskfileinfo(refobjinter.get_taskfileinfo(self._refobj))
             self.set_element(refobjinter.get_element(self._refobj))
-            parentrefobj = refobjinter.get_parent(self._refobj)
-            parentreftrack = root.get_reftrack(parentrefobj)
-            self.set_parent(parentreftrack)
+            if setParent:
+                parentrefobj = refobjinter.get_parent(self._refobj)
+                parentreftrack = root.get_reftrack(parentrefobj)
+                self.set_parent(parentreftrack)
             self.set_status(refobjinter.get_status(self._refobj))
         else:
             self.set_taskfileinfo(None)
-            self.set_parent(None)
+            if setParent:
+                self.set_parent(None)
             self.set_status(None)
         root.update_refobj(old, refobj, self)
         self.fetch_uptodate()
@@ -787,8 +791,11 @@ The Refobject provides the necessary info.")
         if not current:
              self._alien = True
         else:
-            assets = current.assets.all()
-            self._alien = self.get_element() not in assets
+            if self.get_element() == current:
+                self._alien = False
+            else:
+                assets = current.assets.all()
+                self._alien = self.get_element() not in assets
         return self._alien
 
     def status(self, ):
@@ -960,11 +967,11 @@ or a given taskfileinfo. No taskfileinfo was given though"
         assert self.status() is not None,\
             "Can only delete entities that are already in the scene."
         refobjinter = self.get_refobjinter()
-        refobjs = refobjinter.get_children_to_delete(self.get_refobj())
+        refobjs = [r.get_refobj() for r in self.get_children_to_delete()]
         refobjs.append(self.get_refobj())
         for r in refobjs:
             refobjinter.delete(r)
-        self.set_refobj(None)
+        self.set_refobj(None, setParent=False)
         if self.alien():
             self.get_parent().remove_child(self)
             # remove from root
@@ -973,6 +980,7 @@ or a given taskfileinfo. No taskfileinfo was given though"
             self._treeitem.parent().remove_child(self._treeitem)
         else:
             for c in self._children:
+                c._parent = None
                 self._treeitem.remove_child(c._treeitem)
             self._children = []
         self.set_status(None)
@@ -990,6 +998,27 @@ or a given taskfileinfo. No taskfileinfo was given though"
                               typ=self.get_typ(),
                               element=self.get_element(),
                               parent=self.get_parent())
+
+    def get_children_to_delete(self):
+        """Return all children that are not referenced
+
+        :returns: list or :class:`Reftrack`
+        :rtype: list
+        :raises: None
+        """
+        refobjinter = self.get_refobjinter()
+        children = self._children
+        oldlen = 0
+        newlen = len(children)
+        while oldlen != newlen:
+            start = oldlen
+            oldlen = len(children)
+            for i in range(start, len(children)):
+                print i
+                children.extend(children[i]._children)
+            newlen = len(children)
+        print children
+        return [c for c in children if c.get_refobj() and not refobjinter.referenced(c.get_refobj())]
 
 
 class RefobjInterface(object):
@@ -1208,7 +1237,7 @@ class RefobjInterface(object):
         """Return all refobjs in the scene that are not referenced
 
         We do not support nested references at the moment!
-        So filter them with :meth:`RefobjInterface.is_referenced`.
+        So filter them with :meth:`RefobjInterface.referenced`.
 
         :returns: all refobjs in the scene
         :rtype: list

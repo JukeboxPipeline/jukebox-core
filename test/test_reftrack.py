@@ -52,6 +52,7 @@ class Refobj(object):
         self.instances.append(self)
         self.typ = typ
         self.parent = parent
+        self.deleted = False
         self.children = []
         if parent:
             parent.children.append(self)
@@ -365,7 +366,7 @@ class AssetReftypeInterface(ReftypeInterface):
         :rtype: None
         :raises: NotImplementedError
         """
-        pass
+        refobj.deleted = True
 
     def import_reference(self, refobj, reference):
         """Import the given reference
@@ -481,7 +482,9 @@ def test_wrap(djprj, reftrackroot, refobjinter):
     assert tracks[4].get_parent() is None
 
     for t in tracks:
+        assert t.get_typ() == 'Asset'
         assert t is reftrackroot.get_reftrack(t.get_refobj())
+        assert t.status() == Reftrack.IMPORTED
 
 
 def test_create_empty(djprj, reftrackroot, refobjinter):
@@ -490,3 +493,38 @@ def test_create_empty(djprj, reftrackroot, refobjinter):
     assert r1 in reftrackroot._reftracks
     assert r2 in reftrackroot._reftracks
     assert r2.get_treeitem().parent() is r1.get_treeitem()
+    assert r2.get_parent() is r1
+    assert r1.status() is None
+    assert r2.status() is None
+    assert not r1.alien()
+    assert not r2.alien()
+    assert r1.get_typ() == 'Asset'
+    assert r2.get_typ() == 'Asset'
+
+
+def test_alien(djprj, reftrackroot):
+    current = djprj.assets[0]
+    refobjinter = TestRefobjInterface(current)
+    r1 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0])
+    r2 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[1])
+    assert not r1.alien()
+    assert r2.alien()
+
+
+def test_delete(djprj, reftrackroot, refobjinter):
+    robj0 = Refobj('Asset', None, None, djprj.assettaskfiles[0], False)
+    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], True)
+    robj2 = Refobj('Asset', robj1, Reference(), djprj.assettaskfiles[0], True)
+    robj3 = Refobj('Asset', robj2, None, djprj.assettaskfiles[0], False)
+    robj4 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], False)
+    robj5 = Refobj('Asset', robj4, None, djprj.assettaskfiles[0], True)
+    tracks = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2, robj3, robj4, robj5])
+
+    assert tracks[2].get_children_to_delete() == [tracks[3]]
+    assert tracks[0].get_children_to_delete() == [tracks[4], tracks[3]]
+    assert tracks[4].get_children_to_delete() == []
+    tracks[2].delete()
+
+    assert tracks[2]._children == []
+    assert tracks[3].get_parent() is None
+    assert robj3.deleted
