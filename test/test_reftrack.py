@@ -528,3 +528,7 @@ def test_delete(djprj, reftrackroot, refobjinter):
     assert tracks[2]._children == []
     assert tracks[3].get_parent() is None
     assert robj3.deleted
+
+    tracks[0].delete()
+    assert robj4.deleted
+    assert robj0.deleted
