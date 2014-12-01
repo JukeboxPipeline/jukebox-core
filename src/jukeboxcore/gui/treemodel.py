@@ -466,8 +466,9 @@ class TreeModel(QtCore.QAbstractItemModel):
         :raises: None
         """
         item.set_model(self)
-        parentitem = parent.internalPointer()
-        if not parentitem:
+        if parent.isValid():
+            parentitem = parent.internalPointer()
+        else:
             parentitem = self._root
         self.beginInsertRows(parent, row, row)
         item._parent = parentitem
@@ -487,7 +488,10 @@ class TreeModel(QtCore.QAbstractItemModel):
         :rtype: bool
         :raises: None
         """
-        parentitem = parent.internalPointer()
+        if parent.isValid():
+            parentitem = parent.internalPointer()
+        else:
+            parentitem = self._root
         self.beginRemoveRows(parent, row, row)
         item = parentitem.childItems[row]
         item.set_model(None)

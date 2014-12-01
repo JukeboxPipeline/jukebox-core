@@ -260,6 +260,11 @@ class Test_TreeModel():
         assert newi3._parent is None
         assert newi4._model is None
         assert newi4._parent is newi3
+        assert m.index(0, 0, QtCore.QModelIndex()).isValid()
+        m.removeRow(0, QtCore.QModelIndex())
+        assert i1._model is None
+        assert i1._parent is None
+        assert not m.index(0, 0, QtCore.QModelIndex()).isValid()
 
     def test_index_of_item(self, ):
         assert self.root

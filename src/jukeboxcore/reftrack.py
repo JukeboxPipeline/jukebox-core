@@ -275,7 +275,7 @@ class ReftrackRoot(object):
         :rtype: None
         :raises: None
         """
-        self._reftrack.remove(reftrack)
+        self._reftracks.remove(reftrack)
         refobj = reftrack.get_refobj()
         if refobj and refobj in self._parentsearchdict:
             del self._parentsearchdict[refobj]
@@ -989,7 +989,9 @@ or a given taskfileinfo. No taskfileinfo was given though"
         refobjinter.delete(self.get_refobj())
         self.set_refobj(None, setParent=False)
         if self.alien():
-            self.get_parent().remove_child(self)
+            parent = self.get_parent()
+            if parent:
+                parent.remove_child(self)
             # remove from root
             root = self.get_root()
             root.remove_reftrack(self)

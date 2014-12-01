@@ -76,7 +76,7 @@ class Refobj(object):
                 return Reftrack.UNLOADED
 
 
-class TestRefobjInterface(RefobjInterface):
+class DummyRefobjInterface(RefobjInterface):
     """A implementation for the refobjinterface for testing
 
     uses :class:`Refobj` as refobjects
@@ -89,7 +89,7 @@ class TestRefobjInterface(RefobjInterface):
         :type current: Shot or Asset
         :raises: None
         """
-        super(TestRefobjInterface, self).__init__()
+        super(DummyRefobjInterface, self).__init__()
         self.current = current
 
     def get_parent(self, refobj):
@@ -461,7 +461,7 @@ def reftrackroot():
 @pytest.fixture(scope='function')
 def refobjinter(djprj):
     current = djprj.shots[0]
-    return TestRefobjInterface(current)
+    return DummyRefobjInterface(current)
 
 
 def test_wrap(djprj, reftrackroot, refobjinter):
@@ -504,19 +504,21 @@ def test_create_empty(djprj, reftrackroot, refobjinter):
 
 def test_alien(djprj, reftrackroot):
     current = djprj.assets[0]
-    refobjinter = TestRefobjInterface(current)
+    refobjinter = DummyRefobjInterface(current)
     r1 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0])
     r2 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[1])
     assert not r1.alien()
     assert r2.alien()
 
 
-def test_delete(djprj, reftrackroot, refobjinter):
+def test_delete(djprj, reftrackroot):
+    current = djprj.assets[0]
+    refobjinter = DummyRefobjInterface(current)
     ref0 = Reference()
     ref1 = Reference()
     ref2 = Reference()
     ref4 = Reference()
-    robj0 = Refobj('Asset', None, ref0, djprj.assettaskfiles[0], None)
+    robj0 = Refobj('Asset', None, ref0, djprj.assettaskfiles[-1], None)
     robj1 = Refobj('Asset', robj0, ref1, djprj.assettaskfiles[0], ref0)
     robj2 = Refobj('Asset', robj1, ref2, djprj.assettaskfiles[0], ref1)
     robj3 = Refobj('Asset', robj2, None, djprj.assettaskfiles[0], None)
@@ -542,3 +544,8 @@ def test_delete(djprj, reftrackroot, refobjinter):
     tracks[0].delete()
     assert robj4.deleted
     assert robj0.deleted
+
+
+def test_duplicate(djprj, reftrackroot, refobjinter):
+    ref = Reference()
+    robj = Refobj('Asset', None, ref, djprj.assettaskfiles[0], None)
