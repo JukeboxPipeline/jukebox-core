@@ -548,7 +548,6 @@ def test_delete(djprj, reftrackroot):
     assert robj4.deleted
     assert robj0.deleted
     for i, t in enumerate(tracks):
-        print i
         assert t not in reftrackroot._reftracks
 
 
