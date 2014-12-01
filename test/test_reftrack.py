@@ -548,4 +548,20 @@ def test_delete(djprj, reftrackroot):
 
 def test_duplicate(djprj, reftrackroot, refobjinter):
     ref = Reference()
-    robj = Refobj('Asset', None, ref, djprj.assettaskfiles[0], None)
+    robj0 = Refobj('Asset', None, ref, djprj.assettaskfiles[0], None)
+    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], None)
+    tracks = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1])
+    tracks.append(Reftrack(root=reftrackroot,
+                           refobjinter=refobjinter,
+                           typ='Asset',
+                           element=djprj.assettaskfiles[1],
+                           parent=tracks[1]))
+    for t in tracks:
+        d = t.duplicate()
+        assert d.get_root() is t.get_root()
+        assert d.get_refobjinter() is t.get_refobjinter()
+        assert d.get_typ() is t.get_typ()
+        assert d.get_element() is t.get_element()
+        assert d.get_parent() is t.get_parent()
+        assert d.status() is None
+        assert d.get_treeitem().parent() is t.get_treeitem().parent()
