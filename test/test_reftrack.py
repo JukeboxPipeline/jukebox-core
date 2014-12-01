@@ -533,17 +533,23 @@ def test_delete(djprj, reftrackroot):
     assert tracks[2].get_children_to_delete() == [tracks[3]]
     assert tracks[0].get_children_to_delete() == [tracks[4], tracks[6], tracks[3]]
     assert tracks[4].get_children_to_delete() == [tracks[5], tracks[6]]
-    tracks[2].delete()
 
+    tracks[2].delete()
     assert tracks[2]._children == []
     assert tracks[2].get_refobj() is None
+    assert tracks[2] in reftrackroot._reftracks
     assert tracks[3].get_refobj() is None
+    assert tracks[3] not in reftrackroot._reftracks
     assert tracks[3].get_parent() is None
     assert robj3.deleted
 
+    assert tracks[0].alien()
     tracks[0].delete()
     assert robj4.deleted
     assert robj0.deleted
+    for i, t in enumerate(tracks):
+        print i
+        assert t not in reftrackroot._reftracks
 
 
 def test_duplicate(djprj, reftrackroot, refobjinter):

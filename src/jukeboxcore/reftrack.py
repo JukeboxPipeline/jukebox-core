@@ -969,10 +969,15 @@ or a given taskfileinfo. No taskfileinfo was given though"
         """
         assert self.status() is not None,\
             "Can only delete entities that are already in the scene."
-        children = self.get_children_to_delete()
-        for c in children:
+        todelete = self.get_children_to_delete()
+        allchildren = self.get_all_children()
+        for c in todelete:
             c._delete()
+        for c in allchildren:
+            self.get_root().remove_reftrack(c)
         self._delete()
+        if self.alien():
+            self.get_root().remove_reftrack(self)
 
     def _delete(self, ):
         """Internal implementation for deleting a reftrack.
@@ -992,15 +997,12 @@ or a given taskfileinfo. No taskfileinfo was given though"
             parent = self.get_parent()
             if parent:
                 parent.remove_child(self)
-            # remove from root
-            root = self.get_root()
-            root.remove_reftrack(self)
             self._treeitem.parent().remove_child(self._treeitem)
         else:
-            for c in self._children:
+            for c in self.get_all_children():
                 c._parent = None
                 self._treeitem.remove_child(c._treeitem)
-            self._children = []
+        self._children = []
         self.set_status(None)
 
     def duplicate(self, ):
