@@ -33,7 +33,7 @@ class Refobj(object):
 
     instances = []
 
-    def __init__(self, typ, parent, reference, taskfile, referenced):
+    def __init__(self, typ, parent, reference, taskfile, referencedby):
         """Initialize a new refobj
 
         :param typ: the type of the entity
@@ -44,8 +44,8 @@ class Refobj(object):
         :type reference: :class:`Referencce`
         :param taskfile: the taskfile that is loaded
         :type taskfile: :class:`jukeboxcore.djadapter.models.TaskFile`
-        :param referenced: True, if this refobj was referenced by some reference
-        :type referenced: :class:`bool`
+        :param referencedby: The reference that holds this refobj.
+        :type referencedby: :class:`Reference` | None
         :rtype: None
         :raises: None
         """
@@ -58,7 +58,7 @@ class Refobj(object):
             parent.children.append(self)
         self.reference = reference
         self.taskfile = taskfile
-        self.referenced = referenced
+        self.referencedby = referencedby
 
     def get_status(self, ):
         """Return the status
@@ -171,16 +171,16 @@ class TestRefobjInterface(RefobjInterface):
         """
         return Refobj(None, None, None, None, False)
 
-    def referenced(self, refobj):
-        """Return whether the given refobj is referenced.
+    def referenced_by(self, refobj):
+        """Return the reference that holds the given refobj.
 
         :param refobj: the refobj to query
         :type refobj: refobj
-        :returns: True if referenced, False if imported
-        :rtype: None
+        :returns: The reference
+        :rtype: :class:`Reference` | None
         :raises: None
         """
-        return refobj.referenced
+        return refobj.referencedby
 
     def delete_refobj(self, refobj):
         """Delete the given refobj
@@ -512,18 +512,25 @@ def test_alien(djprj, reftrackroot):
 
 
 def test_delete(djprj, reftrackroot, refobjinter):
-    robj0 = Refobj('Asset', None, None, djprj.assettaskfiles[0], False)
-    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], True)
-    robj2 = Refobj('Asset', robj1, Reference(), djprj.assettaskfiles[0], True)
-    robj3 = Refobj('Asset', robj2, None, djprj.assettaskfiles[0], False)
-    robj4 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], False)
-    robj5 = Refobj('Asset', robj4, None, djprj.assettaskfiles[0], True)
-    robj6 = Refobj('Asset', robj4, None, djprj.assettaskfiles[0], False)
+    ref0 = Reference()
+    ref1 = Reference()
+    ref2 = Reference()
+    ref4 = Reference()
+    robj0 = Refobj('Asset', None, ref0, djprj.assettaskfiles[0], None)
+    robj1 = Refobj('Asset', robj0, ref1, djprj.assettaskfiles[0], ref0)
+    robj2 = Refobj('Asset', robj1, ref2, djprj.assettaskfiles[0], ref1)
+    robj3 = Refobj('Asset', robj2, None, djprj.assettaskfiles[0], None)
+    robj4 = Refobj('Asset', robj0, ref4, djprj.assettaskfiles[0], None)
+    robj5 = Refobj('Asset', robj4, None, djprj.assettaskfiles[0], ref0)
+    robj6 = Refobj('Asset', robj4, None, djprj.assettaskfiles[0], None)
     tracks = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2, robj3, robj4, robj5, robj6])
 
+    assert tracks[0].get_all_children() == [tracks[1], tracks[4], tracks[2], tracks[5], tracks[6], tracks[3]]
+    assert tracks[6].get_all_children() == []
+    assert tracks[4].get_all_children() == [tracks[5], tracks[6]]
     assert tracks[2].get_children_to_delete() == [tracks[3]]
-    assert tracks[0].get_children_to_delete() == [tracks[4]]
-    assert tracks[4].get_children_to_delete() == [tracks[6]]
+    assert tracks[0].get_children_to_delete() == [tracks[4], tracks[6], tracks[3]]
+    assert tracks[4].get_children_to_delete() == [tracks[5], tracks[6]]
     tracks[2].delete()
 
     assert tracks[2]._children == []

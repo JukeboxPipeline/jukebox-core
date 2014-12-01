@@ -153,6 +153,8 @@ So before you start, here is a list of things to do:
 """
 import abc
 
+from jukeboxcore.log import get_logger
+log = get_logger(__name__)
 from jukeboxcore.filesys import TaskFileInfo
 from jukeboxcore.gui.treemodel import TreeModel, TreeItem, ListItemData
 from jukeboxcore.gui.reftrackitemdata import ReftrackItemData
@@ -967,10 +969,23 @@ or a given taskfileinfo. No taskfileinfo was given though"
         """
         assert self.status() is not None,\
             "Can only delete entities that are already in the scene."
-        refobjinter = self.get_refobjinter()
         children = self.get_children_to_delete()
         for c in children:
-            c.delete()
+            c._delete()
+        self._delete()
+
+    def _delete(self, ):
+        """Internal implementation for deleting a reftrack.
+
+        This will just delete the reftrack, set the children to None,
+        update the status, and the rootobject. If the object is an alien,
+        it will also set the parent to None, so it dissapears from the model.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        refobjinter = self.get_refobjinter()
         refobjinter.delete(self.get_refobj())
         self.set_refobj(None, setParent=False)
         if self.alien():
@@ -1000,6 +1015,24 @@ or a given taskfileinfo. No taskfileinfo was given though"
                               element=self.get_element(),
                               parent=self.get_parent())
 
+    def get_all_children(self):
+        """Get all children including children of children
+
+        :returns: all children including children of children
+        :rtype: list of :class:`Reftrack`
+        :raises: None
+        """
+        children = self._children[:]
+        oldlen = 0
+        newlen = len(children)
+        while oldlen != newlen:
+            start = oldlen
+            oldlen = len(children)
+            for i in range(start, len(children)):
+                children.extend(children[i]._children)
+            newlen = len(children)
+        return children
+
     def get_children_to_delete(self):
         """Return all children that are not referenced
 
@@ -1008,12 +1041,37 @@ or a given taskfileinfo. No taskfileinfo was given though"
         :raises: None
         """
         refobjinter = self.get_refobjinter()
-        children = self._children
-        return [c for c in children if c.get_refobj() and not refobjinter.referenced(c.get_refobj())]
+        children = self.get_all_children()
+
+        todelete = []
+        for c in children:
+            if c.status() is None:
+                # if child is not in scene we do not have to delete it
+                continue
+            rby = refobjinter.referenced_by(c.get_refobj())
+            if rby is None:
+                # child is not part of another reference.
+                # we have to delete it for sure
+                todelete.append(c)
+                continue
+            # check if child is referenced by any parent up to self
+            # if it is not referenced by any refrence of a parent, then we
+            # can assume it is referenced by a parent of a greater scope,
+            # e.g. the parent of self. because we do not delete anything above self
+            # we would have to delete the child manually
+            parent = c.get_parent()
+            while parent != self.get_parent():
+                if refobjinter.get_reference(parent.get_refobj()) == rby:
+                    # is referenced by a parent so it will get delted when the parent is deleted.
+                    break
+                parent = parent.get_parent()
+            else:
+                todelete.append(c)
+        return todelete
 
 
 class RefobjInterface(object):
-    """Interface to interact with a reference object that is in your scene.
+    """Interface to interact with a refernece object that is in your scene.
 
     This interface is abstract. You should implement it for every software where you need
     a reference workflow.
@@ -1032,7 +1090,7 @@ class RefobjInterface(object):
       * :meth:`RefobjInterface.get_typ`
       * :meth:`RefobjInterface.set_typ`
       * :meth:`RefobjInterface.create_refobj`
-      * :meth:`RefobjInterface.referenced`
+      * :meth:`RefobjInterface.referenced_by`
       * :meth:`RefobjInterface.delete_refobj`
       * :meth:`RefobjInterface.get_all_refobj`
       * :meth:`RefobjInterface.get_current_element`
@@ -1166,13 +1224,15 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def referenced(self, refobj):
-        """Return whether the given refobj is referenced.
+    def referenced_by(self, refobj):
+        """Return the reference that holds the given refobj.
+
+        Returns None if it is imported/in the current scene.
 
         :param refobj: the refobj to query
         :type refobj: refobj
-        :returns: True if referenced, False if imported
-        :rtype: None
+        :returns: the reference that holds the given refobj
+        :rtype: reference | None
         :raises: None
         """
         raise NotImplementedError
@@ -1206,8 +1266,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     def delete(self, refobj):
-        """Delete the given refobj and all of it\'s children
-        that should be deleted as well.
+        """Delete the given refobj and the contents of the entity
 
         :param refobj: the refobj to delete
         :type refobj: refobj
@@ -1215,13 +1274,9 @@ class RefobjInterface(object):
         :rtype: None
         :raises: None
         """
-        refobjs = self.get_children(refobj)
-        refobjs = [r for r in refobjs if self.referenced(r)]
-        refobjs.append(refobj)
-        for r in refobjs:
-            i = self.get_typ_interface(self.get_typ(r))
-            i.delete(r)
-            self.delete_refobj(r)
+        i = self.get_typ_interface(self.get_typ(refobj))
+        i.delete(refobj)
+        self.delete_refobj(refobj)
 
     @abc.abstractmethod
     def get_all_refobjs(self, ):
