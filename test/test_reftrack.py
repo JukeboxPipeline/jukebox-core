@@ -198,14 +198,11 @@ class DummyRefobjInterface(RefobjInterface):
     def get_all_refobjs(self, ):
         """Return all refobjs in the scene that are not referenced
 
-        We do not support nested references at the moment!
-        So filter them with :meth:`RefobjInterface.is_referenced`.
-
         :returns: all refobjs in the scene
         :rtype: list
         :raises: None
         """
-        return filter(self.is_referenced, Refobj.instances)
+        return Refobj.instances
 
     def get_current_element(self, ):
         """Return the currenty open Shot or Asset

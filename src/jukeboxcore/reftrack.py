@@ -1289,10 +1289,7 @@ class RefobjInterface(object):
 
     @abc.abstractmethod
     def get_all_refobjs(self, ):
-        """Return all refobjs in the scene that are not referenced
-
-        We do not support nested references at the moment!
-        So filter them with :meth:`RefobjInterface.referenced`.
+        """Return all refobjs in the scene
 
         :returns: all refobjs in the scene
         :rtype: list
