@@ -46,14 +46,6 @@ There is also a :class:`ReftrackRoot` class. It is important to group all reftra
 The root object is mainly used to find parent :class:`Reftrack` objects. But it also provides a Qt model that you can use
 for views. It holds all :class:`Reftrack` objects in a tree model.
 
-At the moment :class:`Reftrack` does not support nested references. This means that when you reference a file,
-any references in this file should not be handled by the :class:`Reftrack` class.
-If you would like to support such thing, consider the following:
-
-  When loading data, you might get more than one new reference. You have to wrap all the new references.
-  When unloading or deleting an entity, you have to delete the children to. Some children might get implicitly deleted
-  so be careful. Also the status of a child might affect the status of a parent.
-
 You can create a :class:`Reftrack` objects on two ways.
 
   First case would be, you have a scene with refobjs. This would mean, you want to wrap all refobjs in a :class:`Reftrack` object.
@@ -92,6 +84,10 @@ If you have implementations for each interface, it should be fairly easy to use:
     refobjs = refobjinter.get_all_refobjs()
     # wrap them in reftrack instances
     reftracks = Reftrack.wrap(reftrackroot, refobjinter, refobjs)
+    # alternatively if you only want to wrap the ones you haven't
+    # this would return all refobjects that are not in root
+    newrefobjs = Reftrack.get_unwrapped(reftrackroot, refobjinter)
+    newreftracks = Reftrack.wrap(reftrackroot, refobjinter, newrefobjs)
 
   Done. Now to display that in a view you can get the model of the root::
 
@@ -432,6 +428,10 @@ The Refobject provides the necessary info.")
         This is the preferred method for creating refobjects. Because you cannot set
         the parent of a :class:`Reftrack` before the parent has been wrapped itselfed.
 
+        :param root: the root that groups all reftracks and makes it possible to search for parents
+        :type root: :class:`ReftrackRoot`
+        :param refobjinter: a programm specific reftrack object interface
+        :type refobjinter: :class:`RefobjInterface`
         :param refobjects: list of refobjects
         :type refobjects: list
         :returns: list with the wrapped :class:`Reftrack` instances
@@ -451,6 +451,23 @@ The Refobject provides the necessary info.")
                 parentreftrack = None
             t.set_parent(parentreftrack)
         return tracks
+
+    @classmethod
+    def get_unwrapped(self, root, refobjinter):
+        """Return a set with all refobjects in the scene that are not in already
+        wrapped in root.
+
+        :param root: the root that groups all reftracks and makes it possible to search for parents
+        :type root: :class:`ReftrackRoot`
+        :param refobjinter: a programm specific reftrack object interface
+        :type refobjinter: :class:`RefobjInterface`
+        :returns: a set with unwrapped refobjects
+        :rtype: set
+        :raises: None
+        """
+        all_refobjs = set(refobjinter.get_all_refobjs())
+        wrapped = set(root._parentsearchdict.keys())
+        return all_refobjs - wrapped
 
     def get_root(self, ):
         """Return the ReftrackRoot this instance belongs to.
@@ -950,8 +967,8 @@ or a given taskfileinfo. No taskfileinfo was given though"
             refobjinter.replace(refobj, taskfileinfo)
             self.fetch_uptodate()
         else:
-            status = self.status()
             self.delete()
+            status = self.status()
             if status == self.IMPORTED:
                 self.import_entity(taskfileinfo)
             else:
@@ -999,14 +1016,19 @@ or a given taskfileinfo. No taskfileinfo was given though"
         refobjinter.delete(self.get_refobj())
         self.set_refobj(None, setParent=False)
         if self.alien():
+            # it should not be in the scene
+            # so also remove it from the model
+            # so we cannot load it again
             parent = self.get_parent()
             if parent:
                 parent.remove_child(self)
             self._treeitem.parent().remove_child(self._treeitem)
         else:
+            # only remove all children from the model and set their parent to None
             for c in self.get_all_children():
                 c._parent = None
                 self._treeitem.remove_child(c._treeitem)
+        # this should not have any children anymore
         self._children = []
         self.set_status(None)
 
@@ -1078,6 +1100,56 @@ or a given taskfileinfo. No taskfileinfo was given though"
                 todelete.append(c)
         return todelete
 
+    def get_suggestions(self, ):
+        """Return a list with possible children for this reftrack
+
+        Each Reftrack may want different children. E.g. a Asset wants
+        to suggest a shader for itself and all assets that are linked in
+        to it in the database. Suggestions only apply for enities with status
+        other than None.
+
+        A suggestion is a tuple of typ and element. It will be used to create a newlen
+        :class:`Reftrack`. The parent will be this instance, root and interface will
+        of course be the same.
+
+        This will call :meth:`RefobjInterface.get_suggestions` which will delegate the call to the
+        appropriate :class:`ReftypeInterface`. So suggestions may vary for every typ and might depend on the
+        status of the reftrack.
+
+        :returns: list of suggestions, tuples of type and element.
+        :rtype: list
+        :raises: None
+        """
+        return self.get_refobjinter().get_suggestions(self)
+
+    def fetch_new_children(self, ):
+        """Collect all new children and add the suggestions to the children as well
+
+        When an entity is loaded, referenced, imported etc there might be new children.
+        Also it might want to suggest children itself, like a Shader for an asset.
+
+        First we wrap all unwrapped children. See: :meth:`Reftrack.get_unwrapped`, :meth:`Reftrack.wrap`.
+        Then we get the suggestions. See: :meth:`Reftrack.get_suggestions`. All suggestions that are not
+        already a child of this Reftrack instance, will be used to create a new Reftrack with the type
+        and element of the suggestion and the this instance as parent.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        root = self.get_root()
+        refobjinter = self.get_refobjinter()
+        unwrapped = self.get_unwrapped(root, refobjinter)
+        self.wrap(unwrapped)
+
+        suggestions = self.get_suggestions()
+        for typ, element in suggestions:
+            for c in self._children:
+                if typ == c.get_typ() and element == c.get_element():
+                    break
+            else:
+                Reftrack(root=root, refobjinter=refobjinter, typ=typ, element=element, parent=self)
+
 
 class RefobjInterface(object):
     """Interface to interact with a refernece object that is in your scene.
@@ -1101,7 +1173,7 @@ class RefobjInterface(object):
       * :meth:`RefobjInterface.create_refobj`
       * :meth:`RefobjInterface.referenced_by`
       * :meth:`RefobjInterface.delete_refobj`
-      * :meth:`RefobjInterface.get_all_refobj`
+      * :meth:`RefobjInterface.get_all_refobjs`
       * :meth:`RefobjInterface.get_current_element`
       * :meth:`RefobjInterface.set_reference`
       * :meth:`RefobjInterface.get_reference`
@@ -1353,7 +1425,7 @@ class RefobjInterface(object):
         :rtype: None
         :raises: None
         """
-        inter = self.get_typ_interface(self.get_type(refobj))
+        inter = self.get_typ_interface(self.get_typ(refobj))
         ref = inter.reference(refobj, taskfileinfo)
         self.set_reference(refobj, ref)
 
@@ -1372,7 +1444,7 @@ class RefobjInterface(object):
         :rtype: None
         :raises: None
         """
-        inter = self.get_typ_interface(self.get_type(refobj))
+        inter = self.get_typ_interface(self.get_typ(refobj))
         ref = self.get_reference(refobj)
         inter.load(refobj, ref)
 
@@ -1391,7 +1463,7 @@ class RefobjInterface(object):
         :rtype: None
         :raises: None
         """
-        inter = self.get_typ_interface(self.get_type(refobj))
+        inter = self.get_typ_interface(self.get_typ(refobj))
         ref = self.get_reference(refobj)
         inter.unload(refobj, ref)
 
@@ -1408,7 +1480,7 @@ class RefobjInterface(object):
         :rtype: None
         :raises: None
         """
-        inter = self.get_typ_interface(self.get_type(refobj))
+        inter = self.get_typ_interface(self.get_typ(refobj))
         ref = self.get_reference(refobj)
         inter.replace(refobj, ref, taskfileinfo)
 
@@ -1424,7 +1496,7 @@ class RefobjInterface(object):
         :rtype: bool
         :raises: None
         """
-        inter = self.get_typ_interface(self.get_type(refobj))
+        inter = self.get_typ_interface(self.get_typ(refobj))
         return inter.is_replaceable(refobj)
 
     def import_reference(self, refobj):
@@ -1442,7 +1514,7 @@ class RefobjInterface(object):
         :rtype: None
         :raises: None
         """
-        inter = self.get_typ_interface(self.get_type(refobj))
+        inter = self.get_typ_interface(self.get_typ(refobj))
         ref = self.get_reference(refobj)
         inter.import_reference(refobj, ref)
         self.set_reference(refobj, None)
@@ -1460,7 +1532,7 @@ class RefobjInterface(object):
         :rtype: None
         :raises: None
         """
-        inter = self.get_typ_interface(self.get_type(refobj))
+        inter = self.get_typ_interface(self.get_typ(refobj))
         inter.import_taskfile(refobj, taskfileinfo)
 
     @abc.abstractmethod
@@ -1551,6 +1623,31 @@ class RefobjInterface(object):
         """
         inter = self.get_typ_interface(typ)
         return inter.fetch_option_taskfileinfos(element)
+
+    def get_suggestions(self, reftrack):
+        """Return a list with possible children for this reftrack
+
+        Each Reftrack may want different children. E.g. a Asset wants
+        to suggest a shader for itself and all assets that are linked in
+        to it in the database. Suggestions only apply for enities with status
+        other than None.
+
+        A suggestion is a tuple of typ and element. It will be used to create a newlen
+        :class:`Reftrack`. The parent will be this instance, root and interface will
+        of course be the same.
+
+        This will delegate the call to the  appropriate :class:`ReftypeInterface`.
+        So suggestions may vary for every typ and might depend on the
+        status of the reftrack.
+
+        :param reftrack: the reftrack which needs suggestions
+        :type reftrack: :class:`Reftrack`
+        :returns: list of suggestions, tuples of type and element.
+        :rtype: list
+        :raises: None
+        """
+        inter = self.get_typ_interface(reftrack.get_typ())
+        return inter.get_suggestions(reftrack)
 
 
 class ReftypeInterface(object):
@@ -1760,6 +1857,31 @@ class ReftypeInterface(object):
 
         :returns: the option model with :class:`TaskFileInfo` as internal_data of the leaves.
         :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_suggestions(self, reftrack):
+        """Return a list with possible children for this reftrack
+
+        Each Reftrack may want different children. E.g. a Asset wants
+        to suggest a shader for itself and all assets that are linked in
+        to it in the database. Suggestions only apply for enities with status
+        other than None.
+
+        A suggestion is a tuple of typ and element. It will be used to create a newlen
+        :class:`Reftrack`. The parent will be this instance, root and interface will
+        of course be the same.
+
+        This will delegate the call to the  appropriate :class:`ReftypeInterface`.
+        So suggestions may vary for every typ and might depend on the
+        status of the reftrack.
+
+        :param reftrack: the reftrack which needs suggestions
+        :type reftrack: :class:`Reftrack`
+        :returns: list of suggestions, tuples of type and element.
+        :rtype: list
         :raises: NotImplementedError
         """
         raise NotImplementedError

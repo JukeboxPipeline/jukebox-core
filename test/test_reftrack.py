@@ -447,6 +447,20 @@ class AssetReftypeInterface(ReftypeInterface):
             TreeItem(tfidata, parent=rootitem)
         return TreeModel(rootitem)
 
+    def get_suggestions(self, reftrack):
+        """Return a list with possible children for this reftrack
+
+        :param reftrack: the reftrack which needs suggestions
+        :type reftrack: :class:`Reftrack`
+        :returns: list of suggestions, tuples of type and element.
+        :rtype: list
+        :raises: NotImplementedError
+        """
+        element = reftrack.get_element()
+        elements = element.assets.all()
+        typ = reftrack.get_typ()
+        return [(typ, e) for e in elements]
+
 RefobjInterface.register_type('Asset', AssetReftypeInterface)
 
 
