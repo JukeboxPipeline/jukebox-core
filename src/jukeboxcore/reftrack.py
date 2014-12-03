@@ -881,6 +881,7 @@ The Refobject provides the necessary info.")
         refobj = self.create_refobject()
         self.get_refobjinter().reference(taskfileinfo, refobj)
         self.set_refobj(refobj)
+        self.fetch_new_children()
 
     def load(self, ):
         """If the reference is in the scene but unloaded, load it.
@@ -898,6 +899,7 @@ The Refobject provides the necessary info.")
             "Cannot load if there is no unloaded reference. Use reference instead."
         self.get_refobjinter().load(self._refobj)
         self.set_status(self.LOADED)
+        self.fetch_new_children()
 
     def unload(self, ):
         """If the reference is loaded, unload it.
@@ -905,7 +907,14 @@ The Refobject provides the necessary info.")
         .. Note:: Do not confuse this with a delete. This means, that the reference stays in the
                   scene, but no data is read from the reference.
 
-        This will call :meth:`RefobjInterface.unload` and set the status to :data:`Reftrack.UNLOADED`
+        This will call :meth:`RefobjInterface.unload` and set the status to :data:`Reftrack.UNLOADED`.
+        It will also throw away all children :class:`Reftrack`. They will return after :meth:`Reftrack.load`.
+
+        The problem might be that children depend on their parent, but will not get unloaded.
+        E.g. you imported a child. It will stay in the scene after the unload and become an orphan.
+        In this case an error is raised. It is not possible to unload such an entity.
+        The orphan might get its parents back after you call load, but it will introduce bugs when
+        wrapping children of unloaded entities. So we simply disable the feature in that case.
 
         :returns: None
         :rtype: None
@@ -914,8 +923,11 @@ The Refobject provides the necessary info.")
         assert self.status() == self.LOADED,\
             "Cannot unload if there is no loaded reference. \
 Use delete if you want to get rid of a reference or import."
+        if self.get_children_to_delete():
+            raise NotImplementedError
         self.get_refobjinter().unload(self._refobj)
         self.set_status(self.UNLOADED)
+        self.throw_children_away()
 
     def import_entity(self, taskfileinfo=None):
         """Import the entity.
@@ -924,6 +936,9 @@ Use delete if you want to get rid of a reference or import."
         then it is assumed, that you already referenced the :class:`Reftrack` and the reference
         will be imported.
         This will also update the status to :data:`Reftrack.IMPORTED`.
+
+        If you import a :class:`Reftrack` with the status None, this will also call
+        :meth:`fetch_new_children`. Because after the import, we might have new children.
 
         :param taskfileinfo: the taskfileinfo to import. If None is given, try to import
                              the current reference
@@ -942,9 +957,11 @@ or a given taskfileinfo. No taskfileinfo was given though"
             refobj = self.create_refobject(self.get_typ(), self.get_parent())
             refobjinter.import_taskfile(refobj, taskfileinfo)
             self.set_refobj(refobj)
+            self.set_status(self.IMPORTED)
+            self.fetch_new_children()
         else:
             refobjinter.import_reference(self.get_refobj())
-        self.set_status(self.IMPORTED)
+            self.set_status(self.IMPORTED)
 
     def replace(self, taskfileinfo):
         """Replace the current reference or imported entity.
@@ -952,6 +969,17 @@ or a given taskfileinfo. No taskfileinfo was given though"
         If the given refobj is not replaceable, e.g. it might be imported
         or it is not possible to switch the data, then the entity will be deleted,
         then referenced or imported again, depending on the current status.
+
+        A replaced entity might have other children. This introduces a problem:
+
+          A child might get deleted, e.g. an asset which itself has another child,
+          that will not get deleted, e.g. an imported shader. In this case the imported
+          shader will be left as an orphan.
+          This will check all children that will not be deleted (:meth:`Reftrack.get_children_to_delete`)
+          and checks if they are orphans after the replace. If they are, they will get deleted!
+
+        After the replace, all children will be reset. This will simply throw away all children reftracks
+        (the content will not be deleted) and wrap all new children again. See: :meth:`Reftrack.fetch_new_children`.
 
         :param taskfileinfo: the taskfileinfo that will replace the old entity
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
@@ -964,8 +992,27 @@ or a given taskfileinfo. No taskfileinfo was given though"
         refobjinter = self.get_refobjinter()
         refobj = self.get_refobj()
         if refobjinter.is_replaceable(refobj):
+            # possible orphans will not get replaced, by replace
+            # but their parent might dissapear in the process
+            possibleorphans = self.get_children_to_delete()
             refobjinter.replace(refobj, taskfileinfo)
             self.fetch_uptodate()
+            for o in possibleorphans:
+                # find if orphans were created and delete them
+                # we get the refobj of the parent
+                # if it still exists, it is no orphan
+                parent = o.get_parent()
+                refobj = parent.get_refobj()
+                if not parent.get_refobjinter().exists(refobj):
+                    # orphans will be deleted!
+                    # this is politically incorrect, i know!
+                    # the world of programming is a harsh place.
+                    o.delete()
+            # reset the children
+            # throw them away at first
+            self.throw_children_away()
+            # gather them again
+            self.fetch_new_children()
         else:
             self.delete()
             status = self.status()
@@ -1150,6 +1197,23 @@ or a given taskfileinfo. No taskfileinfo was given though"
             else:
                 Reftrack(root=root, refobjinter=refobjinter, typ=typ, element=element, parent=self)
 
+    def throw_children_away(self, ):
+        """Get rid of the children :class:`Reftrack` by deleting them from root,
+        and unparenting them. The content of the children will stay in the scene.
+
+        You can wrap them again. It is a simple way to reset all children, e.g. after
+        a replace. Because they might have changed completly.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        for c in self.get_all_children():
+            c._parent = None
+            self._treeitem.remove_child(c._treeitem)
+            self.get_root().remove_reftrack(c)
+        self._children = []
+
 
 class RefobjInterface(object):
     """Interface to interact with a refernece object that is in your scene.
@@ -1165,6 +1229,7 @@ class RefobjInterface(object):
 
     Methods to implement:
 
+      * :meth:`RefobjInterface.exists`
       * :meth:`RefobjInterface.get_parent`
       * :meth:`RefobjInterface.set_parent`
       * :meth:`RefobjInterface.get_children`
@@ -1216,6 +1281,19 @@ class RefobjInterface(object):
         :raises: KeyError
         """
         return self.types[typ](self)
+
+    @abc.abstractmethod
+    def exists(self, refobj):
+        """Check if the given refobj is still in the scene
+        or if it has been deleted/dissapeared
+
+        :param refobj: a reference object to query
+        :type refobj: refobj
+        :returns: True, if it still exists
+        :rtype: :class:`bool`
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_parent(self, refobj):
