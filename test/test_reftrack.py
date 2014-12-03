@@ -595,3 +595,24 @@ def test_duplicate(djprj, reftrackroot, refobjinter):
         assert d.get_parent() is t.get_parent()
         assert d.status() is None
         assert d.get_treeitem().parent() is t.get_treeitem().parent()
+
+
+def test_throw_children_away(djprj, reftrackroot, refobjinter):
+    robj0 = Refobj('Asset', None, None, djprj.assettaskfiles[0], None)
+    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], None)
+    robj2 = Refobj('Asset', robj1, None, djprj.assettaskfiles[0], None)
+    robj3 = Refobj('Asset', None, None, djprj.assettaskfiles[0], None)
+    tracks = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2, robj3])
+
+    tracks[0].throw_children_away()
+
+    assert tracks[0]._children == []
+    assert tracks[1].get_parent() is None
+    assert tracks[1].get_treeitem().parent() is None
+    assert tracks[1].get_treeitem()._model is None
+    assert tracks[0].get_treeitem().child_count() == 0
+    assert tracks[1] not in reftrackroot._reftracks
+    assert tracks[2] not in reftrackroot._reftracks
+    assert tracks[3] in reftrackroot._reftracks
+    assert refobjinter.exists(tracks[1].get_refobj())
+    assert refobjinter.exists(tracks[2].get_refobj())

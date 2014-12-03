@@ -1208,9 +1208,10 @@ or a given taskfileinfo. No taskfileinfo was given though"
         :rtype: None
         :raises: None
         """
-        for c in self.get_all_children():
+        for c in self._children:
             c._parent = None
             self._treeitem.remove_child(c._treeitem)
+        for c in self.get_all_children():
             self.get_root().remove_reftrack(c)
         self._children = []
 
