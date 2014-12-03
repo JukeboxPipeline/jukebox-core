@@ -92,6 +92,18 @@ class DummyRefobjInterface(RefobjInterface):
         super(DummyRefobjInterface, self).__init__()
         self.current = current
 
+    def exists(self, refobj):
+        """Check if the given refobj is still in the scene
+        or if it has been deleted/dissapeared
+
+        :param refobj: a reference object to query
+        :type refobj: refobj
+        :returns: True, if it still exists
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return not refobj.deleted
+
     def get_parent(self, refobj):
         """Return the parent
 
