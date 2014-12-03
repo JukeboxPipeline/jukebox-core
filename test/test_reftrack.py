@@ -1,5 +1,6 @@
 """Tets the functionality of the :mod:`jukeboxcore.reftrack` module"""
 import pytest
+import mock
 
 from jukeboxcore.reftrack import Reftrack, RefobjInterface, ReftypeInterface, ReftrackRoot
 from jukeboxcore import djadapter
@@ -469,11 +470,19 @@ class AssetReftypeInterface(ReftypeInterface):
         :raises: NotImplementedError
         """
         element = reftrack.get_element()
-        elements = element.assets.all()
+        elements = list(element.assets.all())
+        elements.append(element)
         typ = reftrack.get_typ()
         return [(typ, e) for e in elements]
 
 RefobjInterface.register_type('Asset', AssetReftypeInterface)
+
+
+@pytest.fixture(scope='function', autouse=True)
+def refobjclass(request):
+    def fin():
+        Refobj.instances = []
+    request.addfinalizer(fin)
 
 
 @pytest.fixture(scope='function')
@@ -508,6 +517,15 @@ def test_wrap(djprj, reftrackroot, refobjinter):
         assert t.get_typ() == 'Asset'
         assert t is reftrackroot.get_reftrack(t.get_refobj())
         assert t.status() == Reftrack.IMPORTED
+        # assert if suggestions have been created
+        suggestions = t.get_suggestions()
+        for c in t._children:
+            for i, (typ, element) in enumerate(suggestions):
+                if c.get_typ() == typ and c.get_element() == element:
+                    del suggestions[i]
+                    break
+        assert suggestions == [],\
+            "Not all suggestions were created after wrapping. Suggestions missing %s" % suggestions
 
 
 def test_create_empty(djprj, reftrackroot, refobjinter):
@@ -536,7 +554,9 @@ def test_alien(djprj, reftrackroot):
     assert not r3.alien()
 
 
-def test_delete(djprj, reftrackroot):
+@mock.patch.object(AssetReftypeInterface, "get_suggestions")
+def test_delete(mock_suggestions, djprj, reftrackroot):
+    mock_suggestions.returnvalue = []
     current = djprj.assets[0]
     refobjinter = DummyRefobjInterface(current)
     ref0 = Reference()
@@ -616,3 +636,26 @@ def test_throw_children_away(djprj, reftrackroot, refobjinter):
     assert tracks[3] in reftrackroot._reftracks
     assert refobjinter.exists(tracks[1].get_refobj())
     assert refobjinter.exists(tracks[2].get_refobj())
+
+
+def test_fetch_new_children(djprj, reftrackroot, refobjinter):
+    robj0 = Refobj('Asset', None, None, djprj.assettaskfiles[0], None)
+    t0 = Reftrack.wrap(reftrackroot, refobjinter, [robj0])[0]
+    robj1 = Refobj('Asset', None, None, djprj.assettaskfiles[0], None)
+    t1 = Reftrack.wrap(reftrackroot, refobjinter, [robj1])[0]
+    t0.throw_children_away()
+    assert t0 in reftrackroot._reftracks
+    assert t1 in reftrackroot._reftracks
+    assert t0.get_refobj() in reftrackroot._parentsearchdict
+    assert t1.get_refobj() in reftrackroot._parentsearchdict
+
+    robj2 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], None)
+    robj3 = Refobj('Asset', robj2, None, djprj.assettaskfiles[0], None)
+    t2, t3 = Reftrack.wrap(reftrackroot, refobjinter, [robj2, robj3])
+    t0.throw_children_away()
+    for t in (t2, t3):
+        assert t not in reftrackroot._reftracks
+        assert t.get_refobj() not in reftrackroot._parentsearchdict
+        assert refobjinter.exists(t.get_refobj())
+    assert t2.get_parent() is None
+    assert t2.get_treeitem().parent() is None

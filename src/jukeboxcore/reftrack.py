@@ -450,6 +450,7 @@ The Refobject provides the necessary info.")
             else:
                 parentreftrack = None
             t.set_parent(parentreftrack)
+            t.fetch_new_children()
         return tracks
 
     @classmethod
@@ -1187,7 +1188,7 @@ or a given taskfileinfo. No taskfileinfo was given though"
         root = self.get_root()
         refobjinter = self.get_refobjinter()
         unwrapped = self.get_unwrapped(root, refobjinter)
-        self.wrap(unwrapped)
+        self.wrap(self.get_root(), self.get_refobjinter(), unwrapped)
 
         suggestions = self.get_suggestions()
         for typ, element in suggestions:
