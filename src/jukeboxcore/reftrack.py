@@ -606,7 +606,6 @@ The Refobject provides the necessary info.")
         """
         self._element = element
         self.fetch_options()
-        self.fetch_alien()
 
     def get_parent(self, ):
         """Return the parent :class:`Reftrack` instance
@@ -643,6 +642,7 @@ The Refobject provides the necessary info.")
             # add to parent
             self._parent.add_child(self)
         self._treeitem = self.create_treeitem()
+        self.fetch_alien()
 
     def create_treeitem(self, ):
         """Create a new treeitem for this reftrack instance.
@@ -789,15 +789,20 @@ The Refobject provides the necessary info.")
         :rtype: bool
         :raises: None
         """
-        current = self.get_refobjinter().get_current_element()
-        if not current:
-             self._alien = True
+        parent = self.get_parent()
+        if parent:
+            parentelement = parent.get_element()
         else:
-            if self.get_element() == current:
-                self._alien = False
-            else:
-                assets = current.assets.all()
-                self._alien = self.get_element() not in assets
+            parentelement = self.get_refobjinter().get_current_element()
+            if not parentelement:
+                self._alien = True
+                return self._alien
+        element = self.get_element()
+        if element == parentelement:
+            self._alien = False
+        else:
+            assets = parentelement.assets.all()
+            self._alien = element not in assets
         return self._alien
 
     def status(self, ):

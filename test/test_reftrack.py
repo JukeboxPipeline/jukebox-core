@@ -497,7 +497,7 @@ def test_create_empty(djprj, reftrackroot, refobjinter):
     assert r1.status() is None
     assert r2.status() is None
     assert not r1.alien()
-    assert not r2.alien()
+    assert r2.alien()
     assert r1.get_typ() == 'Asset'
     assert r2.get_typ() == 'Asset'
 
@@ -507,8 +507,10 @@ def test_alien(djprj, reftrackroot):
     refobjinter = DummyRefobjInterface(current)
     r1 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0])
     r2 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[1])
+    r3 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[1], parent=r2)
     assert not r1.alien()
     assert r2.alien()
+    assert not r3.alien()
 
 
 def test_delete(djprj, reftrackroot):
