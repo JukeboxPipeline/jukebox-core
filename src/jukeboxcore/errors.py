@@ -54,16 +54,17 @@ class ReftrackIntegrityError(IntegrityError):
     You can access a list of :class:`jukeboxcore.reftrack.Reftrack` that would cause the error
     with :data:`ReftrackIntegrityError.reftracks`.
     """
-    def __init__(self, msg, reftracks=None):
+    def __init__(self, msg=None, reftracks=None):
         """Initialize a new exception with a error message and the reftracks that
         would cause an integrity error.
 
         :param msg: the error message
-        :type msg: :class:`str`
+        :type msg: :class:`str` | None
         :param reftracks: the reftracks that would cause an integrity error
         :type reftracks: list of :class:`jukeboxcore.reftrack.Reftrack` | None
         :raises: None
         """
+        super(ReftrackIntegrityError, self).__init__(msg)
         if reftracks is None:
             reftracks = []
         self.reftracks = reftracks
