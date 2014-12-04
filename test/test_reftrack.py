@@ -83,15 +83,13 @@ class Refobj(object):
         :rtype: None
         :raises: None
         """
-        self.instances.append(self)
+        Refobj.instances.append(self)
         self.typ = typ
         self.parent = parent
         self.deleted = False
         self.children = []
         if parent:
             parent.children.append(self)
-        if reference:
-            reference.content.append(self)
         self.reference = reference
         self.taskfile = taskfile
         self.referencedby = referencedby
@@ -415,6 +413,10 @@ class AssetReftypeInterface(ReftypeInterface):
         :raises: NotImplementedError
         """
         refobj.deleted = True
+        if refobj.reference:
+            assert refobj not in refobj.reference.content
+            for r in refobj.reference.content:
+                self.get_refobjinter().delete(r)
 
     def import_reference(self, refobj, reference):
         """Import the given reference
@@ -618,7 +620,7 @@ def test_alien(djprj, reftrackroot):
 
 @mock.patch.object(AssetReftypeInterface, "get_suggestions")
 def test_delete(mock_suggestions, djprj, reftrackroot):
-    mock_suggestions.returnvalue = []
+    mock_suggestions.return_value = []
     current = djprj.assets[0]
     refobjinter = DummyRefobjInterface(current)
     ref0 = Reference()
@@ -736,7 +738,7 @@ def test_create_refobject(djprj, reftrackroot, refobjinter):
 
 @mock.patch.object(AssetReftypeInterface, "get_suggestions")
 def test_reference(mock_suggestions, djprj, reftrackroot, refobjinter):
-    mock_suggestions.returnvalue = []
+    mock_suggestions.return_value = []
     t0 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0], parent=None)
     assert reftrackroot._reftracks == set([t0])
     t0.reference(djprj.assettaskfiles[0])
@@ -770,7 +772,7 @@ def test_reference(mock_suggestions, djprj, reftrackroot, refobjinter):
 
 @mock.patch.object(AssetReftypeInterface, "get_suggestions")
 def test_load(mock_suggestions, djprj, reftrackroot, refobjinter):
-    mock_suggestions.returnvalue = []
+    mock_suggestions.return_value = []
     ref2 = Reference(True)
 
     robj2 = Refobj('Asset', None, ref2, djprj.assettaskfiles[0], None)
@@ -796,7 +798,7 @@ def test_load(mock_suggestions, djprj, reftrackroot, refobjinter):
 
 @mock.patch.object(AssetReftypeInterface, "get_suggestions")
 def test_unload(mock_suggestions, djprj, reftrackroot, refobjinter):
-    mock_suggestions.returnvalue = []
+    mock_suggestions.return_value = []
     ref0 = Reference(True)
     robj0 = Refobj('Asset', None, ref0, djprj.assettaskfiles[0], None)
     robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], ref0)
@@ -840,7 +842,7 @@ def test_import_reference(djprj, reftrackroot, refobjinter):
 
 @mock.patch.object(AssetReftypeInterface, "get_suggestions")
 def test_import_taskfile(mock_suggestions, djprj, reftrackroot, refobjinter):
-    mock_suggestions.returnvalue = []
+    mock_suggestions.return_value = []
     t0 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0])
     assert t0._children == []
     assert t0.get_refobj() is None
@@ -856,3 +858,49 @@ def test_import_taskfile(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert robj0.taskfile == djprj.assettaskfiles[0]
     assert robj1.parent is robj0
     assert t0.status() == Reftrack.IMPORTED
+
+
+@mock.patch.object(AssetReftypeInterface, "is_replaceable")
+@mock.patch.object(AssetReftypeInterface, "get_suggestions")
+def test_replace_notreplaceable_reference(mock_suggestions, mock_replaceable, djprj, reftrackroot, refobjinter):
+    mock_suggestions.return_value = []
+    mock_replaceable.return_value = False
+    ref0 = Reference(True)
+    robj0 = Refobj('Asset', None, ref0, djprj.assettaskfiles[-4], None)
+    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], ref0)
+    robj2 = Refobj('Asset', robj1, None, djprj.assettaskfiles[0], ref0)
+    print robj0, robj1, robj2
+    ref0.content.append(robj1)
+    ref0.content.append(robj2)
+    t0, t1, t2 = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2])
+
+    assert not t0.uptodate()
+    assert t0.get_refobjinter().is_replaceable(t0.get_refobj()) is False
+    assert t0.alien()
+    t0.replace(djprj.assettaskfiles[2])
+    assert t0 in reftrackroot._reftracks
+    assert t0.status() == Reftrack.LOADED
+    assert len(t0._children) == 1
+    t4 = t0._children[0]
+    assert t4.get_refobj().parent is t0.get_refobj()
+
+
+@mock.patch.object(AssetReftypeInterface, "is_replaceable")
+@mock.patch.object(AssetReftypeInterface, "get_suggestions")
+def test_replace_notreplaceable_import(mock_suggestions, mock_replaceable, djprj, reftrackroot, refobjinter):
+    mock_suggestions.return_value = []
+    mock_replaceable.return_value = False
+    robj0 = Refobj('Asset', None, None, djprj.assettaskfiles[-4], None)
+    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], None)
+    robj2 = Refobj('Asset', robj1, None, djprj.assettaskfiles[0], None)
+    t0, t1, t2 = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2])
+
+    assert not t0.uptodate()
+    assert t0.get_refobjinter().is_replaceable(t0.get_refobj()) is False
+    assert t0.alien()
+    t0.replace(djprj.assettaskfiles[2])
+    assert t0 in reftrackroot._reftracks
+    assert t0.status() == Reftrack.IMPORTED
+    assert len(t0._children) == 1
+    t4 = t0._children[0]
+    assert t4.get_refobj().parent is t0.get_refobj()

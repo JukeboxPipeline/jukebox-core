@@ -1033,14 +1033,14 @@ or a given taskfileinfo. No taskfileinfo was given though"
             # gather them again
             self.fetch_new_children()
         else:
-            self.delete()
             status = self.status()
+            self.delete(removealien=False)
             if status == self.IMPORTED:
                 self.import_entity(taskfileinfo)
             else:
                 self.reference(taskfileinfo)
 
-    def delete(self, ):
+    def delete(self, removealien=True):
         """Delete the current entity.
 
         This will also call :meth:`RefobjInterface.get_children_to_delete` and
@@ -1051,6 +1051,8 @@ or a given taskfileinfo. No taskfileinfo was given though"
         from the root and from the treemodel.
         If it is not an alien, it will just empty all of tis children and update its status.
 
+        :param removealien: If True, remove this reftrack, if it is an alien
+        :type removealien: :class:`bool`
         :returns: None
         :rtype: None
         :raises: AssertionError
@@ -1064,7 +1066,7 @@ or a given taskfileinfo. No taskfileinfo was given though"
         for c in allchildren:
             self.get_root().remove_reftrack(c)
         self._delete()
-        if self.alien():
+        if self.alien() and removealien:
             self.get_root().remove_reftrack(self)
 
     def _delete(self, ):
