@@ -854,7 +854,7 @@ The Refobject provides the necessary info.")
         self._status = status
 
     def create_refobject(self, ):
-        """Create a refobject that represents the :class:`Reftrack` instance.
+        """Create a refobject in the scene that represents the :class:`Reftrack` instance.
 
         .. Note:: This will not set the reftrack object.
 
@@ -862,7 +862,12 @@ The Refobject provides the necessary info.")
         :rtype: scene object
         :raises: None
         """
-        refobj = self.get_refobjinter().create(self.get_typ(), self.get_parent())
+        parent = self.get_parent()
+        if parent:
+            prefobj = parent.get_refobj()
+        else:
+            prefobj = None
+        refobj = self.get_refobjinter().create(self.get_typ(), prefobj)
         return refobj
 
     def reference(self, taskfileinfo):
@@ -1405,14 +1410,15 @@ class RefobjInterface(object):
         :type typ: str
         :param parent: the parent refobject
         :type parent: refobj
-        :returns: None
-        :rtype: None
+        :returns: The created refobj
+        :rtype: refobj
         :raises: None
         """
         refobj = self.create_refobj()
         self.set_typ(refobj, typ)
         if parent:
             self.set_parent(refobj, parent)
+        return refobj
 
     @abc.abstractmethod
     def delete_refobj(self, refobj):

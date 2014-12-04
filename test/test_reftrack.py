@@ -659,3 +659,15 @@ def test_fetch_new_children(djprj, reftrackroot, refobjinter):
         assert refobjinter.exists(t.get_refobj())
     assert t2.get_parent() is None
     assert t2.get_treeitem().parent() is None
+    # try wrapping them again
+    Reftrack.wrap(reftrackroot, refobjinter, [robj2, robj3])
+
+
+def test_create_refobject(djprj, reftrackroot, refobjinter):
+    robj0 = Refobj('Asset', None, None, djprj.assettaskfiles[0], None)
+    t0 = Reftrack.wrap(reftrackroot, refobjinter, [robj0])[0]
+    t1 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0], parent=t0)
+    robj1 = t1.create_refobject()
+    assert robj1.parent is robj0
+    assert robj1.typ == 'Asset'
+
