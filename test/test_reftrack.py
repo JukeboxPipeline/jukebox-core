@@ -1,13 +1,14 @@
 """Tets the functionality of the :mod:`jukeboxcore.reftrack` module"""
 import pytest
 import mock
+from django.contrib.contenttypes.models import ContentType
 
 from jukeboxcore.reftrack import Reftrack, RefobjInterface, ReftypeInterface, ReftrackRoot
 from jukeboxcore import djadapter
 from jukeboxcore.filesys import TaskFileInfo
 from jukeboxcore.gui.treemodel import TreeItem, TreeModel, ListItemData
 from jukeboxcore.gui.filesysitemdata import TaskFileInfoItemData
-from django.contrib.contenttypes.models import ContentType
+from jukeboxcore.errors import ReftrackIntegrityError
 
 
 class Reference(object):
@@ -351,7 +352,7 @@ class AssetReftypeInterface(ReftypeInterface):
         # also create a new refobj. This acts like the content of the reference
         # contains another refobject
         ref = Reference()
-        refobj2 = Refobj("Asset", None, None, refobj.taskfile, ref)
+        Refobj("Asset", None, None, refobj.taskfile, ref)
         return ref
 
     def load(self, refobj, reference):
@@ -565,6 +566,18 @@ def test_wrap(djprj, reftrackroot, refobjinter):
             "Not all suggestions were created after wrapping. Suggestions missing %s" % suggestions
 
 
+def test_reftrackinit_raise_error(djprj, reftrackroot, refobjinter):
+    with pytest.raises(TypeError):
+        Reftrack(reftrackroot, refobjinter, typ='Asset')
+    with pytest.raises(TypeError):
+        Reftrack(reftrackroot, refobjinter, element=djprj.assets[0])
+    with pytest.raises(TypeError):
+        refobj = Refobj('Asset', None, None, djprj.assettaskfiles[0], None)
+        Reftrack(reftrackroot, refobjinter, refobj=refobj, typ='Asset', element=djprj.assets[0])
+    with pytest.raises(ValueError):
+        Reftrack(reftrackroot, refobjinter, typ='Shader', element=djprj.assets[0])
+
+
 def test_create_empty(djprj, reftrackroot, refobjinter):
     r1 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0])
     r2 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[1], parent=r1)
@@ -589,6 +602,14 @@ def test_alien(djprj, reftrackroot):
     assert not r1.alien()
     assert r2.alien()
     assert not r3.alien()
+
+    refobjinter = DummyRefobjInterface(None)
+    r4 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0])
+    r5 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[1])
+    r6 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[1], parent=r5)
+    assert r4.alien()
+    assert r5.alien()
+    assert not r6.alien()
 
 
 @mock.patch.object(AssetReftypeInterface, "get_suggestions")
@@ -767,3 +788,31 @@ def test_load(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert t0.get_refobj() is robj0
     assert t1.get_refobj() is robj1
     assert t2.status() == Reftrack.LOADED
+
+
+@mock.patch.object(AssetReftypeInterface, "get_suggestions")
+def test_unload(mock_suggestions, djprj, reftrackroot, refobjinter):
+    mock_suggestions.returnvalue = []
+    ref0 = Reference(True)
+    robj0 = Refobj('Asset', None, ref0, djprj.assettaskfiles[0], None)
+    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], ref0)
+    robj2 = Refobj('Asset', robj1, None, djprj.assettaskfiles[0], ref0)
+    ref0.content.append(robj1)
+    ref0.content.append(robj2)
+    t0, t1, t2 = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2])
+
+    assert t0._children
+    t0.unload()
+    assert t0.status() == Reftrack.UNLOADED
+    assert robj0.get_status() == Reftrack.UNLOADED
+    assert t0._children == []
+    assert t1.get_parent() is None
+    assert t1.get_treeitem().parent() is None
+
+    ref3 = Reference(True)
+    robj3 = Refobj('Asset', None, ref3, djprj.assettaskfiles[0], None)
+    robj4 = Refobj('Asset', robj3, None, djprj.assettaskfiles[0], None)
+    t3, t4 = Reftrack.wrap(reftrackroot, refobjinter, [robj3, robj4])
+
+    with pytest.raises(ReftrackIntegrityError):
+        t3.unload()

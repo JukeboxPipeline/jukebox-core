@@ -155,6 +155,7 @@ log = get_logger(__name__)
 from jukeboxcore.filesys import TaskFileInfo
 from jukeboxcore.gui.treemodel import TreeModel, TreeItem, ListItemData
 from jukeboxcore.gui.reftrackitemdata import ReftrackItemData
+from jukeboxcore.errors import ReftrackIntegrityError
 
 
 class ReftrackRoot(object):
@@ -928,17 +929,19 @@ The Refobject provides the necessary info.")
         E.g. you imported a child. It will stay in the scene after the unload and become an orphan.
         In this case an error is raised. It is not possible to unload such an entity.
         The orphan might get its parents back after you call load, but it will introduce bugs when
-        wrapping children of unloaded entities. So we simply disable the feature in that case.
+        wrapping children of unloaded entities. So we simply disable the feature in that case and raise
+        an :class:`IntegrityError`
 
         :returns: None
         :rtype: None
-        :raises: AssertionError
+        :raises: :class:`AssertionError`, :class:`ReftrackIntegrityError`
         """
         assert self.status() == self.LOADED,\
             "Cannot unload if there is no loaded reference. \
 Use delete if you want to get rid of a reference or import."
-        if self.get_children_to_delete():
-            raise NotImplementedError
+        childrentodelete = self.get_children_to_delete()
+        if childrentodelete:
+            raise ReftrackIntegrityError("Cannot unload because children of the reference would become orphans.", childrentodelete)
         self.get_refobjinter().unload(self._refobj)
         self.set_status(self.UNLOADED)
         self.throw_children_away()
