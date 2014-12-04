@@ -315,6 +315,9 @@ class AssetReftypeInterface(ReftypeInterface):
                                         releasetype=taskfileinfo.releasetype,
                                         descriptor=taskfileinfo.descriptor,
                                         typ=taskfileinfo.typ)
+        # also create a new refobj. This acts like the content of the reference
+        # contains another refobject
+        Refobj("Asset", None, None, refobj.taskfile, ref)
         return ref
 
     def load(self, refobj, reference):
@@ -671,3 +674,21 @@ def test_create_refobject(djprj, reftrackroot, refobjinter):
     assert robj1.parent is robj0
     assert robj1.typ == 'Asset'
 
+
+@mock.patch.object(AssetReftypeInterface, "get_suggestions")
+def test_reference(mock_suggestions, djprj, reftrackroot, refobjinter):
+    mock_suggestions.returnvalue = []
+    t0 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0], parent=None)
+    assert reftrackroot._reftracks == set([t0])
+    t0.reference(djprj.assettaskfiles[0])
+    assert t0 in reftrackroot._reftracks
+    t1 = t0._children[0]
+    assert t1.get_parent() is t0
+    robj0 = t0.get_refobj()
+    robj1 = t1.get_refobj()
+    assert robj0.taskfile == djprj.assettaskfiles[0]
+    assert robj1.parent is robj0
+    assert robj0.parent is None
+    assert robj0.typ == 'Asset'
+    assert robj0.get_status() == Reftrack.LOADED
+    assert t0.status() == Reftrack.LOADED

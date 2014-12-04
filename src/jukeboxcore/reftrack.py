@@ -148,6 +148,7 @@ So before you start, here is a list of things to do:
 
 """
 import abc
+from contextlib import contextmanager
 
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
@@ -300,11 +301,15 @@ class ReftrackRoot(object):
         refobj
 
         :param refobj: a ref object. See :meth:`Reftrack.get_refobj`
+        :type refobj: refobj | None
         :returns: The reftrack instance that wraps the given refobj.
                   If no instance is found in this root, a KeyError is raised.
-        :rtype: :class:`Reftrack`
+                  If None was given, None is returned
+        :rtype: :class:`Reftrack` | None
         :raises: :class:`KeyError`
         """
+        if refobj is None:
+            return None
         return self._parentsearchdict[refobj]
 
     def create_itemdata(self, reftrack):
@@ -647,8 +652,10 @@ The Refobject provides the necessary info.")
         :rtype: None
         :raises: AssertionError
         """
-        assert self._parent is None,\
+        assert self._parent is None or self._parent is parent,\
             "Cannot change the parent. Can only set from None."
+        if parent and self._parent is parent:
+            return
         self._parent = parent
         if parent:
             refobjinter = self.get_refobjinter()
@@ -885,7 +892,8 @@ The Refobject provides the necessary info.")
         assert self.status() is None,\
             "Can only reference, if the entity is not already referenced/imported. Use replace instead."
         refobj = self.create_refobject()
-        self.get_refobjinter().reference(taskfileinfo, refobj)
+        with self.set_parent_on_new(refobj):
+            self.get_refobjinter().reference(taskfileinfo, refobj)
         self.set_refobj(refobj)
         self.fetch_new_children()
 
@@ -961,7 +969,8 @@ Use delete if you want to get rid of a reference or import."
                 "Can only import an already referenced entity \
 or a given taskfileinfo. No taskfileinfo was given though"
             refobj = self.create_refobject(self.get_typ(), self.get_parent())
-            refobjinter.import_taskfile(refobj, taskfileinfo)
+            with self.set_parent_on_new(refobj):
+                refobjinter.import_taskfile(refobj, taskfileinfo)
             self.set_refobj(refobj)
             self.set_status(self.IMPORTED)
             self.fetch_new_children()
@@ -1001,7 +1010,8 @@ or a given taskfileinfo. No taskfileinfo was given though"
             # possible orphans will not get replaced, by replace
             # but their parent might dissapear in the process
             possibleorphans = self.get_children_to_delete()
-            refobjinter.replace(refobj, taskfileinfo)
+            with self.set_parent_on_new(refobj):
+                refobjinter.replace(refobj, taskfileinfo)
             self.fetch_uptodate()
             for o in possibleorphans:
                 # find if orphans were created and delete them
@@ -1220,6 +1230,26 @@ or a given taskfileinfo. No taskfileinfo was given though"
         for c in self.get_all_children():
             self.get_root().remove_reftrack(c)
         self._children = []
+
+    @contextmanager
+    def set_parent_on_new(self, parentrefobj):
+        """Contextmanager that on close will get all new
+        unwrapped refobjects, and for every refobject with no parent
+        sets is to the given one.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        refobjinter = self.get_refobjinter()
+        # to make sure we only get the new one
+        # we get all current unwrapped first
+        old = self.get_unwrapped(self.get_root(), refobjinter)
+        yield
+        new = self.get_unwrapped(self.get_root(), refobjinter) - old
+        for refobj in new:
+            if refobjinter.get_parent(refobj) is None:
+                refobjinter.set_parent(refobj, parentrefobj)
 
 
 class RefobjInterface(object):
@@ -1789,7 +1819,10 @@ class ReftypeInterface(object):
         so the RefobjInterface can link the refobj with the refernce object.
         Do not call :meth:`RefobjInterface.set_reference` yourself.
 
-        :param refobj: the refobj that will be  linked to the reference
+        The referenced content might contain more refobjects.
+        All refobjects in the reference which do not TODO
+
+        :param refobj: the refobj that will be linked to the reference
         :param taskfileinfo: The taskfileinfo that holds the information for what to reference
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
         :returns: the reference that was created and should set on the appropriate refobj
