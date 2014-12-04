@@ -682,6 +682,7 @@ def test_reference(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert reftrackroot._reftracks == set([t0])
     t0.reference(djprj.assettaskfiles[0])
     assert t0 in reftrackroot._reftracks
+    assert len(t0._children) == 1
     t1 = t0._children[0]
     assert t1.get_parent() is t0
     robj0 = t0.get_refobj()
@@ -692,3 +693,17 @@ def test_reference(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert robj0.typ == 'Asset'
     assert robj0.get_status() == Reftrack.LOADED
     assert t0.status() == Reftrack.LOADED
+
+    t2 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0], parent=t0)
+    t2.reference(djprj.assettaskfiles[0])
+    t3 = t2._children[0]
+    assert len(t2._children) == 1
+    assert t2.get_parent() is t0
+    robj2 = t2.get_refobj()
+    robj3 = t3.get_refobj()
+    assert robj2.taskfile == djprj.assettaskfiles[0]
+    assert robj2.parent is robj0
+    assert robj3.parent is robj2
+    assert robj2.typ == 'Asset'
+    assert robj2.get_status() == Reftrack.LOADED
+    assert t2.status() == Reftrack.LOADED

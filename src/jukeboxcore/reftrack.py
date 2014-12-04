@@ -1819,9 +1819,6 @@ class ReftypeInterface(object):
         so the RefobjInterface can link the refobj with the refernce object.
         Do not call :meth:`RefobjInterface.set_reference` yourself.
 
-        The referenced content might contain more refobjects.
-        All refobjects in the reference which do not TODO
-
         :param refobj: the refobj that will be linked to the reference
         :param taskfileinfo: The taskfileinfo that holds the information for what to reference
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
