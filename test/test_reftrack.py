@@ -350,7 +350,8 @@ class AssetReftypeInterface(ReftypeInterface):
         # also create a new refobj. This acts like the content of the reference
         # contains another refobject
         ref = Reference()
-        Refobj("Asset", None, None, refobj.taskfile, ref)
+        refobj1 = Refobj("Asset", None, None, refobj.taskfile, ref)
+        ref.content.append(refobj1)
         return ref
 
     def load(self, refobj, reference):
@@ -402,6 +403,10 @@ class AssetReftypeInterface(ReftypeInterface):
                                         releasetype=taskfileinfo.releasetype,
                                         descriptor=taskfileinfo.descriptor,
                                         typ=taskfileinfo.typ)
+        for r in refobj.reference.content:
+            self.get_refobjinter().delete(r)
+        robj1 = Refobj("Asset", None, None, refobj.taskfile, refobj.reference)
+        refobj.reference.content.append(robj1)
 
     def delete(self, refobj):
         """Delete the content of the given refobj
@@ -904,3 +909,14 @@ def test_replace_notreplaceable_import(mock_suggestions, mock_replaceable, djprj
     assert len(t0._children) == 1
     t4 = t0._children[0]
     assert t4.get_refobj().parent is t0.get_refobj()
+
+
+@mock.patch.object(AssetReftypeInterface, "get_suggestions")
+def test_replace_replaceable(mock_suggestions, djprj, reftrackroot, refobjinter):
+    mock_suggestions.return_value = []
+    ref0 = Reference()
+    robj0 = Refobj('Asset', None, ref0, djprj.assettaskfiles[-4], None)
+    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], ref0)
+    robj2 = Refobj('Asset', robj1, None, djprj.assettaskfiles[0], None)
+    ref0.content.append(robj1)
+    t0, t1, t2 = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2])
