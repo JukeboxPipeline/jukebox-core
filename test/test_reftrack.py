@@ -886,6 +886,7 @@ def test_replace_notreplaceable_reference(mock_suggestions, mock_replaceable, dj
     assert t0 in reftrackroot._reftracks
     assert t0.status() == Reftrack.LOADED
     assert len(t0._children) == 1
+    assert t0.get_refobj().taskfile == djprj.assettaskfiles[2]
     t4 = t0._children[0]
     assert t4.get_refobj().parent is t0.get_refobj()
 
@@ -907,6 +908,7 @@ def test_replace_notreplaceable_import(mock_suggestions, mock_replaceable, djprj
     assert t0 in reftrackroot._reftracks
     assert t0.status() == Reftrack.IMPORTED
     assert len(t0._children) == 1
+    assert t0.get_refobj().taskfile == djprj.assettaskfiles[2]
     t4 = t0._children[0]
     assert t4.get_refobj().parent is t0.get_refobj()
 
