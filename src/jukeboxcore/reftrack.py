@@ -971,7 +971,7 @@ Use delete if you want to get rid of a reference or import."
             assert taskfileinfo,\
                 "Can only import an already referenced entity \
 or a given taskfileinfo. No taskfileinfo was given though"
-            refobj = self.create_refobject(self.get_typ(), self.get_parent())
+            refobj = self.create_refobject()
             with self.set_parent_on_new(refobj):
                 refobjinter.import_taskfile(refobj, taskfileinfo)
             self.set_refobj(refobj)
@@ -1323,7 +1323,7 @@ class RefobjInterface(object):
         return self.types[typ](self)
 
     @abc.abstractmethod
-    def exists(self, refobj):
+    def exists(self, refobj):  #pragma: no cover
         """Check if the given refobj is still in the scene
         or if it has been deleted/dissapeared
 
@@ -1336,7 +1336,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_parent(self, refobj):
+    def get_parent(self, refobj):  #pragma: no cover
         """Return the refobj of the parent of the given refobj
 
         :param refobj: a reference object to query
@@ -1348,7 +1348,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def set_parent(self, child, parent):
+    def set_parent(self, child, parent):  #pragma: no cover
         """Set the parent of the child refobj
 
         E.g. in Maya you would connect the two refobj nodes
@@ -1366,7 +1366,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_children(self, refobj):
+    def get_children(self, refobj):  #pragma: no cover
         """Get the children refobjects of the given refobject
 
         It is the reverse query of :meth:`RefobjInterface.get_parent`
@@ -1380,7 +1380,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_typ(self, refobj):
+    def get_typ(self, refobj):  #pragma: no cover
         """Return the entity type of the given refobject
 
         See: :data:`RefobjInterface.types`.
@@ -1394,7 +1394,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def set_typ(self, refobj, typ):
+    def set_typ(self, refobj, typ):  #pragma: no cover
         """Set the type of the given refobj
 
         :param refobj: the refobj to query
@@ -1408,7 +1408,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create_refobj(self, ):
+    def create_refobj(self, ):  #pragma: no cover
         """Create and return a new refobj
 
         E.g. in Maya one would create a custom node that can store all
@@ -1423,7 +1423,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def referenced_by(self, refobj):
+    def referenced_by(self, refobj):  #pragma: no cover
         """Return the reference that holds the given refobj.
 
         Returns None if it is imported/in the current scene.
@@ -1454,7 +1454,7 @@ class RefobjInterface(object):
         return refobj
 
     @abc.abstractmethod
-    def delete_refobj(self, refobj):
+    def delete_refobj(self, refobj):  #pragma: no cover
         """Delete the given refobj
 
         :param refobj: the refobj to delete
@@ -1479,7 +1479,7 @@ class RefobjInterface(object):
         self.delete_refobj(refobj)
 
     @abc.abstractmethod
-    def get_all_refobjs(self, ):
+    def get_all_refobjs(self, ):  #pragma: no cover
         """Return all refobjs in the scene
 
         :returns: all refobjs in the scene
@@ -1489,7 +1489,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_current_element(self, ):
+    def get_current_element(self, ):  #pragma: no cover
         """Return the currenty open Shot or Asset
 
         :returns: the currently open element
@@ -1499,7 +1499,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def set_reference(self, refobj, reference):
+    def set_reference(self, refobj, reference):  #pragma: no cover
         """Set the reference of the given refobj to reference
 
         This will be called by the typinterface after the reference
@@ -1518,7 +1518,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_reference(self, refobj):
+    def get_reference(self, refobj):  #pragma: no cover
         """Return the reference that the refobj represents or None if it is imported.
 
         E.g. in Maya this would return the linked reference node.
@@ -1655,7 +1655,7 @@ class RefobjInterface(object):
         inter.import_taskfile(refobj, taskfileinfo)
 
     @abc.abstractmethod
-    def get_status(self, refobj):
+    def get_status(self, refobj):  #pragma: no cover
         """Return the status of the given refobj
 
         See: :data:`Reftrack.LOADED`, :data:`Reftrack.UNLOADED`, :data:`Reftrack.IMPORTED`.
@@ -1669,7 +1669,7 @@ class RefobjInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_taskfile(self, refobj):
+    def get_taskfile(self, refobj):  #pragma: no cover
         """Return the taskfile that is loaded and represented by the refobj
 
         :param refobj: the refobj to query
@@ -1814,7 +1814,7 @@ class ReftypeInterface(object):
         return self._refobjinter
 
     @abc.abstractmethod
-    def reference(self, refobj, taskfileinfo):
+    def reference(self, refobj, taskfileinfo):  #pragma: no cover
         """Reference the given taskfileinfo into the scene and return the created reference object
 
         The created reference object will be used on :meth:`RefobjInterface.set_reference` to
@@ -1831,7 +1831,7 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def load(self, refobj, reference):
+    def load(self, refobj, reference):  #pragma: no cover
         """Load the given reference
 
         Load in this case means, that a reference is already in the scene
@@ -1847,7 +1847,7 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def unload(self, refobj, reference):
+    def unload(self, refobj, reference):  #pragma: no cover
         """Unload the given reference
 
         Unload in this case means, that a reference is stays in the scene
@@ -1863,7 +1863,7 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def replace(self, refobj, reference, taskfileinfo):
+    def replace(self, refobj, reference, taskfileinfo):  #pragma: no cover
         """Replace the given reference with the given taskfileinfo
 
         :param refobj: the refobj that is linked to the reference
@@ -1877,7 +1877,7 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def delete(self, refobj):
+    def delete(self, refobj):  #pragma: no cover
         """Delete the content of the given refobj
 
         :param refobj: the refobj that represents the content that should be deleted
@@ -1889,7 +1889,7 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def import_reference(self, refobj, reference):
+    def import_reference(self, refobj, reference):  #pragma: no cover
         """Import the given reference
 
         The reference of the refobj will be set to None automatically afterwards with
@@ -1904,7 +1904,7 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def import_taskfile(self, refobj, taskfileinfo):
+    def import_taskfile(self, refobj, taskfileinfo):  #pragma: no cover
         """Import the given taskfileinfo and update the refobj
 
         :param refobj: the refobject
@@ -1918,7 +1918,7 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def is_replaceable(self, refobj):
+    def is_replaceable(self, refobj):  #pragma: no cover
         """Return whether the given reference of the refobject is replaceable or
         if it should just get deleted and loaded again.
 
@@ -1951,7 +1951,7 @@ class ReftypeInterface(object):
         return self.create_options_model(tfis), tfis
 
     @abc.abstractmethod
-    def fetch_option_taskfileinfos(self, element):
+    def fetch_option_taskfileinfos(self, element):  #pragma: no cover
         """Fetch the options for possible files to load, replace etc for the given element.
 
         Options from which to choose a file to load or replace.
@@ -1965,7 +1965,7 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create_options_model(self, taskfileinfos):
+    def create_options_model(self, taskfileinfos):  #pragma: no cover
         """Create a new treemodel that has the taskfileinfos as internal_data of the leaves.
 
         I recommend using :class:`jukeboxcore.gui.filesysitemdata.TaskFileInfoItemData` for the leaves.
@@ -1981,7 +1981,7 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_suggestions(self, reftrack):
+    def get_suggestions(self, reftrack):  #pragma: no cover
         """Return a list with possible children for this reftrack
 
         Each Reftrack may want different children. E.g. a Asset wants

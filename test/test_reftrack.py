@@ -426,7 +426,10 @@ class AssetReftypeInterface(ReftypeInterface):
         :rtype: None
         :raises: NotImplementedError
         """
-        pass
+        for r in reference.content:
+            r.referencedby = None
+        reference.content = []
+        refobj.reference = None
 
     def import_taskfile(self, refobj, taskfileinfo):
         """Import the given taskfileinfo and update the refobj
@@ -444,6 +447,7 @@ class AssetReftypeInterface(ReftypeInterface):
                                         releasetype=taskfileinfo.releasetype,
                                         descriptor=taskfileinfo.descriptor,
                                         typ=taskfileinfo.typ)
+        Refobj("Asset", None, None, refobj.taskfile, None)
 
     def is_replaceable(self, refobj):
         """Return whether the given reference of the refobject is replaceable or
@@ -816,3 +820,39 @@ def test_unload(mock_suggestions, djprj, reftrackroot, refobjinter):
 
     with pytest.raises(ReftrackIntegrityError):
         t3.unload()
+
+
+def test_import_reference(djprj, reftrackroot, refobjinter):
+    ref0 = Reference(True)
+    robj0 = Refobj('Asset', None, ref0, djprj.assettaskfiles[0], None)
+    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], ref0)
+    robj2 = Refobj('Asset', robj1, None, djprj.assettaskfiles[0], ref0)
+    ref0.content.append(robj1)
+    ref0.content.append(robj2)
+    t0, t1, t2 = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2])
+
+    assert t0.status() == Reftrack.LOADED
+    t0.import_entity()
+    assert t0.status() == Reftrack.IMPORTED
+    for r in (robj0, robj1, robj2):
+        assert r.get_status() == Reftrack.IMPORTED
+
+
+@mock.patch.object(AssetReftypeInterface, "get_suggestions")
+def test_import_taskfile(mock_suggestions, djprj, reftrackroot, refobjinter):
+    mock_suggestions.returnvalue = []
+    t0 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0])
+    assert t0._children == []
+    assert t0.get_refobj() is None
+
+    t0.import_entity(djprj.assettaskfiles[0])
+    assert len(t0._children) == 1
+    t1 = t0._children[0]
+    robj0 = t0.get_refobj()
+    robj1 = t1.get_refobj()
+    assert robj0.typ == 'Asset'
+    assert robj0.parent is None
+    assert robj0.children == [robj1]
+    assert robj0.taskfile == djprj.assettaskfiles[0]
+    assert robj1.parent is robj0
+    assert t0.status() == Reftrack.IMPORTED
