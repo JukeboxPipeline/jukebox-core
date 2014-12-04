@@ -15,14 +15,46 @@ class Reference(object):
     if it is currently loaded or unloaded
     """
 
-    def __init__(self, loaded=True):
+    def __init__(self, loaded=True, content=None):
         """Initialize a new reference with the given status
 
         :param loaded: True if loaded, false if unloaded
         :type loaded: :class:`bool`
+        :param content: a list of refobjs
+        :type content: list | None
         :raises: None
         """
+        if content is None:
+            content = []
+        self.content = content
+        for refobj in content:
+            if refobj.referencedby is None:
+                refobj.referencedby = self
         self.loaded = loaded
+        if not loaded:
+            self.unload()
+
+    def load(self, ):
+        """Set loaded to True and put the content back to Refobj.instances
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        for refobj in self.content:
+            Refobj.instances.append(refobj)
+        self.loaded = True
+
+    def unload(self, ):
+        """Set loaded to False and remove the content from Refobj.instances
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        for refobj in self.content:
+            Refobj.instances.remove(refobj)
+        self.loaded = False
 
 
 class Refobj(object):
@@ -57,6 +89,8 @@ class Refobj(object):
         self.children = []
         if parent:
             parent.children.append(self)
+        if reference:
+            reference.content.append(self)
         self.reference = reference
         self.taskfile = taskfile
         self.referencedby = referencedby
@@ -309,7 +343,6 @@ class AssetReftypeInterface(ReftypeInterface):
         :returns: the reference that was created and should set on the appropriate refobj
         :raises: NotImplementedError
         """
-        ref = Reference()
         refobj.taskfile = djadapter.taskfiles.get(task=taskfileinfo.task,
                                         version=taskfileinfo.version,
                                         releasetype=taskfileinfo.releasetype,
@@ -317,7 +350,8 @@ class AssetReftypeInterface(ReftypeInterface):
                                         typ=taskfileinfo.typ)
         # also create a new refobj. This acts like the content of the reference
         # contains another refobject
-        Refobj("Asset", None, None, refobj.taskfile, ref)
+        ref = Reference()
+        refobj2 = Refobj("Asset", None, None, refobj.taskfile, ref)
         return ref
 
     def load(self, refobj, reference):
@@ -334,7 +368,7 @@ class AssetReftypeInterface(ReftypeInterface):
         :rtype: None
         :raises: NotImplementedError
         """
-        reference.loaded = True
+        reference.load()
 
     def unload(self, refobj, reference):
         """Unload the given reference
@@ -350,7 +384,7 @@ class AssetReftypeInterface(ReftypeInterface):
         :rtype: None
         :raises: NotImplementedError
         """
-        reference.loaded = False
+        reference.unload()
 
     def replace(self, refobj, reference, taskfileinfo):
         """Replace the given reference with the given taskfileinfo
@@ -706,4 +740,30 @@ def test_reference(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert robj3.parent is robj2
     assert robj2.typ == 'Asset'
     assert robj2.get_status() == Reftrack.LOADED
+    assert t2.status() == Reftrack.LOADED
+
+
+@mock.patch.object(AssetReftypeInterface, "get_suggestions")
+def test_load(mock_suggestions, djprj, reftrackroot, refobjinter):
+    mock_suggestions.returnvalue = []
+    ref2 = Reference(True)
+
+    robj2 = Refobj('Asset', None, ref2, djprj.assettaskfiles[0], None)
+    robj0 = Refobj('Asset', robj2, None, djprj.assettaskfiles[0], ref2)
+    robj1 = Refobj('Asset', robj0, None, djprj.assettaskfiles[0], ref2)
+    ref2.content.append(robj0)
+    ref2.content.append(robj1)
+    ref2.unload()
+
+    t2 = Reftrack.wrap(reftrackroot, refobjinter, [robj2])[0]
+
+    assert t2.status() == Reftrack.UNLOADED
+    for r in [robj0, robj1]:
+        assert r not in Refobj.instances
+    assert t2._children == []
+    t2.load()
+    t0 = t2._children[0]
+    t1 = t0._children[0]
+    assert t0.get_refobj() is robj0
+    assert t1.get_refobj() is robj1
     assert t2.status() == Reftrack.LOADED
