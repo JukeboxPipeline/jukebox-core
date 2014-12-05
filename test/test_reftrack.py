@@ -922,3 +922,9 @@ def test_replace_replaceable(mock_suggestions, djprj, reftrackroot, refobjinter)
     robj2 = Refobj('Asset', robj1, None, djprj.assettaskfiles[0], None)
     ref0.content.append(robj1)
     t0, t1, t2 = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2])
+
+    assert not t0.uptodate()
+    t0.replace(djprj.assettaskfiles[2])
+    assert t0.get_refobjinter().is_replaceable(t0.get_refobj()) is True
+    assert t0.alien()
+    
