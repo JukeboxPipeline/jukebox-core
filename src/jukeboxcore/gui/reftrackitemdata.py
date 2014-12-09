@@ -1,6 +1,8 @@
 """This module holds :class:`jukeboxcore.gui.treemodel.ItemData` subclasses that represent reftrack data,
 e.g. a :class:`jukeboxcore.reftrack.Reftrack` object.
 """
+from functools import partial
+
 from PySide import QtCore
 
 from jukeboxcore import djadapter
@@ -189,6 +191,24 @@ def reftrack_path_data(rt, role):
     return filesysitemdata.taskfileinfo_path_data(tfi, role)
 
 
+def reftrack_restricted_data(rt, role, attr):
+    """Return the data for restriction of the given attr of the given reftrack
+
+    :param rt: the :class:`jukeboxcore.reftrack.Reftrack` holds the data
+    :type rt: :class:`jukeboxcore.reftrack.Reftrack`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the restriction
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        if rt.is_restricted(getattr(rt, attr, None)):
+            return "Restricted"
+        else:
+            return "Allowed"
+
+
 class ReftrackItemData(ItemData):
     """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a :class:`jukeboxcore.reftrack.Reftrack`
     """
@@ -212,7 +232,13 @@ class ReftrackItemData(ItemData):
                reftrack_status_data,
                reftrack_uptodate_data,
                reftrack_alien_data,
-               reftrack_path_data,]
+               reftrack_path_data,
+               partial(reftrack_restricted_data, attr='reference'),
+               partial(reftrack_restricted_data, attr='load'),
+               partial(reftrack_restricted_data, attr='unload'),
+               partial(reftrack_restricted_data, attr='import_reference'),
+               partial(reftrack_restricted_data, attr='import_taskfile'),
+               partial(reftrack_restricted_data, attr='replace')]
 
     def column_count(self, ):
         """Return the number of columns that can be queried for data

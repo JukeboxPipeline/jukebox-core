@@ -839,7 +839,7 @@ def test_import_reference(djprj, reftrackroot, refobjinter):
     t0, t1, t2 = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2])
 
     assert t0.status() == Reftrack.LOADED
-    t0.import_entity()
+    t0.import_reference()
     assert t0.status() == Reftrack.IMPORTED
     for r in (robj0, robj1, robj2):
         assert r.get_status() == Reftrack.IMPORTED
@@ -852,7 +852,7 @@ def test_import_taskfile(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert t0._children == []
     assert t0.get_refobj() is None
 
-    t0.import_entity(djprj.assettaskfiles[0])
+    t0.import_file(djprj.assettaskfiles[0])
     assert len(t0._children) == 1
     t1 = t0._children[0]
     robj0 = t0.get_refobj()

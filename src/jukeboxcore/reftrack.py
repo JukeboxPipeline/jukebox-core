@@ -1,5 +1,8 @@
 """This module features classes and interfaces to track references and loaded data and manipulate it.
 
+Overview
+------------
+
 It is the main lib for the reference workflow of the pipeline.
 It revoles around a :class:`Reftrack` object.
 Each :class:`Reftrack` instance is responsible for one entity.
@@ -21,6 +24,9 @@ and manipulate them. It is specific for each software you use. So there should b
 :class:`RefobjInterface` for each software. The :class:`Reftrack` object will interact with the interface
 to manipulate the scene.
 
+Entity Types
+------------
+
 Each entity has a certain type. For example one type might be ``"Asset"`` and another might be ``"Shader"``.
 Depending on the type and of course the software you are in (or in this case simply the :class:`RefobjInterface`),
 you want to perform different actions on loading or deleting the entity. E.g. when loading a shader, you might want
@@ -37,14 +43,23 @@ shaders to certain objects. Make sure that your :class:`ReftypeInterface` classe
 :class:`RefobjInterface`. Use the classmethod :meth:`RefobjInterface.register_type` on your refobj interface subclass
 or but them directly in :data:`RefobjInterface.types` when defining the class.
 
+Parents
+-------
+
 Each :class:`Reftrack` object can have a parent. A parent is another :class:`Reftack` object and is responsible
 for its children. If the parent is deleted, all other children should be deleted too. This might be the case for a shader.
 Imagine assigning a shader to an asset. The asset would be the parent and the shader the child. If the asset gets deleted
 the shader should be deleted to. The :class:`Reftrack` objects handle such cases by themselves.
 
+Root
+----
+
 There is also a :class:`ReftrackRoot` class. It is important to group all reftracks of your current scene under the same root.
 The root object is mainly used to find parent :class:`Reftrack` objects. But it also provides a Qt model that you can use
 for views. It holds all :class:`Reftrack` objects in a tree model.
+
+Creating a Reftrack
+-------------------
 
 You can create a :class:`Reftrack` objects on two ways.
 
@@ -60,6 +75,21 @@ You can create a :class:`Reftrack` objects on two ways.
   The type is for example ``"Shader"``. The element would be either a Shot or Asset in your database. So you would choose the character asset.
   The parent would be an already existing :class:`Reftrack` of the character asset with type ``"Asset"``. In other cases, you do not need a parent.
   E.g. you create a new :class:`Reftrack` for the character asset. It would have no parent.
+
+Restrictions
+------------
+
+You can restrict certain actions on a :class:`Reftrack` instance. All methods that have the decorator :func:`restrictable` can be
+restricted by using :meth:`Reftrack.set_restricted`. Usually this is automatically done. E.g. you cannot replace an entity if it is not
+already in the scene. In this case a :class:`ReftrackIntegrityError` would be raised by the decorated method automatically.
+See: :meth:`Reftrack.fetch_reference_restriction`, :meth:`Reftrack.fetch_load_restriction`, :meth:`Reftrack.fetch_unload_restriction`,
+:meth:`Reftrack.fetch_import_ref_restriction`, :meth:`Reftrack.fetch_import_f_restriction`, :meth:`Reftrack.fetch_replace_restriction`.
+
+The :class:`RefobjInterface` or :class:`ReftypeInterface` can customize the rules for restrictions.
+For example you could create a rule, that nested references in Maya cannot be replaced.
+
+Usage
+-----
 
 If you have implementations for each interface, it should be fairly easy to use:
 
@@ -134,6 +164,9 @@ If you have implementations for each interface, it should be fairly easy to use:
         # pick one
         reftrack.import_entity(options[0])
 
+Get Started
+-----------
+
 So before you start, here is a list of things to do:
 
   1. Implement a :class:`ReftypeInterface` for each type.
@@ -148,6 +181,7 @@ So before you start, here is a list of things to do:
 
 """
 import abc
+import functools
 from contextlib import contextmanager
 
 from jukeboxcore.log import get_logger
@@ -206,7 +240,13 @@ class ReftrackRoot(object):
                                      "Status",
                                      "Uptodate",
                                      "Alien",
-                                     "Path"])
+                                     "Path",
+                                     "Referencing Restricted",
+                                     "Loading Restricted",
+                                     "Unloading Restricted",
+                                     "Import Reference Restricted",
+                                     "Import File Restricted",
+                                     "Replace Restricted"])
             rootitem = TreeItem(rootdata)
         if itemdataclass is None:
             itemdataclass = ReftrackItemData
@@ -326,6 +366,27 @@ class ReftrackRoot(object):
         return self._idataclass(reftrack)
 
 
+def restrictable(m):
+    """Decorator for :class:`Reftrack` methods.
+    A decorated method will check if its restriction with :meth:`Reftrack.is_restricted`
+    and raises a :class:`RestrictionError` if it is restricted.
+
+    :param m: The :class:`Reftrack` method to wrap
+    :type m: :class:`Reftrack` method
+    :returns: a wrapped method
+    :rtype: method
+    :raises: None
+    """
+    @functools.wraps(m)
+    def wrapper(*args, **kwds):
+        self = args[0]
+        if wrapper in self._restricted:
+            msg = "Method: %s restricted on %s" % (m.__name__, self)
+            raise ReftrackIntegrityError(msg=msg, reftracks=[self])
+        return m(*args, **kwds)
+    return wrapper
+
+
 class Reftrack(object):
     """Represents one entity of the reference workflow in a programm
 
@@ -411,6 +472,9 @@ The Refobject provides the necessary info.")
         self._treeitem = self.create_treeitem()  # a treeitem for the model of the root
         """A treeitem for the model of the root. Will get set when parents gets set!"""
 
+        # restrict actions
+        self._restricted = set([])
+
         # initialize reftrack
         if not refobj:
             self.set_typ(typ)
@@ -425,6 +489,7 @@ The Refobject provides the necessary info.")
             self.fetch_uptodate()
 
         self._root.add_reftrack(self)
+        self.update_restrictions()
 
     @classmethod
     def wrap(cls, root, refobjinter, refobjects):
@@ -457,6 +522,7 @@ The Refobject provides the necessary info.")
                 parentreftrack = None
             t.set_parent(parentreftrack)
             t.fetch_new_children()
+            t.update_restrictions()
         return tracks
 
     @classmethod
@@ -878,6 +944,7 @@ The Refobject provides the necessary info.")
         refobj = self.get_refobjinter().create(self.get_typ(), prefobj)
         return refobj
 
+    @restrictable
     def reference(self, taskfileinfo):
         """Reference the entity into the scene. Only possible if the current status is None.
 
@@ -888,7 +955,7 @@ The Refobject provides the necessary info.")
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
         :returns: None
         :rtype: None
-        :raises: AssertionError
+        :raises: :class:`ReftrackIntegrityError`
         """
         assert self.status() is None,\
             "Can only reference, if the entity is not already referenced/imported. Use replace instead."
@@ -897,7 +964,9 @@ The Refobject provides the necessary info.")
             self.get_refobjinter().reference(taskfileinfo, refobj)
         self.set_refobj(refobj)
         self.fetch_new_children()
+        self.update_restrictions()
 
+    @restrictable
     def load(self, ):
         """If the reference is in the scene but unloaded, load it.
 
@@ -908,14 +977,16 @@ The Refobject provides the necessary info.")
 
         :returns: None
         :rtype: None
-        :raises: AssertionError
+        :raises: :class:`ReftrackIntegrityError`
         """
         assert self.status() == self.UNLOADED,\
             "Cannot load if there is no unloaded reference. Use reference instead."
         self.get_refobjinter().load(self._refobj)
         self.set_status(self.LOADED)
         self.fetch_new_children()
+        self.update_restrictions()
 
+    @restrictable
     def unload(self, ):
         """If the reference is loaded, unload it.
 
@@ -934,7 +1005,7 @@ The Refobject provides the necessary info.")
 
         :returns: None
         :rtype: None
-        :raises: :class:`AssertionError`, :class:`ReftrackIntegrityError`
+        :raises: :class:`ReftrackIntegrityError`
         """
         assert self.status() == self.LOADED,\
             "Cannot unload if there is no loaded reference. \
@@ -945,16 +1016,13 @@ Use delete if you want to get rid of a reference or import."
         self.get_refobjinter().unload(self._refobj)
         self.set_status(self.UNLOADED)
         self.throw_children_away()
+        self.update_restrictions()
 
-    def import_entity(self, taskfileinfo=None):
-        """Import the entity.
+    @restrictable
+    def import_file(self, taskfileinfo):
+        """Import the file for the given taskfileinfo
 
-        This will import the file for the given taskfileinfo. If no taskfileinfo is given,
-        then it is assumed, that you already referenced the :class:`Reftrack` and the reference
-        will be imported.
-        This will also update the status to :data:`Reftrack.IMPORTED`.
-
-        If you import a :class:`Reftrack` with the status None, this will also call
+        This will also update the status to :data:`Reftrack.IMPORTED`. This will also call
         :meth:`fetch_new_children`. Because after the import, we might have new children.
 
         :param taskfileinfo: the taskfileinfo to import. If None is given, try to import
@@ -962,25 +1030,37 @@ Use delete if you want to get rid of a reference or import."
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo` | None
         :returns: None
         :rtype: None
-        :raises: AssertionError
+        :raises: :class:`ReftrackIntegrityError`
         """
-        assert self.status() is not self.IMPORTED,\
-            "Entity is already imported. Use replace instead."
+        assert self.status() is None,\
+            "Entity is already in scene. Use replace instead."
         refobjinter = self.get_refobjinter()
-        if self.status() is None:
-            assert taskfileinfo,\
-                "Can only import an already referenced entity \
-or a given taskfileinfo. No taskfileinfo was given though"
-            refobj = self.create_refobject()
-            with self.set_parent_on_new(refobj):
-                refobjinter.import_taskfile(refobj, taskfileinfo)
-            self.set_refobj(refobj)
-            self.set_status(self.IMPORTED)
-            self.fetch_new_children()
-        else:
-            refobjinter.import_reference(self.get_refobj())
-            self.set_status(self.IMPORTED)
+        refobj = self.create_refobject()
+        with self.set_parent_on_new(refobj):
+            refobjinter.import_taskfile(refobj, taskfileinfo)
+        self.set_refobj(refobj)
+        self.set_status(self.IMPORTED)
+        self.fetch_new_children()
+        self.update_restrictions()
 
+    @restrictable
+    def import_reference(self, ):
+        """Import the currently loaded reference
+
+        This will also update the status to :data:`Reftrack.IMPORTED`.
+
+        :returns: None
+        :rtype: None
+        :raises: :class:`ReftrackIntegrityError`
+        """
+        assert self.status() in (self.LOADED, self.UNLOADED),\
+            "There is no reference for this entity."
+        refobjinter = self.get_refobjinter()
+        refobjinter.import_reference(self.get_refobj())
+        self.set_status(self.IMPORTED)
+        self.update_restrictions()
+
+    @restrictable
     def replace(self, taskfileinfo):
         """Replace the current reference or imported entity.
 
@@ -1003,7 +1083,7 @@ or a given taskfileinfo. No taskfileinfo was given though"
         :type taskfileinfo: :class:`jukeboxcore.filesys.TaskFileInfo`
         :returns: None
         :rtype: None
-        :raises: AssertionError
+        :raises: ReftrackIntegrityError
         """
         assert self.status() is not None,\
             "Can only replace entities that are already in the scene."
@@ -1036,9 +1116,10 @@ or a given taskfileinfo. No taskfileinfo was given though"
             status = self.status()
             self.delete(removealien=False)
             if status == self.IMPORTED:
-                self.import_entity(taskfileinfo)
+                self.import_file(taskfileinfo)
             else:
                 self.reference(taskfileinfo)
+        self.update_restrictions()
 
     def delete(self, removealien=True):
         """Delete the current entity.
@@ -1068,6 +1149,7 @@ or a given taskfileinfo. No taskfileinfo was given though"
         self._delete()
         if self.alien() and removealien:
             self.get_root().remove_reftrack(self)
+        self.update_restrictions()
 
     def _delete(self, ):
         """Internal implementation for deleting a reftrack.
@@ -1256,6 +1338,125 @@ or a given taskfileinfo. No taskfileinfo was given though"
             if refobjinter.get_parent(refobj) is None:
                 refobjinter.set_parent(refobj, parentrefobj)
 
+    def is_restricted(self, obj):
+        """Returns True if the given object is listed under :data:`Reftrack.restricted`.
+
+        This is mainly used to restrict functions in certain situations.
+
+        :param obj: a hashable object
+        :returns: True, if the given obj is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return obj in self.restrictioned
+
+    def set_restricted(self, obj, restricted):
+        """Set the restriction on the given object.
+
+        You can use this to signal that a certain function is restricted.
+        Then you can query the restriction later with :meth:`Reftrack.is_restricted`.
+
+        :param obj: a hashable object
+        :param restricted: True, if you want to restrict the object.
+        :type restricted: :class:`bool`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if restricted:
+            self._restricted.add(obj)
+        elif obj in self._restricted:
+            self._restricted.remove(obj)
+
+    def update_restrictions(self, ):
+        """Update all restrictions for the common :class:`Reftrack` actions.
+
+        Update restrictions for:
+
+          * :meth:`Reftrack.reference`
+          * :meth:`Reftrack.load`
+          * :meth:`Reftrack.unload`
+          * :meth:`Reftrack.import_reference`
+          * :meth:`Reftrack.import_file`
+          * :meth:`Reftrack.replace`
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.set_restricted(self.reference, self.fetch_reference_restriction())
+        self.set_restricted(self.load, self.fetch_load_restriction())
+        self.set_restricted(self.unload, self.fetch_unload_restriction())
+        self.set_restricted(self.import_reference, self.fetch_import_ref_restriction())
+        self.set_restricted(self.import_file, self.fetch_import_f_restriction())
+        self.set_restricted(self.replace, self.fetch_replace_restriction())
+
+    def fetch_reference_restriction(self, ):
+        """Fetch whether referencing is restricted
+
+        :returns: True, if referencing is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        restricted = self.status() is not None
+        return restricted or inter.fetch_action_restriction(self, 'reference')
+
+    def fetch_load_restriction(self, ):
+        """Fetch whether loading is restricted
+
+        :returns: True, if loading is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        restricted = self.status() != self.UNLOADED
+        return restricted or inter.fetch_action_restriction(self, 'load')
+
+    def fetch_unload_restriction(self, ):
+        """Fetch whether unloading is restricted
+
+        :returns: True, if unloading is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        restricted = self.status() != self.LOADED or self.get_children_to_delete()
+        return restricted or inter.fetch_action_restriction(self, 'unload')
+
+    def fetch_import_ref_restriction(self,):
+        """Fetch whether importing the reference is restricted
+
+        :returns: True, if importing the reference is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        restricted = self.status() is not None
+        return restricted or inter.fetch_action_restriction(self, 'import_reference')
+
+    def fetch_import_f_restriction(self,):
+        """Fetch whether unloading is restricted
+
+        :returns: True, if unloading is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        restricted = self.status() not in (self.LOADED, self.UNLOADED)
+        return restricted or inter.fetch_action_restriction(self, 'import_taskfile')
+
+    def fetch_replace_restriction(self, ):
+        """Fetch whether unloading is restricted
+
+        :returns: True, if unloading is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        restricted = self.status() is None
+        return restricted or inter.fetch_action_restriction(self, 'replace')
+
 
 class RefobjInterface(object):
     """Interface to interact with a refernece object that is in your scene.
@@ -1286,6 +1487,8 @@ class RefobjInterface(object):
       * :meth:`RefobjInterface.get_reference`
       * :meth:`RefobjInterface.get_status`
       * :meth:`RefobjInterface.get_taskfile`
+
+    You might also want to reimplement :meth:`fetch_action_restriction`
 
     """
 
@@ -1770,6 +1973,33 @@ class RefobjInterface(object):
         inter = self.get_typ_interface(reftrack.get_typ())
         return inter.get_suggestions(reftrack)
 
+    def fetch_action_restriction(self, reftrack, action):
+        """Return wheter the given action is restricted for the given reftrack
+
+        available actions are:
+
+           ``reference``, ``load``, ``unload``, ``replace``, ``import_reference``, ``import_taskfile``
+
+        If action is not available, True is returned.
+
+        :param reftrack: the reftrack to query
+        :type reftrack: :class:`Reftrack`
+        :param action: the action to check.
+        :type action: str
+        :returns: True, if the action is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        inter = self.get_typ_interface(reftrack.get_typ())
+        d = {'reference': inter.is_reference_restricted, 'load': inter.is_load_restricted,
+             'unload': inter.is_unload_restricted, 'replace': inter.is_replace_restricted,
+             'import_reference': inter.is_import_ref_restricted, 'import_taskfile': inter.is_import_f_restricted}
+        f = d.get(action)
+        if not f:
+            return True
+        else:
+            return f(reftrack)
+
 
 class ReftypeInterface(object):
     """Interface for manipulating the content of an entity in the scene
@@ -1794,6 +2024,15 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.is_replaceable`
       * :meth:`ReftypeInterface.fetch_option_taskfileinfos`
       * :meth:`ReftypeInterface.create_options_model`
+
+    You might also want to reimplement:
+
+      * :meth:`ReftypeInterface.is_reference_restricted`
+      * :meth:`ReftypeInterface.is_load_restricted`
+      * :meth:`ReftypeInterface.is_unload_restricted`
+      * :meth:`ReftypeInterface.is_import_ref_restricted`
+      * :meth:`ReftypeInterface.is_import_f_restricted`
+      * :meth:`ReftypeInterface.is_replace_restricted`
 
     """
 
@@ -2006,3 +2245,81 @@ class ReftypeInterface(object):
         :raises: NotImplementedError
         """
         raise NotImplementedError
+
+    def is_reference_restricted(self, reftrack):
+        """Return whether referencing for the given reftrack should be restricted
+
+        This implementation returns always False
+
+        :param reftrack: the reftrack to query
+        :type reftrack: :class:`Reftrack`
+        :returns: True, if restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return False
+
+    def is_load_restricted(self, reftrack):
+        """Return whether loading for the given reftrack should be restricted
+
+        This implementation returns always False
+
+        :param reftrack: the reftrack to query
+        :type reftrack: :class:`Reftrack`
+        :returns: True, if restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return False
+
+    def is_unload_restricted(self, reftrack):
+        """Return whether unloading for the given reftrack should be restricted
+
+        This implementation returns always False
+
+        :param reftrack: the reftrack to query
+        :type reftrack: :class:`Reftrack`
+        :returns: True, if restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return False
+
+    def is_import_ref_restricted(self, reftrack):
+        """Return whether importing the reference for the given reftrack should be restricted
+
+        This implementation returns always False
+
+        :param reftrack: the reftrack to query
+        :type reftrack: :class:`Reftrack`
+        :returns: True, if restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return False
+
+    def is_import_f_restricted(self, reftrack):
+        """Return whether importing a file for the given reftrack should be restricted
+
+        This implementation returns always False
+
+        :param reftrack: the reftrack to query
+        :type reftrack: :class:`Reftrack`
+        :returns: True, if restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return False
+
+    def is_replace_restricted(self, reftrack):
+        """Return whether replacing for the given reftrack should be restricted
+
+        This implementation returns always False
+
+        :param reftrack: the reftrack to query
+        :type reftrack: :class:`Reftrack`
+        :returns: True, if restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return False
