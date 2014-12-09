@@ -169,6 +169,15 @@ class TreeItem(object):
         if self._parent is not None:
             self._parent.add_child(self)
 
+    def get_model(self, ):
+        """Return the model the item belongs to
+
+        :returns: the model the item belongs to or None if it belongs to none
+        :rtype: :class:`TreeModel` | None
+        :raises: None
+        """
+        return self._model
+
     def set_model(self, model):
         """Set the model the item belongs to
 

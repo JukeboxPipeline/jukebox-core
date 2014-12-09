@@ -490,6 +490,7 @@ The Refobject provides the necessary info.")
 
         self._root.add_reftrack(self)
         self.update_restrictions()
+        self.emit_data_changed()
 
     @classmethod
     def wrap(cls, root, refobjinter, refobjects):
@@ -523,6 +524,7 @@ The Refobject provides the necessary info.")
             t.set_parent(parentreftrack)
             t.fetch_new_children()
             t.update_restrictions()
+            t.emit_data_changed()
         return tracks
 
     @classmethod
@@ -965,6 +967,7 @@ The Refobject provides the necessary info.")
         self.set_refobj(refobj)
         self.fetch_new_children()
         self.update_restrictions()
+        self.emit_data_changed()
 
     @restrictable
     def load(self, ):
@@ -985,6 +988,7 @@ The Refobject provides the necessary info.")
         self.set_status(self.LOADED)
         self.fetch_new_children()
         self.update_restrictions()
+        self.emit_data_changed()
 
     @restrictable
     def unload(self, ):
@@ -1017,6 +1021,7 @@ Use delete if you want to get rid of a reference or import."
         self.set_status(self.UNLOADED)
         self.throw_children_away()
         self.update_restrictions()
+        self.emit_data_changed()
 
     @restrictable
     def import_file(self, taskfileinfo):
@@ -1042,6 +1047,7 @@ Use delete if you want to get rid of a reference or import."
         self.set_status(self.IMPORTED)
         self.fetch_new_children()
         self.update_restrictions()
+        self.emit_data_changed()
 
     @restrictable
     def import_reference(self, ):
@@ -1059,6 +1065,7 @@ Use delete if you want to get rid of a reference or import."
         refobjinter.import_reference(self.get_refobj())
         self.set_status(self.IMPORTED)
         self.update_restrictions()
+        self.emit_data_changed()
 
     @restrictable
     def replace(self, taskfileinfo):
@@ -1120,6 +1127,7 @@ Use delete if you want to get rid of a reference or import."
             else:
                 self.reference(taskfileinfo)
         self.update_restrictions()
+        self.emit_data_changed()
 
     def delete(self, removealien=True):
         """Delete the current entity.
@@ -1150,6 +1158,7 @@ Use delete if you want to get rid of a reference or import."
         if self.alien() and removealien:
             self.get_root().remove_reftrack(self)
         self.update_restrictions()
+        self.emit_data_changed()
 
     def _delete(self, ):
         """Internal implementation for deleting a reftrack.
@@ -1456,6 +1465,22 @@ Use delete if you want to get rid of a reference or import."
         inter = self.get_refobjinter()
         restricted = self.status() is None
         return restricted or inter.fetch_action_restriction(self, 'replace')
+
+    def emit_data_changed(self):
+        """Emit the data changed signal on the model of the treeitem
+        if the treeitem has a model.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        item = self.get_treeitem()
+        m = item.get_model()
+        if m:
+            start = m.index_of_item(item)
+            parent = start.parent()
+            end = m.index(start.row(), item.column_count()-1, parent)
+            m.dataChanged.emit(start, end)
 
 
 class RefobjInterface(object):
