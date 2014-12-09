@@ -927,7 +927,7 @@ def test_replace_replaceable(mock_suggestions, djprj, reftrackroot, refobjinter)
     t0.replace(djprj.assettaskfiles[2])
     assert t0.get_refobjinter().is_replaceable(t0.get_refobj()) is True
     assert t0.alien()
-    assert t0.status() == Reftrack.REFERENCED
+    assert t0.status() == Reftrack.LOADED
     assert len(t0._children) == 1
     assert t0.get_refobj().taskfile == djprj.assettaskfiles[2]
     t4 = t0._children[0]
