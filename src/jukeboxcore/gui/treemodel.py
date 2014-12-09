@@ -144,6 +144,12 @@ class TreeItem(object):
     Even if you have multiple top level items, they are all grouped under one
     root. The data for the root item can be None but it is advised to use
     a ListItemData so you can provide horizontal headers.
+
+    TreeItems should always belong to only one model.
+    Once a new TreeModel gets initialized all TreeItems will share the same model.
+    When you add a new Item or delete one, the model gets automatically updated.
+    You do not need to call TreeModel insertRow or removeRow. Just use add_child, remove_child
+    or create a new TreeItem and provide a parent item to the constructor.
     """
 
     def __init__(self, data, parent=None):
@@ -156,11 +162,61 @@ class TreeItem(object):
         :type parent: :class:`jukeboxcore.gui.treemodel.TreeItem`
         :raises: None
         """
+        self._model = None
         self._data = data
         self._parent = parent
-        if self._parent is not None:
-            self._parent.childItems.append(self)
         self.childItems = []
+        if self._parent is not None:
+            self._parent.add_child(self)
+
+    def set_model(self, model):
+        """Set the model the item belongs to
+
+        A TreeItem can only belong to one model.
+
+        :param model: the model the item belongs to
+        :type model: :class:`Treemodel`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self._model = model
+        for c in self.childItems:
+            c.set_model(model)
+
+    def add_child(self, child):
+        """Add child to children of this TreeItem
+
+        :param child: the child TreeItem
+        :type child: :class:`TreeItem`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        child.set_model(self._model)
+        if self._model:
+            row = len(self.childItems)
+            parentindex = self._model.index_of_item(self)
+            self._model.insertRow(row, child, parentindex)
+        else:
+            self.childItems.append(child)
+
+    def remove_child(self, child):
+        """Remove the child from this TreeItem
+
+        :param child: the child TreeItem
+        :type child: :class:`TreeItem`
+        :returns: None
+        :rtype: None
+        :raises: ValueError
+        """
+        child.set_model(None)
+        if self._model:
+            row = self.childItems.index(child)
+            parentindex = self._model.index_of_item(self)
+            self._model.removeRow(row, parentindex)
+        else:
+            self.childItems.remove(child)
 
     def child(self, row):
         """Return the child at the specified row
@@ -269,14 +325,16 @@ class TreeModel(QtCore.QAbstractItemModel):
     def __init__(self, root, parent=None):
         """Constructs a new tree model with the given root treeitem
 
-        :param root:
-        :type root:
-        :param parent:
-        :type parent:
+        :param root: the root tree item. The root tree item is responsible for the headers.
+                     A :class:`ListItemData` with the headers is suitable as data for the item.
+        :type root: :class:`TreeItem`
+        :param parent: the parent for the model
+        :type parent: :class:`QtCore.QObject`
         :raises: None
         """
         super(TreeModel, self).__init__(parent)
         self._root = root
+        self._root.set_model(self)
 
     def index(self, row, column, parent=None):
         """Returns the index of the item in the model specified by the given row, column and parent index.
@@ -402,17 +460,44 @@ class TreeModel(QtCore.QAbstractItemModel):
                      If not it will defeat the purpose of this function.
         :type item: :class:`TreeItem`
         :param parent: the parent
-        :type parent: class:`QtCore.QModelIndex`
+        :type parent: :class:`QtCore.QModelIndex`
         :returns: Returns true if the row is inserted; otherwise returns false.
         :rtype: bool
         :raises: None
         """
-        parentitem = parent.internalPointer()
+        item.set_model(self)
+        if parent.isValid():
+            parentitem = parent.internalPointer()
+        else:
+            parentitem = self._root
         self.beginInsertRows(parent, row, row)
         item._parent = parentitem
-        parentitem.childItems.insert(row, item)
+        if parentitem:
+            parentitem.childItems.insert(row, item)
         self.endInsertRows()
-        # self.insertRows(len(parentitem.childItems), 1, parent)
+        return True
+
+    def removeRow(self, row, parent):
+        """Remove row from parent
+
+        :param row: the row index
+        :type row: int
+        :param parent: the parent index
+        :type parent: :class:`QtCore.QModelIndex`
+        :returns: True if row is inserted; otherwise returns false.
+        :rtype: bool
+        :raises: None
+        """
+        if parent.isValid():
+            parentitem = parent.internalPointer()
+        else:
+            parentitem = self._root
+        self.beginRemoveRows(parent, row, row)
+        item = parentitem.childItems[row]
+        item.set_model(None)
+        item._parent = None
+        del parentitem.childItems[row]
+        self.endRemoveRows()
         return True
 
     @property
@@ -439,3 +524,40 @@ class TreeModel(QtCore.QAbstractItemModel):
             return item.flags(index)
         else:
             super(TreeModel, self).flags(index)
+
+    def index_of_item(self, item):
+        """Get the index for the given TreeItem
+
+        :param item: the treeitem to query
+        :type item: :class:`TreeItem`
+        :returns: the index of the item
+        :rtype: :class:`QtCore.QModelIndex`
+        :raises: ValueError
+        """
+        # root has an invalid index
+        if item == self._root:
+            return QtCore.QModelIndex()
+        # find all parents to get their index
+        parents = [item]
+        i = item
+        while True:
+            parent = i.parent()
+            # break if parent is root because we got all parents we need
+            if parent == self._root:
+                break
+            if parent is None:
+                # No new parent but last parent wasn't root!
+                # This means that the item was not in the model!
+                return QtCore.QModelIndex()
+            # a new parent was found and we are still not at root
+            # search further until we get to root
+            i = parent
+            parents.append(parent)
+
+        # get the parent indexes until
+        index = QtCore.QModelIndex()
+        for treeitem in reversed(parents):
+            parent = treeitem.parent()
+            row = parent.childItems.index(treeitem)
+            index = self.index(row, 0, index)
+        return index
