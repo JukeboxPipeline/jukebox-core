@@ -1627,7 +1627,7 @@ class RefobjInterface(object):
     def set_typ(self, refobj, typ):  #pragma: no cover
         """Set the type of the given refobj
 
-        :param refobj: the refobj to query
+        :param refobj: the refobj to edit
         :type refobj: refobj
         :param typ: the entity type
         :type typ: str
@@ -1720,7 +1720,7 @@ class RefobjInterface(object):
 
     @abc.abstractmethod
     def get_current_element(self, ):  #pragma: no cover
-        """Return the currenty open Shot or Asset
+        """Return the currently open Shot or Asset
 
         :returns: the currently open element
         :rtype: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot` | None
@@ -1735,8 +1735,7 @@ class RefobjInterface(object):
         This will be called by the typinterface after the reference
         has been made. The typinterface should deliver an appropriate
         object as reference that can be used to track the reference
-        in the scene. If you query refobj afterwards it should say, that
-        it is referenced.
+        in the scene.
 
         :param refobj: the refobj to update
         :type refobj: refobj
@@ -2019,7 +2018,7 @@ class RefobjInterface(object):
         d = {'reference': inter.is_reference_restricted, 'load': inter.is_load_restricted,
              'unload': inter.is_unload_restricted, 'replace': inter.is_replace_restricted,
              'import_reference': inter.is_import_ref_restricted, 'import_taskfile': inter.is_import_f_restricted}
-        f = d.get(action)
+        f = d.get(action, None)
         if not f:
             return True
         else:
@@ -2049,6 +2048,7 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.is_replaceable`
       * :meth:`ReftypeInterface.fetch_option_taskfileinfos`
       * :meth:`ReftypeInterface.create_options_model`
+      * :meth:`ReftypeInterface.get_suggestions`
 
     You might also want to reimplement:
 
