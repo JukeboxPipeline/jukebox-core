@@ -95,7 +95,7 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         if not tf:
             self.statusbar.showMessage("Select a file to release, please!")
             return
-        tfi = TaskFileInfo(tf.task, tf.version, tf.releasetype, tf.typ, tf.descriptor)
+        tfi = TaskFileInfo.create_from_taskfile(tf)
         checks = self.get_checks()
         cleanups = self.get_cleanups()
         comment = self.get_comment()

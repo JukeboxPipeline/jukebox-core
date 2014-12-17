@@ -169,6 +169,19 @@ class TaskFileInfo(FileInfo):
             ver = 1
         return TaskFileInfo(task=task, version=ver, releasetype=releasetype, typ=typ, descriptor=descriptor)
 
+    @classmethod
+    def create_from_taskfile(self, taskfile):
+        """Create a new TaskFileInfo and return it for the given taskfile
+
+        :param taskfile: the taskfile to represent
+        :type taskfile: :class:`jukeboxcore.djadapter.models.TaskFile`
+        :returns: a taskfileinfo
+        :rtype: :class:`TaskFileInfo`
+        :raises: None
+        """
+        return TaskFileInfo(task=taskfile.task, version=taskfile.version, releasetype=taskfile.releasetype,
+                            descriptor=taskfile.descriptor, typ=taskfile.typ)
+
     def is_latest(self, ):
         """Return True, if the version is the newest.
 

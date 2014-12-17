@@ -1920,11 +1920,7 @@ class RefobjInterface(object):
         :raises: None
         """
         tf = self.get_taskfile(refobj)
-        return TaskFileInfo(task=tf.task,
-                            version=tf.version,
-                            releasetype=tf.releasetype,
-                            typ=tf.typ,
-                            descriptor=tf.descriptor)
+        return TaskFileInfo.create_from_taskfile(tf)
 
     def get_element(self, refobj):
         """Return the element the refobj represents.
