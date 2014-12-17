@@ -173,3 +173,6 @@ This structure can be adapted for the rest of python objects.
 Always start with a very short one-line description, an emptyline and then a detailed description.
 To make the creation of parameter docstrings faster there are also yasnippets for emacs, which create them automatically.
 For more information have a look at these `examples <https://pythonhosted.org/an_example_pypi_project/sphinx.html#full-code-example>`_ and the official syntax `markup documentation <http://sphinx-doc.org/markup/index.html>`_.
+
+
+.. TODO:: Write autosummary stuff?
