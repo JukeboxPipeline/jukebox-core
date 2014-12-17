@@ -365,6 +365,32 @@ class ReftrackRoot(object):
         """
         return self._idataclass(reftrack)
 
+    def get_suggestions(self, refobjinter):
+        """Return a list of suggested Reftracks for the current scene, that are not already
+        in this root.
+
+        A suggestion is a combination of type and element.
+
+        :param refobjinter: a programm specific reftrack object interface
+        :type refobjinter: :class:`RefobjInterface`
+        :returns: A list of suggestions
+        :rtype: :class:`list`
+        :raises: None
+        """
+        cur = self.refobjinter.get_current_element()
+        linked = list(cur.assets.all())
+        types = self.refobjinter.types.keys()
+        sugs = []
+        for e in [cur] + linked:
+            for t in types:
+                # filter if not already in root
+                for r in self._reftracks:
+                    if t == r.get_typ() and e == r.get_element():
+                        break
+                else:
+                    sugs.append((t, e))
+        return sugs
+
 
 def restrictable(m):
     """Decorator for :class:`Reftrack` methods.
