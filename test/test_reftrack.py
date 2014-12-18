@@ -552,6 +552,20 @@ def test_wrap(djprj, reftrackroot, refobjinter):
             "Not all suggestions were created after wrapping. Suggestions missing %s" % suggestions
 
 
+def test_wrap_scene(djprj, reftrackroot, refobjinter):
+    tf = djprj.assettaskfiles[0]
+    r1 = Refobj('Asset', None, None, tf, False)
+    r2 = Refobj('Asset', None, None, tf, False)
+    r3 = Refobj('Asset', None, None, tf, False)
+    tracks = Reftrack.wrap_scene(reftrackroot, refobjinter)
+    assert len(tracks) == 4
+    assert tracks[0].get_refobj() is r1
+    assert tracks[1].get_refobj() is r2
+    assert tracks[2].get_refobj() is r3
+    assert tracks[3].get_refobj() is None
+    assert tracks[3].get_element() == djprj.shots[0]
+
+
 def test_reftrackinit_raise_error(djprj, reftrackroot, refobjinter):
     with pytest.raises(TypeError):
         Reftrack(reftrackroot, refobjinter, typ='Asset')

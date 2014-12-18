@@ -553,6 +553,33 @@ The Refobject provides the necessary info.")
         return tracks
 
     @classmethod
+    def wrap_scene(cls, root, refobjinter):
+        """Wrap all refobjects in the scene in a :class:`Reftrack` instance
+        and set the right parents, also add suggestions for the current scene
+
+        When you want to quickly scan the scene and display the reftracks in a tool,
+        this is the easiest function.
+
+        It uses wrap on all refobjects in the scene, then adds suggestions for the
+        current scene.
+
+        :param root: the root that groups all reftracks and makes it possible to search for parents
+        :type root: :class:`ReftrackRoot`
+        :param refobjinter: a programm specific reftrack object interface
+        :type refobjinter: :class:`RefobjInterface`
+        :returns: list with the wrapped :class:`Reftrack` instances
+        :rtype: list
+        :raises: None
+        """
+        refobjects = refobjinter.get_all_refobjs()
+        tracks = cls.wrap(root, refobjinter, refobjects)
+        sugs = root.get_scene_suggestions(refobjinter)
+        for typ, element in sugs:
+            r = cls(root=root, refobjinter=refobjinter, typ=typ, element=element)
+            tracks.append(r)
+        return tracks
+
+    @classmethod
     def get_unwrapped(self, root, refobjinter):
         """Return a set with all refobjects in the scene that are not in already
         wrapped in root.
