@@ -283,7 +283,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         task = taskitem.internal_data()
         rtype = djadapter.RELEASETYPES['work']
         descriptor = self.asset_descriptor_le.text()
-        if not self.check_selection_for_save(task, descriptor):
+        if not self.check_selection_for_save(task, rtype, descriptor):
             return
 
         tfi = TaskFileInfo.get_next(task=task, releasetype=rtype,
