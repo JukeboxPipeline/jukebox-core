@@ -118,6 +118,8 @@ If you have implementations for each interface, it should be fairly easy to use:
     # this would return all refobjects that are not in root
     newrefobjs = Reftrack.get_unwrapped(reftrackroot, refobjinter)
     newreftracks = Reftrack.wrap(reftrackroot, refobjinter, newrefobjs)
+    # convenience function to wrap unwrapped refobjects and also get suggestions:
+    newrefobjs = Reftrack.wrap_scene(reftrackroot, refobjinter)
 
   Done. Now to display that in a view you can get the model of the root::
 
@@ -176,7 +178,7 @@ So before you start, here is a list of things to do:
      for :class:`Reftrack` objects.
   4. Create a :class:`RefobjInterface` instance.
   5. Create a :class:`ReftrackRoot` instance.
-  6. For refobjs in your scene use :meth:`Reftrack.wrap`.
+  6. For refobjs in your scene use :meth:`Reftrack.wrap` or :meth:`Reftrack.wrap_scene`.
   7. Add new reftracks.
 
 """
@@ -379,6 +381,8 @@ class ReftrackRoot(object):
         """
         sugs = []
         cur = refobjinter.get_current_element()
+        if not cur:
+            return sugs
         for typ in refobjinter.types:
             inter = refobjinter.get_typ_interface(typ)
             elements = inter.get_scene_suggestions(cur)
@@ -571,7 +575,7 @@ The Refobject provides the necessary info.")
         :rtype: list
         :raises: None
         """
-        refobjects = refobjinter.get_all_refobjs()
+        refobjects = cls.get_unwrapped(root, refobjinter)
         tracks = cls.wrap(root, refobjinter, refobjects)
         sugs = root.get_scene_suggestions(refobjinter)
         for typ, element in sugs:
@@ -787,7 +791,9 @@ The Refobject provides the necessary info.")
                 refobjinter.set_parent(refobj, parent.get_refobj())
             # add to parent
             self._parent.add_child(self)
-        self._treeitem = self.create_treeitem()
+
+        pitem = self._parent._treeitem if self._parent else self.get_root().get_rootitem()
+        self._treeitem.set_parent(pitem)
         self.fetch_alien()
 
     def create_treeitem(self, ):
@@ -1409,7 +1415,7 @@ Use delete if you want to get rid of a reference or import."
         :rtype: :class:`bool`
         :raises: None
         """
-        return obj in self.restrictioned
+        return obj in self._restricted
 
     def set_restricted(self, obj, restricted):
         """Set the restriction on the given object.

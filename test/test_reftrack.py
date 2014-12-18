@@ -554,16 +554,16 @@ def test_wrap(djprj, reftrackroot, refobjinter):
 
 def test_wrap_scene(djprj, reftrackroot, refobjinter):
     tf = djprj.assettaskfiles[0]
-    r1 = Refobj('Asset', None, None, tf, False)
-    r2 = Refobj('Asset', None, None, tf, False)
-    r3 = Refobj('Asset', None, None, tf, False)
+    Refobj('Asset', None, None, tf, False)
+    Refobj('Asset', None, None, tf, False)
+    Refobj('Asset', None, None, tf, False)
     tracks = Reftrack.wrap_scene(reftrackroot, refobjinter)
     assert len(tracks) == 4
-    assert tracks[0].get_refobj() is r1
-    assert tracks[1].get_refobj() is r2
-    assert tracks[2].get_refobj() is r3
-    assert tracks[3].get_refobj() is None
-    assert tracks[3].get_element() == djprj.shots[0]
+    for t in tracks:
+        if t.get_refobj() is None:
+            assert t.get_element() == djprj.shots[0]
+        else:
+            assert t.get_element() == tf.task.element
 
 
 def test_reftrackinit_raise_error(djprj, reftrackroot, refobjinter):
@@ -932,3 +932,10 @@ def test_get_scene_suggestions(djprj, reftrackroot, refobjinter):
     Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.shots[0])
     sugs = reftrackroot.get_scene_suggestions(refobjinter)
     assert sugs == []
+
+
+def test_restricted(djprj, reftrackroot, refobjinter):
+    r1 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0],)
+    assert not r1.is_restricted(r1.reference)
+    r1.set_restricted(r1.reference, True)
+    assert r1.is_restricted(r1.reference)
