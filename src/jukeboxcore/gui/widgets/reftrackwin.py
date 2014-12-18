@@ -90,7 +90,8 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         :rtype: None
         :raises: None
         """
-        pass
+        plus_icon = get_icon('glyphicons_433_plus.png', asicon=True)
+        self.addnew_tb.setIcon(plus_icon)
 
     def setup_filter(self, ):
         """Create a checkbox for every reftrack type so one can filter them
