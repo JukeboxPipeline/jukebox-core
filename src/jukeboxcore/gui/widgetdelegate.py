@@ -255,7 +255,7 @@ class WD_AbstractItemView(QtGui.QAbstractItemView):
     a left click to the widget delegate.
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         """Initialize a new abstract item view
 
         :raises: None
@@ -415,7 +415,7 @@ class WD_ListView(QtGui.QListView):
     a left click to the widget delegate.
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         """Initialize a new list view
 
         :raises: None
@@ -575,7 +575,7 @@ class WD_TableView(QtGui.QTableView):
     a left click to the widget delegate.
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         """Initialize a new table view
 
         :raises: None
@@ -735,7 +735,7 @@ class WD_TreeView(QtGui.QTreeView):
     a left click to the widget delegate.
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         """Initialize a new tree view
 
         :raises: None
