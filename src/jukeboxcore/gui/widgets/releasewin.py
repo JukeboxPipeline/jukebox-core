@@ -43,7 +43,7 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         w = QtGui.QWidget(self)
         w.setLayout(self.central_vbox)
         self.setCentralWidget(w)
-        releasetypes= [djadapter.RELEASETYPES["work"]]
+        releasetypes = [djadapter.RELEASETYPES["work"]]
         self.browser = FileBrowser(self.filetype, releasetypes, None, self)
         self.central_vbox.insertWidget(0, self.browser)
 

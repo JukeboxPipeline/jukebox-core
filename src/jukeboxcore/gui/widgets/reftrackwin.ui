@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ReftrackTool</class>
- <widget class="QMainWindow" name="ReftrackTool">
+ <class>reftrack_mwin</class>
+ <widget class="QMainWindow" name="reftrack_mwin">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -43,9 +43,6 @@
      </layout>
     </item>
     <item>
-     <widget class="QTreeView" name="reftrack_treev"/>
-    </item>
-    <item>
      <layout class="QHBoxLayout" name="filtersep_hbox">
       <item>
        <widget class="QToolButton" name="showfilter_tb">
@@ -60,6 +57,12 @@
           <width>10</width>
           <height>10</height>
          </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
         <property name="arrowType">
          <enum>Qt::DownArrow</enum>
@@ -81,7 +84,20 @@
        <string>Filter</string>
       </property>
       <layout class="QGridLayout" name="filter_gb_grid">
-       <item row="1" column="0">
+       <item row="3" column="4">
+        <spacer name="filter_space">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="0">
         <widget class="QCheckBox" name="loaded_checkb">
          <property name="toolTip">
           <string>Show Loaded (a Reference that is loaded)</string>
@@ -94,7 +110,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="search_lb">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -110,7 +126,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
+       <item row="3" column="2">
         <widget class="QCheckBox" name="imported_checkb">
          <property name="toolTip">
           <string>Show imported</string>
@@ -123,7 +139,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="3" column="1">
         <widget class="QCheckBox" name="unloaded_checkb">
          <property name="toolTip">
           <string>Show References that are unloaded.</string>
@@ -136,7 +152,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="4" column="0">
         <widget class="QCheckBox" name="newest_checkb">
          <property name="toolTip">
           <string>Show newest</string>
@@ -149,7 +165,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="3">
+       <item row="3" column="3">
         <widget class="QCheckBox" name="empty_checkb">
          <property name="toolTip">
           <string>Show empyt (not in the scene)</string>
@@ -162,7 +178,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="4" column="1">
         <widget class="QCheckBox" name="old_checkb">
          <property name="toolTip">
           <string>Show outdated</string>
@@ -175,7 +191,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
+       <item row="4" column="2">
         <widget class="QCheckBox" name="alien_checkb">
          <property name="toolTip">
           <string>Show aliens (do not acutally belong to the current scene/parent)</string>
@@ -188,7 +204,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="3">
+       <item row="4" column="3">
         <widget class="QCheckBox" name="global_checkb">
          <property name="toolTip">
           <string>Show also global reftracks from the global shot/sequence.</string>
@@ -201,32 +217,36 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="4">
-        <spacer name="filter_space">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="5" column="1" colspan="4">
+        <widget class="QLineEdit" name="search_le">
+         <property name="toolTip">
+          <string>You can search all for all kind of attributes. Seperate words with spaces to filter for multiple categories.</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
+        </widget>
        </item>
-       <item row="0" column="0" colspan="5">
+       <item row="1" column="0" colspan="5">
         <widget class="Line" name="filter_sep_line">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="3" column="1" colspan="4">
-        <widget class="QLineEdit" name="search_le">
-         <property name="toolTip">
-          <string>You can search all for all kind of attributes. Seperate words with spaces to filter for multiple categories.</string>
-         </property>
-        </widget>
+       <item row="0" column="0" colspan="5">
+        <layout class="QGridLayout" name="typefilter_grid">
+         <item row="0" column="0">
+          <spacer name="typefilter_space">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -236,5 +256,22 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>showfilter_tb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>filter_gb</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>18</x>
+     <y>742</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>813</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
