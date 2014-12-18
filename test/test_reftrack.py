@@ -180,8 +180,6 @@ class DummyRefobjInterface(RefobjInterface):
     def get_typ(self, refobj):
         """Return the entity type of the given refobject
 
-        See: :data:`RefobjInterface.types`.
-
         :param refobj: the refobj to query
         :type refobj: refobj
         :returns: the entity type
@@ -205,11 +203,6 @@ class DummyRefobjInterface(RefobjInterface):
 
     def create_refobj(self, ):
         """Create and return a new refobj
-
-        E.g. in Maya one would create a custom node that can store all
-        the necessary information in the scene.
-        The type and parent will be set automatically, because one would normally call
-        :meth:`RefobjInterface.create`.
 
         :returns: the new refobj
         :rtype: refobj
@@ -262,12 +255,6 @@ class DummyRefobjInterface(RefobjInterface):
     def set_reference(self, refobj, reference):
         """Set the reference of the given refobj to reference
 
-        This will be called by the typinterface after the reference
-        has been made. The typinterface should deliver an appropriate
-        object as reference that can be used to track the reference
-        in the scene. If you query refobj afterwards it should say, that
-        it is referenced.
-
         :param refobj: the refobj to update
         :type refobj: refobj
         :param reference: the value for the refobj
@@ -280,8 +267,6 @@ class DummyRefobjInterface(RefobjInterface):
     def get_reference(self, refobj):
         """Return the reference that the refobj represents or None if it is imported.
 
-        E.g. in Maya this would return the linked reference node.
-
         :param refobj: the refobj to query
         :type refobj: refobj
         :returns: the reference object in the scene | None
@@ -291,8 +276,6 @@ class DummyRefobjInterface(RefobjInterface):
 
     def get_status(self, refobj):
         """Return the status of the given refobj
-
-        See: :data:`Reftrack.LOADED`, :data:`Reftrack.UNLOADED`, :data:`Reftrack.IMPORTED`.
 
         :param refobj: the refobj to query
         :type refobj: refobj
@@ -331,10 +314,6 @@ class AssetReftypeInterface(ReftypeInterface):
     def reference(self, refobj, taskfileinfo):
         """Reference the given taskfileinfo into the scene and return the created reference object
 
-        The created reference object will be used on :meth:`RefobjInterface.set_reference` to
-        set the reference on a refobj. E.g. in Maya, one would return the reference node
-        so the RefobjInterface can link the refobj with the refernce object.
-
         :param refobj: the refobj
         :type refobj: :class:`Refobj`
         :param taskfileinfo: The taskfileinfo that holds the information for what to reference
@@ -357,10 +336,6 @@ class AssetReftypeInterface(ReftypeInterface):
     def load(self, refobj, reference):
         """Load the given reference
 
-        Load in this case means, that a reference is already in the scene
-        but it is not in a loaded state.
-        Loading the reference means, that the actual data will be read.
-
         :param refobj: the refobj
         :type refobj: :class:`Refobj`
         :param reference: the reference object. E.g. in Maya a reference node
@@ -372,10 +347,6 @@ class AssetReftypeInterface(ReftypeInterface):
 
     def unload(self, refobj, reference):
         """Unload the given reference
-
-        Unload in this case means, that a reference is stays in the scene
-        but it is not in a loaded state.
-        So there is a reference, but data is not read from it.
 
         :param refobj: the refobj
         :type refobj: :class:`Refobj`
@@ -471,8 +442,6 @@ class AssetReftypeInterface(ReftypeInterface):
     def fetch_option_taskfileinfos(self, element):
         """Fetch the options for possible files to load, replace etc for the given element.
 
-        Options from which to choose a file to load or replace.
-
         :param element: The element for which the options should be fetched.
         :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
         :returns: The options
@@ -491,12 +460,6 @@ class AssetReftypeInterface(ReftypeInterface):
 
     def create_options_model(self, taskfileinfos):
         """Create a new treemodel that has the taskfileinfos as internal_data of the leaves.
-
-        I recommend using :class:`jukeboxcore.gui.filesysitemdata.TaskFileInfoItemData` for the leaves.
-        So a valid root item would be something like::
-
-          rootdata = jukeboxcore.gui.treemodel.ListItemData(["Asset/Shot", "Task", "Descriptor", "Version", "Releasetype"])
-          rootitem = jukeboxcore.gui.treemodel.TreeItem(rootdata)
 
         :returns: the option model with :class:`TaskFileInfo` as internal_data of the leaves.
         :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
@@ -523,6 +486,18 @@ class AssetReftypeInterface(ReftypeInterface):
         elements.append(element)
         typ = reftrack.get_typ()
         return [(typ, e) for e in elements]
+
+    def get_scene_suggestions(self, current):
+        """Return a list with elements for reftracks for the current scene with this type.
+
+        :param reftrack: the reftrack which needs suggestions
+        :type reftrack: :class:`Reftrack`
+        :returns: list of suggestions, tuples of type and element.
+        :rtype: list
+        :raises: None
+        """
+        return [current]
+
 
 RefobjInterface.register_type('Asset', AssetReftypeInterface)
 
@@ -575,6 +550,20 @@ def test_wrap(djprj, reftrackroot, refobjinter):
                     break
         assert suggestions == [],\
             "Not all suggestions were created after wrapping. Suggestions missing %s" % suggestions
+
+
+def test_wrap_scene(djprj, reftrackroot, refobjinter):
+    tf = djprj.assettaskfiles[0]
+    r1 = Refobj('Asset', None, None, tf, False)
+    r2 = Refobj('Asset', None, None, tf, False)
+    r3 = Refobj('Asset', None, None, tf, False)
+    tracks = Reftrack.wrap_scene(reftrackroot, refobjinter)
+    assert len(tracks) == 4
+    assert tracks[0].get_refobj() is r1
+    assert tracks[1].get_refobj() is r2
+    assert tracks[2].get_refobj() is r3
+    assert tracks[3].get_refobj() is None
+    assert tracks[3].get_element() == djprj.shots[0]
 
 
 def test_reftrackinit_raise_error(djprj, reftrackroot, refobjinter):
@@ -932,3 +921,14 @@ def test_replace_replaceable(mock_suggestions, djprj, reftrackroot, refobjinter)
     assert t0.get_refobj().taskfile == djprj.assettaskfiles[2]
     t4 = t0._children[0]
     assert t4.get_refobj().parent is t0.get_refobj()
+
+
+def test_get_scene_suggestions(djprj, reftrackroot, refobjinter):
+    r1 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0])
+    Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.shots[0], parent=r1)
+    sugs = reftrackroot.get_scene_suggestions(refobjinter)
+    assert len(sugs) == 1
+    assert sugs[0] == ('Asset', djprj.shots[0])
+    Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.shots[0])
+    sugs = reftrackroot.get_scene_suggestions(refobjinter)
+    assert sugs == []
