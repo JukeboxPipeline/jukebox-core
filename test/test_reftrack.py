@@ -735,7 +735,7 @@ def test_reference(mock_suggestions, djprj, reftrackroot, refobjinter):
     mock_suggestions.return_value = []
     t0 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0], parent=None)
     assert reftrackroot._reftracks == set([t0])
-    t0.reference(djprj.assettaskfiles[0])
+    t0.reference(TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[0]))
     assert t0 in reftrackroot._reftracks
     assert len(t0._children) == 1
     t1 = t0._children[0]
@@ -748,9 +748,15 @@ def test_reference(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert robj0.typ == 'Asset'
     assert robj0.get_status() == Reftrack.LOADED
     assert t0.status() == Reftrack.LOADED
+    tfi = t0.get_taskfileinfo()
+    reftfi = TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[0])
+    assert tfi.version == reftfi.version
+    assert tfi.task == reftfi.task
+    assert tfi.releasetype == reftfi.releasetype
+    assert tfi.descriptor == reftfi.descriptor
 
     t2 = Reftrack(reftrackroot, refobjinter, typ='Asset', element=djprj.assets[0], parent=t0)
-    t2.reference(djprj.assettaskfiles[0])
+    t2.reference(TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[0]))
     t3 = t2._children[0]
     assert len(t2._children) == 1
     assert t2.get_parent() is t0
@@ -762,6 +768,12 @@ def test_reference(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert robj2.typ == 'Asset'
     assert robj2.get_status() == Reftrack.LOADED
     assert t2.status() == Reftrack.LOADED
+    tfi = t2.get_taskfileinfo()
+    reftfi = TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[0])
+    assert tfi.version == reftfi.version
+    assert tfi.task == reftfi.task
+    assert tfi.releasetype == reftfi.releasetype
+    assert tfi.descriptor == reftfi.descriptor
 
 
 @mock.patch.object(AssetReftypeInterface, "get_suggestions")
@@ -841,7 +853,7 @@ def test_import_taskfile(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert t0._children == []
     assert t0.get_refobj() is None
 
-    t0.import_file(djprj.assettaskfiles[0])
+    t0.import_file(TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[0]))
     assert len(t0._children) == 1
     t1 = t0._children[0]
     robj0 = t0.get_refobj()
@@ -852,6 +864,12 @@ def test_import_taskfile(mock_suggestions, djprj, reftrackroot, refobjinter):
     assert robj0.taskfile == djprj.assettaskfiles[0]
     assert robj1.parent is robj0
     assert t0.status() == Reftrack.IMPORTED
+    tfi = t0.get_taskfileinfo()
+    reftfi = TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[0])
+    assert tfi.version == reftfi.version
+    assert tfi.task == reftfi.task
+    assert tfi.releasetype == reftfi.releasetype
+    assert tfi.descriptor == reftfi.descriptor
 
 
 @mock.patch.object(AssetReftypeInterface, "is_replaceable")
@@ -871,11 +889,17 @@ def test_replace_notreplaceable_reference(mock_suggestions, mock_replaceable, dj
     assert not t0.uptodate()
     assert t0.get_refobjinter().is_replaceable(t0.get_refobj()) is False
     assert t0.alien()
-    t0.replace(djprj.assettaskfiles[2])
+    t0.replace(TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[2]))
     assert t0 in reftrackroot._reftracks
     assert t0.status() == Reftrack.LOADED
     assert len(t0._children) == 1
     assert t0.get_refobj().taskfile == djprj.assettaskfiles[2]
+    tfi = t0.get_taskfileinfo()
+    reftfi = TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[2])
+    assert tfi.version == reftfi.version
+    assert tfi.task == reftfi.task
+    assert tfi.releasetype == reftfi.releasetype
+    assert tfi.descriptor == reftfi.descriptor
     t4 = t0._children[0]
     assert t4.get_refobj().parent is t0.get_refobj()
 
@@ -893,11 +917,17 @@ def test_replace_notreplaceable_import(mock_suggestions, mock_replaceable, djprj
     assert not t0.uptodate()
     assert t0.get_refobjinter().is_replaceable(t0.get_refobj()) is False
     assert t0.alien()
-    t0.replace(djprj.assettaskfiles[2])
+    t0.replace(TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[2]))
     assert t0 in reftrackroot._reftracks
     assert t0.status() == Reftrack.IMPORTED
     assert len(t0._children) == 1
     assert t0.get_refobj().taskfile == djprj.assettaskfiles[2]
+    tfi = t0.get_taskfileinfo()
+    reftfi = TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[2])
+    assert tfi.version == reftfi.version
+    assert tfi.task == reftfi.task
+    assert tfi.releasetype == reftfi.releasetype
+    assert tfi.descriptor == reftfi.descriptor
     t4 = t0._children[0]
     assert t4.get_refobj().parent is t0.get_refobj()
 
@@ -913,12 +943,18 @@ def test_replace_replaceable(mock_suggestions, djprj, reftrackroot, refobjinter)
     t0, t1, t2 = Reftrack.wrap(reftrackroot, refobjinter, [robj0, robj1, robj2])
 
     assert not t0.uptodate()
-    t0.replace(djprj.assettaskfiles[2])
+    t0.replace(TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[2]))
     assert t0.get_refobjinter().is_replaceable(t0.get_refobj()) is True
     assert t0.alien()
     assert t0.status() == Reftrack.LOADED
     assert len(t0._children) == 1
     assert t0.get_refobj().taskfile == djprj.assettaskfiles[2]
+    tfi = t0.get_taskfileinfo()
+    reftfi = TaskFileInfo.create_from_taskfile(djprj.assettaskfiles[2])
+    assert tfi.version == reftfi.version
+    assert tfi.task == reftfi.task
+    assert tfi.releasetype == reftfi.releasetype
+    assert tfi.descriptor == reftfi.descriptor
     t4 = t0._children[0]
     assert t4.get_refobj().parent is t0.get_refobj()
 

@@ -1154,12 +1154,13 @@ Use delete if you want to get rid of a reference or import."
             "Can only replace entities that are already in the scene."
         refobjinter = self.get_refobjinter()
         refobj = self.get_refobj()
-        if refobjinter.is_replaceable(refobj):
+        if self.status() in (self.LOADED, self.UNLOADED) and refobjinter.is_replaceable(refobj):
             # possible orphans will not get replaced, by replace
             # but their parent might dissapear in the process
             possibleorphans = self.get_children_to_delete()
             with self.set_parent_on_new(refobj):
                 refobjinter.replace(refobj, taskfileinfo)
+            self.set_taskfileinfo(taskfileinfo)
             self.fetch_uptodate()
             for o in possibleorphans:
                 # find if orphans were created and delete them
