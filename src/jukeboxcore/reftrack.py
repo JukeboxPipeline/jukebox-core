@@ -365,7 +365,7 @@ class ReftrackRoot(object):
         """
         return self._idataclass(reftrack)
 
-    def get_suggestions(self, refobjinter):
+    def get_scene_suggestions(self, refobjinter):
         """Return a list of suggested Reftracks for the current scene, that are not already
         in this root.
 
@@ -377,18 +377,17 @@ class ReftrackRoot(object):
         :rtype: :class:`list`
         :raises: None
         """
-        cur = self.refobjinter.get_current_element()
-        linked = list(cur.assets.all())
-        types = self.refobjinter.types.keys()
         sugs = []
-        for e in [cur] + linked:
-            for t in types:
-                # filter if not already in root
+        cur = refobjinter.get_current_element()
+        for typ in refobjinter.types:
+            inter = refobjinter.get_typ_interface(typ)
+            elements = inter.get_scene_suggestions(cur)
+            for e in elements:
                 for r in self._reftracks:
-                    if t == r.get_typ() and e == r.get_element():
+                    if not r.get_parent() and typ == r.get_typ() and e == r.get_element():
                         break
                 else:
-                    sugs.append((t, e))
+                    sugs.append((typ, e))
         return sugs
 
 
@@ -2074,6 +2073,7 @@ class ReftypeInterface(object):
 
     You might also want to reimplement:
 
+      * :meth:`ReftypeInterface.get_scene_suggestions`
       * :meth:`ReftypeInterface.is_reference_restricted`
       * :meth:`ReftypeInterface.is_load_restricted`
       * :meth:`ReftypeInterface.is_unload_restricted`
@@ -2281,10 +2281,6 @@ class ReftypeInterface(object):
         :class:`Reftrack`. The parent will be this instance, root and interface will
         of course be the same.
 
-        This will delegate the call to the  appropriate :class:`ReftypeInterface`.
-        So suggestions may vary for every typ and might depend on the
-        status of the reftrack.
-
         :param reftrack: the reftrack which needs suggestions
         :type reftrack: :class:`Reftrack`
         :returns: list of suggestions, tuples of type and element.
@@ -2292,6 +2288,30 @@ class ReftypeInterface(object):
         :raises: NotImplementedError
         """
         raise NotImplementedError
+
+    def get_scene_suggestions(self, current):
+        """Return a list with elements for reftracks for the current scene with this type.
+
+        For every element returned, the reftrack system will create a :class:`Reftrack` with the type
+        of this interface, if it is not already in the scene.
+
+        E.g. if you have a type that references whole scenes, you might suggest all
+        linked assets for shots, and all liked assets plus the current element itself for assets.
+        If you have a type like shader, that usually need a parent, you would return an empty list.
+        Cameras might only make sense for shots and not for assets etc.
+
+        Do not confuse this with :meth:`ReftypeInterface.get_suggestions`. It will gather suggestions
+        for children of a :class:`Reftrack`.
+
+        The standard implementation only returns an empty list!
+
+        :param reftrack: the reftrack which needs suggestions
+        :type reftrack: :class:`Reftrack`
+        :returns: list of suggestions, tuples of type and element.
+        :rtype: list
+        :raises: None
+        """
+        return []
 
     def is_reference_restricted(self, reftrack):
         """Return whether referencing for the given reftrack should be restricted
