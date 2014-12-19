@@ -500,10 +500,9 @@ The Refobject provides the necessary info.")
         self._uptodate = None
         self._alien = True
         self._status = None
+        self._restricted = set([])  # restrict actions
         self._treeitem = self.create_treeitem()  # a treeitem for the model of the root
         """A treeitem for the model of the root. Will get set when parents gets set!"""
-        # restrict actions
-        self._restricted = set([])
 
         # initialize reftrack
         if not refobj:
@@ -1499,7 +1498,7 @@ Use delete if you want to get rid of a reference or import."
         :raises: None
         """
         inter = self.get_refobjinter()
-        restricted = self.status() is not None
+        restricted = self.status() not in (None, self.IMPORTED)
         return restricted or inter.fetch_action_restriction(self, 'reference')
 
     def fetch_load_restriction(self, ):
