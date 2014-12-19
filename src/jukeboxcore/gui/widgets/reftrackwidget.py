@@ -114,6 +114,8 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
         self.duplicate_tb.setVisible(not dupres)
         delres = self.reftrack.is_restricted(self.reftrack.delete)
         self.delete_tb.setVisible(not delres)
+        refres = self.reftrack.is_restricted(self.reftrack.reference)
+        self.reference_tb.setVisible(not refres)
         loadres = self.reftrack.is_restricted(self.reftrack.load)
         self.load_tb.setVisible(not loadres)
         unloadres = self.reftrack.is_restricted(self.reftrack.unload)

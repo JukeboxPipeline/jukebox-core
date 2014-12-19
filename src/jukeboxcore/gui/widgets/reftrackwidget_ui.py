@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Fri Dec 19 15:32:10 2014
+# Created: Fri Dec 19 19:07:30 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -54,18 +54,15 @@ class Ui_ReftrackWidget(object):
         self.type_icon_lb.setObjectName("type_icon_lb")
         self.type_icon_hbox.addWidget(self.type_icon_lb)
         self.reftrack_fr_hbox.addWidget(self.type_icon_fr)
-        self.main_fr = QtGui.QFrame(self.reftrack_fr)
-        self.main_fr.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.main_fr.setFrameShadow(QtGui.QFrame.Sunken)
+        self.main_fr = QtGui.QWidget(self.reftrack_fr)
         self.main_fr.setObjectName("main_fr")
         self.main_vbox = QtGui.QVBoxLayout(self.main_fr)
         self.main_vbox.setSpacing(0)
         self.main_vbox.setContentsMargins(0, 0, 0, 0)
+        self.main_vbox.setContentsMargins(0, 0, 0, 0)
         self.main_vbox.setObjectName("main_vbox")
-        self.upper_fr = QtGui.QFrame(self.main_fr)
+        self.upper_fr = QtGui.QWidget(self.main_fr)
         self.upper_fr.setStyleSheet("")
-        self.upper_fr.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.upper_fr.setFrameShadow(QtGui.QFrame.Raised)
         self.upper_fr.setObjectName("upper_fr")
         self.horizontalLayout = QtGui.QHBoxLayout(self.upper_fr)
         self.horizontalLayout.setContentsMargins(-1, 0, -1, 0)
@@ -74,10 +71,8 @@ class Ui_ReftrackWidget(object):
         self.maintext_lb.setObjectName("maintext_lb")
         self.horizontalLayout.addWidget(self.maintext_lb)
         self.main_vbox.addWidget(self.upper_fr)
-        self.btn_fr = QtGui.QFrame(self.main_fr)
+        self.btn_fr = QtGui.QWidget(self.main_fr)
         self.btn_fr.setStyleSheet("")
-        self.btn_fr.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.btn_fr.setFrameShadow(QtGui.QFrame.Raised)
         self.btn_fr.setObjectName("btn_fr")
         self.horizontalLayout_2 = QtGui.QHBoxLayout(self.btn_fr)
         self.horizontalLayout_2.setContentsMargins(-1, 2, -1, 0)
