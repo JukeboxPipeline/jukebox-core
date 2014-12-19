@@ -1498,7 +1498,7 @@ Use delete if you want to get rid of a reference or import."
         :raises: None
         """
         inter = self.get_refobjinter()
-        restricted = self.status() not in (None, self.IMPORTED)
+        restricted = self.status() is not None
         return restricted or inter.fetch_action_restriction(self, 'reference')
 
     def fetch_load_restriction(self, ):
