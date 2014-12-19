@@ -10,6 +10,23 @@ from jukeboxcore.gui import filesysitemdata
 from jukeboxcore.gui.treemodel import ItemData
 
 
+def reftrack_type_data(rt, role):
+    """Return the data for the type (e.g. Asset, Alembic, Camera etc)
+
+    :param rt: the :class:`jukeboxcore.reftrack.Reftrack` holds the data
+    :type rt: :class:`jukeboxcore.reftrack.Reftrack`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the type
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
+        return rt.get_typ()
+    elif role == QtCore.Qt.ForegroundRole:
+        return rt.get_typ_color()
+
+
 def reftrack_elementgrp_data(rt, role):
     """Return the data for the elementgrp (e.g. the Assettype or Sequence)
 
@@ -223,7 +240,8 @@ class ReftrackItemData(ItemData):
         super(ReftrackItemData, self).__init__()
         self._reftrack = reftrack
 
-    columns = [reftrack_elementgrp_data,
+    columns = [reftrack_type_data,
+               reftrack_elementgrp_data,
                reftrack_element_data,
                reftrack_task_data,
                reftrack_rtype_data,

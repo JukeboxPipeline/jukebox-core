@@ -293,6 +293,23 @@ class TreeItem(object):
         """
         return self._parent
 
+    def set_parent(self, parent):
+        """Set the parent of the treeitem
+
+        :param parent: parent treeitem
+        :type parent: :class:`TreeItem` | None
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if self._parent == parent:
+            return
+        if self._parent:
+            self._parent.remove_child(self)
+        self._parent = parent
+        if parent:
+            parent.add_child(self)
+
     def itemdata(self, ):
         """Return the internal :class:`ItemData`
 

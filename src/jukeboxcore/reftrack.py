@@ -118,6 +118,8 @@ If you have implementations for each interface, it should be fairly easy to use:
     # this would return all refobjects that are not in root
     newrefobjs = Reftrack.get_unwrapped(reftrackroot, refobjinter)
     newreftracks = Reftrack.wrap(reftrackroot, refobjinter, newrefobjs)
+    # convenience function to wrap unwrapped refobjects and also get suggestions:
+    newrefobjs = Reftrack.wrap_scene(reftrackroot, refobjinter)
 
   Done. Now to display that in a view you can get the model of the root::
 
@@ -176,13 +178,15 @@ So before you start, here is a list of things to do:
      for :class:`Reftrack` objects.
   4. Create a :class:`RefobjInterface` instance.
   5. Create a :class:`ReftrackRoot` instance.
-  6. For refobjs in your scene use :meth:`Reftrack.wrap`.
+  6. For refobjs in your scene use :meth:`Reftrack.wrap` or :meth:`Reftrack.wrap_scene`.
   7. Add new reftracks.
 
 """
 import abc
 import functools
 from contextlib import contextmanager
+
+from PySide import QtGui
 
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
@@ -231,7 +235,8 @@ class ReftrackRoot(object):
         :raises: None
         """
         if rootitem is None:
-            rootdata = ListItemData(["Seq/Atype",
+            rootdata = ListItemData(["Type",
+                                     "Seq/Atype",
                                      "Shot/Asset",
                                      "Task",
                                      "Releasetype",
@@ -379,6 +384,8 @@ class ReftrackRoot(object):
         """
         sugs = []
         cur = refobjinter.get_current_element()
+        if not cur:
+            return sugs
         for typ in refobjinter.types:
             inter = refobjinter.get_typ_interface(typ)
             elements = inter.get_scene_suggestions(cur)
@@ -486,6 +493,7 @@ The Refobject provides the necessary info.")
         self._refobj = refobj
         self._taskfileinfo = None  # the taskfileinfo that the refobj represents
         self._typ = None
+        self._typcolor = QtGui.QColor()
         self._element = None
         self._parent = None
         self._children = []
@@ -571,7 +579,7 @@ The Refobject provides the necessary info.")
         :rtype: list
         :raises: None
         """
-        refobjects = refobjinter.get_all_refobjs()
+        refobjects = cls.get_unwrapped(root, refobjinter)
         tracks = cls.wrap(root, refobjinter, refobjects)
         sugs = root.get_scene_suggestions(refobjinter)
         for typ, element in sugs:
@@ -678,6 +686,16 @@ The Refobject provides the necessary info.")
             raise ValueError("The given typ is not supported by RefobjInterface. Given %s, supported: %s" %
                              (typ, self._refobjinter.types.keys()))
         self._typ = typ
+        self._typcolor = self.get_refobjinter().get_typ_color(typ)
+
+    def get_typ_color(self, ):
+        """Return the color for the type
+
+        :returns: the color that should be used in UIs to identify the type
+        :rtype: :class:`QtGui.QColor`
+        :raises: None
+        """
+        return self._typcolor
 
     def get_refobjinter(self, ):
         """Return the refobject interface
@@ -787,7 +805,9 @@ The Refobject provides the necessary info.")
                 refobjinter.set_parent(refobj, parent.get_refobj())
             # add to parent
             self._parent.add_child(self)
-        self._treeitem = self.create_treeitem()
+
+        pitem = self._parent._treeitem if self._parent else self.get_root().get_rootitem()
+        self._treeitem.set_parent(pitem)
         self.fetch_alien()
 
     def create_treeitem(self, ):
@@ -876,7 +896,7 @@ The Refobject provides the necessary info.")
         :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
-        self._options, self._taskfileinfo_options = self.get_refobjinter().fetch_options(self.get_typ(), self._element)
+        self._options, self._taskfileinfo_options = self.get_refobjinter().fetch_options(self.get_typ(), self.get_element())
         return self._options
 
     def get_option_taskfileinfos(self, ):
@@ -888,6 +908,22 @@ The Refobject provides the necessary info.")
         :raises: None
         """
         return self._taskfileinfo_options
+
+    def get_option_labels(self,):
+        """Return labels for each level of the option model.
+
+        The options returned by :meth:`Reftrack.fetch_options` is a treemodel
+        with ``n`` levels. Each level should get a label to describe what is displays.
+
+        E.g. if you organize your options, so that the first level shows the tasks, the second
+        level shows the descriptors and the third one shows the versions, then
+        your labels should be: ``["Task", "Descriptor", "Version"]``.
+
+        :returns: label strings for all levels
+        :rtype: list
+        :raises: None
+        """
+        return self.get_refobjinter().get_option_labels(self.get_typ(), self.get_element())
 
     def uptodate(self, ):
         """Return True, if the currently loaded entity is the newest version.
@@ -1148,12 +1184,13 @@ Use delete if you want to get rid of a reference or import."
             "Can only replace entities that are already in the scene."
         refobjinter = self.get_refobjinter()
         refobj = self.get_refobj()
-        if refobjinter.is_replaceable(refobj):
+        if self.status() in (self.LOADED, self.UNLOADED) and refobjinter.is_replaceable(refobj):
             # possible orphans will not get replaced, by replace
             # but their parent might dissapear in the process
             possibleorphans = self.get_children_to_delete()
             with self.set_parent_on_new(refobj):
                 refobjinter.replace(refobj, taskfileinfo)
+            self.set_taskfileinfo(taskfileinfo)
             self.fetch_uptodate()
             for o in possibleorphans:
                 # find if orphans were created and delete them
@@ -1409,7 +1446,7 @@ Use delete if you want to get rid of a reference or import."
         :rtype: :class:`bool`
         :raises: None
         """
-        return obj in self.restrictioned
+        return obj in self._restricted
 
     def set_restricted(self, obj, restricted):
         """Set the restriction on the given object.
@@ -2020,6 +2057,27 @@ class RefobjInterface(object):
         inter = self.get_typ_interface(typ)
         return inter.fetch_option_taskfileinfos(element)
 
+    def get_option_labels(self, typ, element):
+        """Return labels for each level of the option model.
+
+        The options returned by :meth:`RefobjInterface.fetch_options` is a treemodel
+        with ``n`` levels. Each level should get a label to describe what is displays.
+
+        E.g. if you organize your options, so that the first level shows the tasks, the second
+        level shows the descriptors and the third one shows the versions, then
+        your labels should be: ``["Task", "Descriptor", "Version"]``.
+
+        :param typ: the typ of options. E.g. Asset, Alembic, Camera etc
+        :type typ: str
+        :param element: The element for which the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: label strings for all levels
+        :rtype: list
+        :raises: None
+        """
+        inter = self.get_typ_interface(typ)
+        return inter.fetch_option_labels(element)
+
     def get_suggestions(self, reftrack):
         """Return a list with possible children for this reftrack
 
@@ -2044,6 +2102,18 @@ class RefobjInterface(object):
         """
         inter = self.get_typ_interface(reftrack.get_typ())
         return inter.get_suggestions(reftrack)
+
+    def get_typ_color(self, typ):
+        """Get the color that should be used to identify the type in an UI
+
+        :param typ: the typ. E.g. Asset, Alembic, Camera etc
+        :type typ: str
+        :returns: a color for this type
+        :rtype: :class:`QtGui.QColor`
+        :raises: NotImplementedError
+        """
+        inter = self.get_typ_interface(typ)
+        return inter.get_typ_color()
 
     def fetch_action_restriction(self, reftrack, action):
         """Return wheter the given action is restricted for the given reftrack
@@ -2097,6 +2167,8 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.fetch_option_taskfileinfos`
       * :meth:`ReftypeInterface.create_options_model`
       * :meth:`ReftypeInterface.get_suggestions`
+      * :meth:`ReftypeInterface.get_option_labels`
+      * :meth:`ReftypeInterface.get_typ_color`
 
     You might also want to reimplement:
 
@@ -2296,6 +2368,25 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_option_labels(self, element):  #pragma: no cover
+        """Return labels for each level of the option model.
+
+        The options returned by :meth:`RefobjInterface.fetch_options` is a treemodel
+        with ``n`` levels. Each level should get a label to describe what is displays.
+
+        E.g. if you organize your options, so that the first level shows the tasks, the second
+        level shows the descriptors and the third one shows the versions, then
+        your labels should be: ``["Task", "Descriptor", "Version"]``.
+
+        :param element: The element for which the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: label strings for all levels
+        :rtype: list
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_suggestions(self, reftrack):  #pragma: no cover
         """Return a list with possible children for this reftrack
 
@@ -2312,6 +2403,16 @@ class ReftypeInterface(object):
         :type reftrack: :class:`Reftrack`
         :returns: list of suggestions, tuples of type and element.
         :rtype: list
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_typ_color(self, ):  #pragma: no cover
+        """Return a color that should be used to identify the type in an UI
+
+        :returns: a color for this type
+        :rtype: :class:`QtGui.QColor`
         :raises: NotImplementedError
         """
         raise NotImplementedError
