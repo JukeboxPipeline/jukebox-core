@@ -186,6 +186,8 @@ import abc
 import functools
 from contextlib import contextmanager
 
+from PySide import QtGui
+
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 from jukeboxcore.filesys import TaskFileInfo
@@ -233,7 +235,8 @@ class ReftrackRoot(object):
         :raises: None
         """
         if rootitem is None:
-            rootdata = ListItemData(["Seq/Atype",
+            rootdata = ListItemData(["Type",
+                                     "Seq/Atype",
                                      "Shot/Asset",
                                      "Task",
                                      "Releasetype",
@@ -490,6 +493,7 @@ The Refobject provides the necessary info.")
         self._refobj = refobj
         self._taskfileinfo = None  # the taskfileinfo that the refobj represents
         self._typ = None
+        self._typcolor = QtGui.QColor()
         self._element = None
         self._parent = None
         self._children = []
@@ -682,6 +686,16 @@ The Refobject provides the necessary info.")
             raise ValueError("The given typ is not supported by RefobjInterface. Given %s, supported: %s" %
                              (typ, self._refobjinter.types.keys()))
         self._typ = typ
+        self._typcolor = self.get_refobjinter().get_typ_color(typ)
+
+    def get_typ_color(self, ):
+        """Return the color for the type
+
+        :returns: the color that should be used in UIs to identify the type
+        :rtype: :class:`QtGui.QColor`
+        :raises: None
+        """
+        return self._typcolor
 
     def get_refobjinter(self, ):
         """Return the refobject interface
@@ -2089,6 +2103,18 @@ class RefobjInterface(object):
         inter = self.get_typ_interface(reftrack.get_typ())
         return inter.get_suggestions(reftrack)
 
+    def get_typ_color(self, typ):
+        """Get the color that should be used to identify the type in an UI
+
+        :param typ: the typ. E.g. Asset, Alembic, Camera etc
+        :type typ: str
+        :returns: a color for this type
+        :rtype: :class:`QtGui.QColor`
+        :raises: NotImplementedError
+        """
+        inter = self.get_typ_interface(typ)
+        return inter.get_typ_color()
+
     def fetch_action_restriction(self, reftrack, action):
         """Return wheter the given action is restricted for the given reftrack
 
@@ -2142,6 +2168,7 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.create_options_model`
       * :meth:`ReftypeInterface.get_suggestions`
       * :meth:`ReftypeInterface.get_option_labels`
+      * :meth:`ReftypeInterface.get_typ_color`
 
     You might also want to reimplement:
 
@@ -2376,6 +2403,16 @@ class ReftypeInterface(object):
         :type reftrack: :class:`Reftrack`
         :returns: list of suggestions, tuples of type and element.
         :rtype: list
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_typ_color(self, ):  #pragma: no cover
+        """Return a color that should be used to identify the type in an UI
+
+        :returns: a color for this type
+        :rtype: :class:`QtGui.QColor`
         :raises: NotImplementedError
         """
         raise NotImplementedError
