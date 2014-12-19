@@ -43,9 +43,10 @@ def reftrack_elementgrp_data(rt, role):
         egrp = element.sequence
     elif isinstance(element, djadapter.models.Asset):
         egrp = element.atype
-    else:
+    elif element is not None:
         raise TypeError("Expected the element to be either Asset or Shot. Got %s" % type(element))
-
+    else:
+        return
     if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
         return egrp.name
 
@@ -62,6 +63,8 @@ def reftrack_element_data(rt, role):
     :raises: None
     """
     element = rt.get_element()
+    if element is None:
+        return
     if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
         return element.name
 
@@ -290,3 +293,16 @@ class ReftrackItemData(ItemData):
         :raises: None
         """
         return self._reftrack
+
+    def flags(self, column):
+        """Return the item flags for the item
+
+        Default is QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+
+        :param column: the column to query
+        :type column: int
+        :returns: the item flags
+        :rtype: QtCore.Qt.ItemFlags
+        :raises: None
+        """
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
