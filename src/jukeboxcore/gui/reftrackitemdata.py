@@ -23,8 +23,8 @@ def reftrack_type_data(rt, role):
     """
     if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
         return rt.get_typ()
-    elif role == QtCore.Qt.ForegroundRole:
-        return rt.get_typ_color()
+    elif role == QtCore.Qt.DecorationRole:
+        return rt.get_typ_icon()
 
 
 def reftrack_elementgrp_data(rt, role):
