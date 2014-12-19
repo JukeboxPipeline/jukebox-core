@@ -261,6 +261,8 @@ class TreeItem(object):
     def column_count(self, ):
         """Return the number of columns that the children have
 
+        If there are no children, return the column count of its own data.
+
         :returns: the column count of the children data
         :rtype: int
         :raises: None
@@ -268,7 +270,7 @@ class TreeItem(object):
         if self.child_count():
             return self.childItems[0]._data.column_count()
         else:
-            return 0
+            return self._data.column_count() if self._data else 0
 
     def data(self, column, role):
         """Return the data for the column and role
