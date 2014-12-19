@@ -882,7 +882,7 @@ The Refobject provides the necessary info.")
         :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
         :raises: None
         """
-        self._options, self._taskfileinfo_options = self.get_refobjinter().fetch_options(self.get_typ(), self._element)
+        self._options, self._taskfileinfo_options = self.get_refobjinter().fetch_options(self.get_typ(), self.get_element())
         return self._options
 
     def get_option_taskfileinfos(self, ):
@@ -894,6 +894,22 @@ The Refobject provides the necessary info.")
         :raises: None
         """
         return self._taskfileinfo_options
+
+    def get_option_labels(self,):
+        """Return labels for each level of the option model.
+
+        The options returned by :meth:`Reftrack.fetch_options` is a treemodel
+        with ``n`` levels. Each level should get a label to describe what is displays.
+
+        E.g. if you organize your options, so that the first level shows the tasks, the second
+        level shows the descriptors and the third one shows the versions, then
+        your labels should be: ``["Task", "Descriptor", "Version"]``.
+
+        :returns: label strings for all levels
+        :rtype: list
+        :raises: None
+        """
+        return self.get_refobjinter().get_option_labels(self.get_typ(), self.get_element())
 
     def uptodate(self, ):
         """Return True, if the currently loaded entity is the newest version.
@@ -2027,6 +2043,27 @@ class RefobjInterface(object):
         inter = self.get_typ_interface(typ)
         return inter.fetch_option_taskfileinfos(element)
 
+    def get_option_labels(self, typ, element):
+        """Return labels for each level of the option model.
+
+        The options returned by :meth:`RefobjInterface.fetch_options` is a treemodel
+        with ``n`` levels. Each level should get a label to describe what is displays.
+
+        E.g. if you organize your options, so that the first level shows the tasks, the second
+        level shows the descriptors and the third one shows the versions, then
+        your labels should be: ``["Task", "Descriptor", "Version"]``.
+
+        :param typ: the typ of options. E.g. Asset, Alembic, Camera etc
+        :type typ: str
+        :param element: The element for which the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: label strings for all levels
+        :rtype: list
+        :raises: None
+        """
+        inter = self.get_typ_interface(typ)
+        return inter.fetch_option_labels(element)
+
     def get_suggestions(self, reftrack):
         """Return a list with possible children for this reftrack
 
@@ -2104,6 +2141,7 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.fetch_option_taskfileinfos`
       * :meth:`ReftypeInterface.create_options_model`
       * :meth:`ReftypeInterface.get_suggestions`
+      * :meth:`ReftypeInterface.get_option_labels`
 
     You might also want to reimplement:
 
@@ -2298,6 +2336,25 @@ class ReftypeInterface(object):
 
         :returns: the option model with :class:`TaskFileInfo` as internal_data of the leaves.
         :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_option_labels(self, element):  #pragma: no cover
+        """Return labels for each level of the option model.
+
+        The options returned by :meth:`RefobjInterface.fetch_options` is a treemodel
+        with ``n`` levels. Each level should get a label to describe what is displays.
+
+        E.g. if you organize your options, so that the first level shows the tasks, the second
+        level shows the descriptors and the third one shows the versions, then
+        your labels should be: ``["Task", "Descriptor", "Version"]``.
+
+        :param element: The element for which the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: label strings for all levels
+        :rtype: list
         :raises: NotImplementedError
         """
         raise NotImplementedError
