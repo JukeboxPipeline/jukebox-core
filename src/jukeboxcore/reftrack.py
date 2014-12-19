@@ -1214,6 +1214,7 @@ Use delete if you want to get rid of a reference or import."
         self.update_restrictions()
         self.emit_data_changed()
 
+    @restrictable
     def delete(self, removealien=True):
         """Delete the current entity.
 
@@ -1229,7 +1230,7 @@ Use delete if you want to get rid of a reference or import."
         :type removealien: :class:`bool`
         :returns: None
         :rtype: None
-        :raises: AssertionError
+        :raises: None
         """
         if self.status() is None:
             parent = self.get_parent()
@@ -1489,6 +1490,7 @@ Use delete if you want to get rid of a reference or import."
         self.set_restricted(self.import_reference, self.fetch_import_ref_restriction())
         self.set_restricted(self.import_file, self.fetch_import_f_restriction())
         self.set_restricted(self.replace, self.fetch_replace_restriction())
+        self.set_restricted(self.delete, self.fetch_delete_restriction())
 
     def fetch_reference_restriction(self, ):
         """Fetch whether referencing is restricted
@@ -1535,9 +1537,9 @@ Use delete if you want to get rid of a reference or import."
         return restricted or inter.fetch_action_restriction(self, 'import_reference')
 
     def fetch_import_f_restriction(self,):
-        """Fetch whether unloading is restricted
+        """Fetch whether importing a file is restricted
 
-        :returns: True, if unloading is restricted
+        :returns: True, if import is restricted
         :rtype: :class:`bool`
         :raises: None
         """
@@ -1555,6 +1557,16 @@ Use delete if you want to get rid of a reference or import."
         inter = self.get_refobjinter()
         restricted = self.status() is None
         return restricted or inter.fetch_action_restriction(self, 'replace')
+
+    def fetch_delete_restriction(self, ):
+        """Fetch whether deletion is restricted
+
+        :returns: True, if deletion is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        return inter.fetch_action_restriction(self, 'delete')
 
     def emit_data_changed(self):
         """Emit the data changed signal on the model of the treeitem
@@ -2121,7 +2133,7 @@ class RefobjInterface(object):
 
         available actions are:
 
-           ``reference``, ``load``, ``unload``, ``replace``, ``import_reference``, ``import_taskfile``
+           ``reference``, ``load``, ``unload``, ``replace``, ``import_reference``, ``import_taskfile``, ``delete``
 
         If action is not available, True is returned.
 
@@ -2136,7 +2148,8 @@ class RefobjInterface(object):
         inter = self.get_typ_interface(reftrack.get_typ())
         d = {'reference': inter.is_reference_restricted, 'load': inter.is_load_restricted,
              'unload': inter.is_unload_restricted, 'replace': inter.is_replace_restricted,
-             'import_reference': inter.is_import_ref_restricted, 'import_taskfile': inter.is_import_f_restricted}
+             'import_reference': inter.is_import_ref_restricted, 'import_taskfile': inter.is_import_f_restricted,
+             'delete': inter.is_delete_restricted,}
         f = d.get(action, None)
         if not f:
             return True
@@ -2508,6 +2521,19 @@ class ReftypeInterface(object):
 
     def is_replace_restricted(self, reftrack):
         """Return whether replacing for the given reftrack should be restricted
+
+        This implementation returns always False
+
+        :param reftrack: the reftrack to query
+        :type reftrack: :class:`Reftrack`
+        :returns: True, if restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return False
+
+    def is_delete_restricted(self, reftrack):
+        """Return whether deleting for the given reftrack should be restricted
 
         This implementation returns always False
 
