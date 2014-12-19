@@ -6,6 +6,7 @@ from PySide import QtCore
 from jukeboxcore import reftrack
 from jukeboxcore.gui.main import JB_MainWindow, get_icon
 from jukeboxcore.gui.widgetdelegate import WD_TreeView
+from jukeboxcore.gui.widgets.reftrackwidget import ReftrackDelegate
 from reftrackwin_ui import Ui_reftrack_mwin
 
 
@@ -34,7 +35,7 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         """The :class:`reftrack.RefobjInterface` this window uses."""
         self.root = root if root else self.create_root()
         """The :class:`reftrack.ReftrackRoot` this window uses."""
-
+        self.reftrackdelegate = ReftrackDelegate(self)
         self.typecbmap = {}
         """Map a type to a checkboxes that indicates if the type should be shown"""
 
@@ -66,8 +67,14 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         self.reftrack_treev = WD_TreeView(parent=self)
         self.central_widget_vbox.insertWidget(1, self.reftrack_treev)
         self.setup_icons()
-
-        self.reftrack_treev.setModel(self.root.get_model())
+        m = self.root.get_model()
+        self.reftrack_treev.setModel(m)
+        self.reftrack_treev.setItemDelegate(self.reftrackdelegate)
+        # hide all columns but the first
+        cc = m.columnCount(QtCore.QModelIndex())
+        for i in range(1, cc):
+            print 'hide', i
+            self.reftrack_treev.setColumnHidden(i, True)
 
     def setup_signals(self, ):
         """Connect the signals with the slots to make the ui functional

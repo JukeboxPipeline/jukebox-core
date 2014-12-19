@@ -502,7 +502,6 @@ The Refobject provides the necessary info.")
         self._status = None
         self._treeitem = self.create_treeitem()  # a treeitem for the model of the root
         """A treeitem for the model of the root. Will get set when parents gets set!"""
-
         # restrict actions
         self._restricted = set([])
 
@@ -1233,8 +1232,13 @@ Use delete if you want to get rid of a reference or import."
         :rtype: None
         :raises: AssertionError
         """
-        assert self.status() is not None,\
-            "Can only delete entities that are already in the scene."
+        if self.status() is None:
+            parent = self.get_parent()
+            if parent:
+                parent.remove_child(self)
+            self._treeitem.parent().remove_child(self._treeitem)
+            self.get_root().remove_reftrack(self)
+            return
         todelete = self.get_children_to_delete()
         allchildren = self.get_all_children()
         for c in todelete:
@@ -1528,7 +1532,7 @@ Use delete if you want to get rid of a reference or import."
         :raises: None
         """
         inter = self.get_refobjinter()
-        restricted = self.status() is not None
+        restricted = self.status() not in (self.LOADED, self.UNLOADED)
         return restricted or inter.fetch_action_restriction(self, 'import_reference')
 
     def fetch_import_f_restriction(self,):
@@ -1539,7 +1543,7 @@ Use delete if you want to get rid of a reference or import."
         :raises: None
         """
         inter = self.get_refobjinter()
-        restricted = self.status() not in (self.LOADED, self.UNLOADED)
+        restricted = self.status() is not None
         return restricted or inter.fetch_action_restriction(self, 'import_taskfile')
 
     def fetch_replace_restriction(self, ):
@@ -2166,10 +2170,10 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.create_options_model`
       * :meth:`ReftypeInterface.get_suggestions`
       * :meth:`ReftypeInterface.get_option_labels`
-      * :meth:`ReftypeInterface.get_typ_icon`
 
     You might also want to reimplement:
 
+      * :meth:`ReftypeInterface.get_typ_icon`
       * :meth:`ReftypeInterface.get_scene_suggestions`
       * :meth:`ReftypeInterface.is_reference_restricted`
       * :meth:`ReftypeInterface.is_load_restricted`
