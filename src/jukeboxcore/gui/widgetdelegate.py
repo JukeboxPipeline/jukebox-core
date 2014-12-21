@@ -11,6 +11,11 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
     Make sure that the model returns the ItemIsEditable flag!
     I recommend using one of the views in this module, because they issue a left click, when
     an index is clicked.
+
+    .. Note: If a section is small, the widget will get rendered partially, because it always has the minimum size of the size hint.
+             The editor might look different, because he will get resized to the section width.
+             To prevent that, set :data:`WidgetDelegate.keep_editor_size` to True.
+             But then i would recommend to keep your sections in the view at least as big as the size hint. See :meth:`QtGui.HeaderView.resizeMode`
     """
 
     def __init__(self, parent=None):
@@ -26,6 +31,8 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         self._widget = self.create_widget(parent)
         self._widget.setVisible(False)
         self._edit_widget = None
+        self.keep_editor_size = False
+        """If True, resize the editor at least to its size Hint size, or if the section allows is, bigger."""
 
     @property
     def widget(self):
@@ -113,6 +120,9 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         Note that the index contains information about the model being used.
         The editor's parent widget is specified by parent, and the item options by option.
 
+        This will set auto fill background to True on the editor, because else, you would see
+        The rendered delegate below.
+
         :param parent: the parent widget
         :type parent: QtGui.QWidget
         :param option: the options for painting
@@ -123,7 +133,10 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         :rtype: :class:`QtGui.QWidget` | None
         :raises: None
         """
+        if self._edit_widget:  # this will close an existing editor
+            self.commit_close_editor(self._edit_widget)
         self._edit_widget = self.create_editor_widget(parent, option, index)
+        self._edit_widget.setAutoFillBackground(True)
         if self._edit_widget:
             self._edit_widget.destroyed.connect(self.editor_destroyed)
         return self._edit_widget
@@ -177,6 +190,30 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         :raises: None
         """
         self._edit_widget = None
+
+    def updateEditorGeometry(self, editor, option, index):
+        """Make sure the editor is the same size as the widget
+
+        By default it can get smaller because does not expand over viewport size.
+        This will make sure it will resize to the same size as the widget.
+
+        :param editor: the editor to update
+        :type editor: :class:`QtGui.QWidget`
+        :param option: the options for painting
+        :type option: QtGui.QStyleOptionViewItem
+        :param index: the index to paint
+        :type index: QtCore.QModelIndex
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        super(WidgetDelegate, self).updateEditorGeometry(editor, option, index)
+        if self.keep_editor_size:
+            esh = editor.sizeHint()
+            osh = option.rect.size()
+            w = osh.width() if osh.width() > esh.width() else esh.width()
+            h = osh.height() if osh.height() > esh.height() else esh.height()
+            editor.resize(w, h)
 
 
 class CommentDelegate(WidgetDelegate):
@@ -250,7 +287,7 @@ class CommentDelegate(WidgetDelegate):
         editor.set_index(index)
 
 
-class MouseEditMixin(object):
+class WidgetDelegateViewMixin(object):
     """Mixin for views to allow editing with mouseclicks,
     if there is a widgetdelegate.
 
@@ -302,33 +339,42 @@ class MouseEditMixin(object):
         :rtype: None
         :raises: None
         """
+        print 80 * "="
+        print "Handle"
         # find index at mouse position
         i = self.index_at_event(event)
+        print "Index", i.row(), i.column(), i.parent()
 
         # if the index is not valid, we don't care
         # handle it the default way
         if not i.isValid():
-            return getattr(super(MouseEditMixin, self), eventhandler)(event)
+            print "invalid!"
+            return getattr(super(WidgetDelegateViewMixin, self), eventhandler)(event)
         # get the widget delegate. if there is None, handle it the default way
         delegate = self.itemDelegate(i)
         if not isinstance(delegate, WidgetDelegate):
-            return getattr(super(MouseEditMixin, self), eventhandler)(event)
+            print "no delegate"
+            return getattr(super(WidgetDelegateViewMixin, self), eventhandler)(event)
 
         # if we are not editing, start editing now
         if self.state() != self.EditingState:
+            print "not editing", self.state()
             self.edit(i)
             # check if we are in edit state now. if not, return
             if self.state() != self.EditingState:
+                print "still not"
                 return
 
         # get the editor widget. if there is None, there is nothing to do so return
         widget = delegate.edit_widget()
         if not widget:
-            return getattr(super(MouseEditMixin, self), eventhandler)(event)
+            print "no widget"
+            return getattr(super(WidgetDelegateViewMixin, self), eventhandler)(event)
+        print "widget", widget
 
         # try to find the relative position to the widget
         clickpos = self.get_pos_in_delegate(i, event.globalPos())
-
+        print "clickpos", clickpos
         # create a new event for the editor widget.
         e = QtGui.QMouseEvent(event.type(),
                               clickpos,
@@ -377,29 +423,77 @@ class MouseEditMixin(object):
         return self.propagate_event_to_delegate(event, "mouseReleaseEvent")
 
 
-class WD_AbstractItemView(QtGui.QAbstractItemView, MouseEditMixin):
+class WD_AbstractItemView(WidgetDelegateViewMixin, QtGui.QAbstractItemView):
     """A abstract item view that that when clicked, tries to issue
     a left click to the widget delegate.
     """
     pass
 
 
-class WD_ListView(QtGui.QListView, MouseEditMixin):
+class WD_ListView(WidgetDelegateViewMixin, QtGui.QListView):
     """A list view that that when clicked, tries to issue
     a left click to the widget delegate.
     """
     pass
 
 
-class WD_TableView(QtGui.QTableView, MouseEditMixin):
+class WD_TableView(WidgetDelegateViewMixin, QtGui.QTableView):
     """A table view that that when clicked, tries to issue
     a left click to the widget delegate.
     """
     pass
 
 
-class WD_TreeView(QtGui.QTreeView, MouseEditMixin):
+class WD_TreeView(WidgetDelegateViewMixin, QtGui.QTreeView):
     """A tree view that that when clicked, tries to issue
     a left click to the widget delegate.
+
+    By default the resize mode of the header will resize to contents.
     """
-    pass
+
+    def __init__(self, *args, **kwargs):
+        """Initialize a new treeview
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        super(WD_TreeView, self).__init__(*args, **kwargs)
+        self.header().setResizeMode(self.header().ResizeToContents)
+
+    def get_total_indentation(self, index):
+        """Get the indentation for the given index
+
+        :param index: the index to query
+        :type index: :class:`QtCore.ModelIndex`
+        :returns: the number of parents
+        :rtype: int
+        :raises: None
+        """
+        n = 0
+        while index.isValid():
+            n += 1
+            index = index.parent()
+        return n * self.indentation()
+
+    def index_at_event(self, event):
+        """Get the index under the position of the given MouseEvent
+
+        This implementation takes the indentation into account.
+
+        :param event: the mouse event
+        :type event: :class:`QtGui.QMouseEvent`
+        :returns: the index
+        :rtype: :class:`QtCore.QModelIndex`
+        :raises: None
+        """
+        # find index at mouse position
+        globalpos = event.globalPos()
+        viewport = self.viewport()
+        pos = viewport.mapFromGlobal(globalpos)
+        i = self.indexAt(pos)
+        n = self.get_total_indentation(i)
+        if pos.x() > n:
+            return i
+        else:
+            return QtCore.QModelIndex()
