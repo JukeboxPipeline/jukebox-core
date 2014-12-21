@@ -250,641 +250,156 @@ class CommentDelegate(WidgetDelegate):
         editor.set_index(index)
 
 
-class WD_AbstractItemView(QtGui.QAbstractItemView):
+class MouseEditMixin(object):
+    """Mixin for views to allow editing with mouseclicks,
+    if there is a widgetdelegate.
+
+    On a mouse click event, try to edit the index at click position.
+    Then take the editor widget and issue the same click on that widget.
+    """
+
+    def index_at_event(self, event):
+        """Get the index under the position of the given MouseEvent
+
+        :param event: the mouse event
+        :type event: :class:`QtGui.QMouseEvent`
+        :returns: the index
+        :rtype: :class:`QtCore.QModelIndex`
+        :raises: None
+        """
+        # find index at mouse position
+        globalpos = event.globalPos()
+        viewport = self.viewport()
+        pos = viewport.mapFromGlobal(globalpos)
+        return self.indexAt(pos)
+
+    def get_pos_in_delegate(self, index, globalpos):
+        """Map the global position to the position relative to the
+        given index
+
+        :param index: the index to map to
+        :type index: :class:`QtCore.QModelIndex`
+        :param globalpos: the global position
+        :type globalpos: :class:`QtCore.QPoint`
+        :returns: The position relative to the given index
+        :rtype: :class:`QtCore.QPoint`
+        :raises: None
+        """
+        rect = self.visualRect(index)  # rect of the index
+        p = self.viewport().mapToGlobal(rect.topLeft())
+        return globalpos - p
+
+    def propagate_event_to_delegate(self, event, eventhandler):
+        """Propagate the given Mouse event to the widgetdelegate
+
+        Enter edit mode, get the editor widget and issue an event on that widget.
+
+        :param event: the mouse event
+        :type event: :class:`QtGui.QMouseEvent`
+        :param eventhandler: the eventhandler to use. E.g. ``"mousePressEvent"``
+        :type eventhandler: str
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        # find index at mouse position
+        i = self.index_at_event(event)
+
+        # if the index is not valid, we don't care
+        # handle it the default way
+        if not i.isValid():
+            return getattr(super(MouseEditMixin, self), eventhandler)(event)
+        # get the widget delegate. if there is None, handle it the default way
+        delegate = self.itemDelegate(i)
+        if not isinstance(delegate, WidgetDelegate):
+            return getattr(super(MouseEditMixin, self), eventhandler)(event)
+
+        # if we are not editing, start editing now
+        if self.state() != self.EditingState:
+            self.edit(i)
+            # check if we are in edit state now. if not, return
+            if self.state() != self.EditingState:
+                return
+
+        # get the editor widget. if there is None, there is nothing to do so return
+        widget = delegate.edit_widget()
+        if not widget:
+            return getattr(super(MouseEditMixin, self), eventhandler)(event)
+
+        # try to find the relative position to the widget
+        clickpos = self.get_pos_in_delegate(i, event.globalPos())
+
+        # create a new event for the editor widget.
+        e = QtGui.QMouseEvent(event.type(),
+                              clickpos,
+                              event.button(),
+                              event.buttons(),
+                              event.modifiers())
+        getattr(widget, eventhandler)(e)
+        # make sure to accept the event. If the widget does not accept the event
+        # it would be propagated to the view, and we would end in a recursion.
+        e.accept()
+
+    def mouseDoubleClickEvent(self, event):
+        """If a widgetdelegate is double clicked,
+        enter edit mode and propagate the event to the editor widget.
+
+        :param event: the mouse event
+        :type event: :class:`QtGui.QMouseEvent`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        return self.propagate_event_to_delegate(event, "mouseDoubleClickEvent")
+
+    def mousePressEvent(self, event):
+        """If the mouse is presses on a widgetdelegate,
+        enter edit mode and propagate the event to the editor widget.
+
+        :param event: the mouse event
+        :type event: :class:`QtGui.QMouseEvent`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        return self.propagate_event_to_delegate(event, "mousePressEvent")
+
+    def mouseReleaseEvent(self, event):
+        """If the mouse is released on a widgetdelegate,
+        enter edit mode and propagate the event to the editor widget.
+
+        :param event: the mouse event
+        :type event: :class:`QtGui.QMouseEvent`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        return self.propagate_event_to_delegate(event, "mouseReleaseEvent")
+
+
+class WD_AbstractItemView(QtGui.QAbstractItemView, MouseEditMixin):
     """A abstract item view that that when clicked, tries to issue
     a left click to the widget delegate.
     """
-
-    def __init__(self, parent=None):
-        """Initialize a new abstract item view
-
-        :raises: None
-        """
-        super(WD_AbstractItemView, self).__init__(parent)
-
-    def mouseDoubleClickEvent(self, event):
-        """If a widgetdelegate is double clicked,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_AbstractItemView, self).mouseDoubleClickEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_AbstractItemView, self).mouseDoubleClickEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_AbstractItemView, self).mouseDoubleClickEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mouseDoubleClickEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
-
-    def mousePressEvent(self, event):
-        """If the mouse is presses on a widgetdelegate,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_AbstractItemView, self).mousePressEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_AbstractItemView, self).mousePressEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_AbstractItemView, self).mousePressEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mousePressEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
-
-    def mouseReleaseEvent(self, event):
-        """If the mouse is released on a widgetdelegate,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_AbstractItemView, self).mouseReleaseEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_AbstractItemView, self).mouseReleaseEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_AbstractItemView, self).mouseReleaseEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mouseReleaseEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
+    pass
 
 
-class WD_ListView(QtGui.QListView):
+class WD_ListView(QtGui.QListView, MouseEditMixin):
     """A list view that that when clicked, tries to issue
     a left click to the widget delegate.
     """
-
-    def __init__(self, parent=None):
-        """Initialize a new list view
-
-        :raises: None
-        """
-        super(WD_ListView, self).__init__(parent)
-
-    def mouseDoubleClickEvent(self, event):
-        """If a widgetdelegate is double clicked,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_ListView, self).mouseDoubleClickEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_ListView, self).mouseDoubleClickEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_ListView, self).mouseDoubleClickEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mouseDoubleClickEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
-
-    def mousePressEvent(self, event):
-        """If the mouse is presses on a widgetdelegate,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_ListView, self).mousePressEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_ListView, self).mousePressEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_ListView, self).mousePressEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mousePressEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
-
-    def mouseReleaseEvent(self, event):
-        """If the mouse is released on a widgetdelegate,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_ListView, self).mouseReleaseEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_ListView, self).mouseReleaseEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_ListView, self).mouseReleaseEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mouseReleaseEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
+    pass
 
 
-class WD_TableView(QtGui.QTableView):
+class WD_TableView(QtGui.QTableView, MouseEditMixin):
     """A table view that that when clicked, tries to issue
     a left click to the widget delegate.
     """
-
-    def __init__(self, parent=None):
-        """Initialize a new table view
-
-        :raises: None
-        """
-        super(WD_TableView, self).__init__(parent)
-
-    def mouseDoubleClickEvent(self, event):
-        """If a widgetdelegate is double clicked,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_TableView, self).mouseDoubleClickEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_TableView, self).mouseDoubleClickEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_TableView, self).mouseDoubleClickEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mouseDoubleClickEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
-
-    def mousePressEvent(self, event):
-        """If the mouse is presses on a widgetdelegate,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_TableView, self).mousePressEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_TableView, self).mousePressEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_TableView, self).mousePressEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mousePressEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
-
-    def mouseReleaseEvent(self, event):
-        """If the mouse is released on a widgetdelegate,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_TableView, self).mouseReleaseEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_TableView, self).mouseReleaseEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_TableView, self).mouseReleaseEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mouseReleaseEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
+    pass
 
 
-class WD_TreeView(QtGui.QTreeView):
+class WD_TreeView(QtGui.QTreeView, MouseEditMixin):
     """A tree view that that when clicked, tries to issue
     a left click to the widget delegate.
     """
-
-    def __init__(self, parent=None):
-        """Initialize a new tree view
-
-        :raises: None
-        """
-        super(WD_TreeView, self).__init__(parent)
-
-    def mouseDoubleClickEvent(self, event):
-        """If a widgetdelegate is double clicked,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_TreeView, self).mouseDoubleClickEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_TreeView, self).mouseDoubleClickEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_TreeView, self).mouseDoubleClickEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mouseDoubleClickEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
-
-    def mousePressEvent(self, event):
-        """If the mouse is presses on a widgetdelegate,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_TreeView, self).mousePressEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_TreeView, self).mousePressEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_TreeView, self).mousePressEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mousePressEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
-
-    def mouseReleaseEvent(self, event):
-        """If the mouse is released on a widgetdelegate,
-        enter edit mode and propagate the event to the editor widget.
-
-        :param event: the mouse event
-        :type event: :class:`QtGui.QMouseEvent`
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        # find index at mouse position
-        globalpos = event.globalPos()
-        viewport = self.viewport()
-        pos = viewport.mapFromGlobal(globalpos)
-        i = self.indexAt(pos)
-
-        # if the index is not valid, we don't care
-        if not i.isValid():
-            return super(WD_TreeView, self).mouseReleaseEvent(event)
-        # get the widget delegate. if there is None, return
-        delegate = self.itemDelegate(i)
-        if not isinstance(delegate, WidgetDelegate):
-            return super(WD_TreeView, self).mouseReleaseEvent(event)
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                return
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
-        if not widget:
-            return super(WD_TreeView, self).mouseReleaseEvent(event)
-
-        # try to find the relative position to the widget
-        rect = self.visualRect(i)  # rect of the index
-        p = viewport.mapToGlobal(rect.topLeft())
-        clickpos = globalpos - p
-        # create a new event for the editor widget.
-        e = QtGui.QMouseEvent(event.type(),
-                              clickpos,
-                              event.button(),
-                              event.buttons(),
-                              event.modifiers())
-        widget.mouseReleaseEvent(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
+    pass
