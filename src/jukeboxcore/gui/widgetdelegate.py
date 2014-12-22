@@ -33,7 +33,7 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         self._widget = self.create_widget(parent)
         self._widget.setVisible(False)
         self._edit_widgets = {}
-        self.keep_editor_size = False
+        self.keep_editor_size = True
         """If True, resize the editor at least to its size Hint size, or if the section allows is, bigger."""
 
     @property
