@@ -1,3 +1,5 @@
+from functools import partial
+
 from PySide import QtCore, QtGui
 
 from jukeboxcore.gui.widgets.commentwidget import CommentWidget
@@ -30,7 +32,7 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         super(WidgetDelegate, self).__init__(parent)
         self._widget = self.create_widget(parent)
         self._widget.setVisible(False)
-        self._edit_widget = None
+        self._edit_widgets = {}
         self.keep_editor_size = False
         """If True, resize the editor at least to its size Hint size, or if the section allows is, bigger."""
 
@@ -114,6 +116,16 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         """
         return None
 
+    def close_editors(self, ):
+        """Close all current editors
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        for k in reversed(self._edit_widgets.keys()):
+            self.commit_close_editor(k)
+
     def createEditor(self, parent, option, index):
         """Return the editor to be used for editing the data item with the given index.
 
@@ -133,13 +145,14 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         :rtype: :class:`QtGui.QWidget` | None
         :raises: None
         """
-        if self._edit_widget:  # this will close an existing editor
-            self.commit_close_editor(self._edit_widget)
-        self._edit_widget = self.create_editor_widget(parent, option, index)
-        self._edit_widget.setAutoFillBackground(True)
-        if self._edit_widget:
-            self._edit_widget.destroyed.connect(self.editor_destroyed)
-        return self._edit_widget
+        # close all editors
+        self.close_editors()
+        e = self.create_editor_widget(parent, option, index)
+        if e:
+            self._edit_widgets[index] = e
+            e.setAutoFillBackground(True)
+            e.destroyed.connect(partial(self.editor_destroyed, index=index))
+        return e
 
     def create_editor_widget(self, parent, option, index):
         """Return a editor widget for the given index.
@@ -156,40 +169,47 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         """
         return None
 
-    def commit_close_editor(self, editor, endedithint=QtGui.QAbstractItemDelegate.NoHint):
+    def commit_close_editor(self, index, endedithint=QtGui.QAbstractItemDelegate.NoHint):
         """Commit and close the editor
 
         Call this method whenever the user finished editing.
 
-        :param editor: The editor to close
-        :type editor: :class:`QtGui.QWidget`
+        :param index: The index of the editor
+        :type index: :class:`QtCore.QModelIndex`
         :param endedithint: Hints that the delegate can give the model and view to make editing data comfortable for the user
         :type endedithint: :data:`QtGui.QAbstractItemDelegate.EndEditHint`
         :returns: None
         :rtype: None
         :raises: None
         """
+        editor = self._edit_widgets[index]
         self.commitData.emit(editor)
         self.closeEditor.emit(editor, endedithint)
-        self._edit_widget = None
+        del self._edit_widgets[index]
 
-    def edit_widget(self, ):
-        """Return the current edit widget if there is one
+    def edit_widget(self, index):
+        """Return the current edit widget at the givent index if there is one
 
+        :param index: The index of the editor
+        :type index: :class:`QtCore.QModelIndex`
         :returns: The editor widget | None
         :rtype: :class:`QtGui.QWidget` | None
         :raises: None
         """
-        return self._edit_widget
+        return self._edit_widgets.get(index)
 
-    def editor_destroyed(self, *args, **kwargs):
+    def editor_destroyed(self, index=None, *args):
         """Callback for when the editor widget gets destroyed. Set edit_widget to None
 
         :returns: None
         :rtype: None
         :raises: None
         """
-        self._edit_widget = None
+        if index:
+            try:
+                del self._edit_widgets[index]
+            except KeyError:
+                pass
 
     def updateEditorGeometry(self, editor, option, index):
         """Make sure the editor is the same size as the widget
@@ -339,42 +359,31 @@ class WidgetDelegateViewMixin(object):
         :rtype: None
         :raises: None
         """
-        print 80 * "="
-        print "Handle"
         # find index at mouse position
         i = self.index_at_event(event)
-        print "Index", i.row(), i.column(), i.parent()
 
         # if the index is not valid, we don't care
         # handle it the default way
         if not i.isValid():
-            print "invalid!"
             return getattr(super(WidgetDelegateViewMixin, self), eventhandler)(event)
         # get the widget delegate. if there is None, handle it the default way
         delegate = self.itemDelegate(i)
         if not isinstance(delegate, WidgetDelegate):
-            print "no delegate"
             return getattr(super(WidgetDelegateViewMixin, self), eventhandler)(event)
 
-        # if we are not editing, start editing now
-        if self.state() != self.EditingState:
-            print "not editing", self.state()
-            self.edit(i)
-            # check if we are in edit state now. if not, return
-            if self.state() != self.EditingState:
-                print "still not"
-                return
-
-        # get the editor widget. if there is None, there is nothing to do so return
-        widget = delegate.edit_widget()
+        # see if there is already a editor
+        widget = delegate.edit_widget(i)
         if not widget:
-            print "no widget"
+            # close all editors, then start editing
+            delegate.close_editors()
+            self.edit(i)
+            # get the editor widget. if there is None, there is nothing to do so return
+            widget = delegate.edit_widget(i)
+        if not widget:
             return getattr(super(WidgetDelegateViewMixin, self), eventhandler)(event)
-        print "widget", widget
 
         # try to find the relative position to the widget
         clickpos = self.get_pos_in_delegate(i, event.globalPos())
-        print "clickpos", clickpos
         # create a new event for the editor widget.
         e = QtGui.QMouseEvent(event.type(),
                               clickpos,
