@@ -1,3 +1,28 @@
+
+"""Module for having arbitrary widgets in views.
+
+Delegate
+--------
+
+The :class:`WidgetDelegate` enables an easy way to put arbitrary widgets in views.
+This is done by rendering the widget in the cells of the view. Ones the user edits the item,
+the delegate will give him an editor widget. Combined with the special views below, this
+will almost feel like real widgets. So if your widget has buttons, and you click on them,
+the click actually gets propagated to the widget.
+
+Views
+-----
+
+To make the widget delegates in the views behave like real widgets, we have to propagate click
+events. A user might see a button in a view and will try to click it. This will
+edit the item, so the delegate will give us a real editor widget and the click will be propagated
+to given widget.
+Mouse hovering etc is not supported at the moment and probably not good for performance.
+
+You can either use the :class:`WidgetDelegateViewMixin` for your own views or use one
+of the premade views: :class:`WD_AbstractItemView`, :class:`WD_ListView`, :class:`WD_TableView`
+:class:`WD_TreeView`.
+"""
 from functools import partial
 
 from PySide import QtCore, QtGui
@@ -8,22 +33,32 @@ from jukeboxcore.gui.widgets.commentwidget import CommentWidget
 class WidgetDelegate(QtGui.QStyledItemDelegate):
     """A delegate for drawing a arbitrary QWidget
 
-    When subclassing, reimplement set_widget_index, create_widget, create_editor_widget, setEditorData, setModelData
-    to your liking.
-    Make sure that the model returns the ItemIsEditable flag!
-    I recommend using one of the views in this module, because they issue a left click, when
+    When subclassing, reimplement:
+
+       * :meth:`WidgetDelegate.set_widget_index`
+       * :meth:`WidgetDelegate.create_widget`
+       * :meth:`WidgetDelegate.create_editor_widget`
+       * :meth:`WidgetDelegate.setEditorData`
+       * :meth:`WidgetDelegate.setModelData`
+
+    .. Note:: Make sure that the model returns the ItemIsEditable flag!
+
+    I recommend using one of the views in this module, because they issue click events, when
     an index is clicked.
 
-    .. Note: If a section is small, the widget will get rendered partially, because it always has the minimum size of the size hint.
+    .. Note: If a section is small, the widget will get rendered partially,
+             because it always has the minimum size of the size hint.
              The editor might look different, because he will get resized to the section width.
              To prevent that, set :data:`WidgetDelegate.keep_editor_size` to True.
-             But then i would recommend to keep your sections in the view at least as big as the size hint. See :meth:`QtGui.HeaderView.resizeMode`
+             But then i would recommend to keep your sections in the view at least
+             as big as the size hint. See :meth:`QtGui.HeaderView.resizeMode`.
     """
 
     def __init__(self, parent=None):
         """Create a new abstract widget delegate that draws the given widget.
 
-        :param widget: the widget to draw. If None, it behaves like a :class:`QtGui.QStyledItemDelegate`
+        :param widget: the widget to draw. If None,
+                       it behaves like a :class:`QtGui.QStyledItemDelegate`
         :type widget: :class:`QtGui.QWidget` | None
         :param parent: the parent object
         :type parent: :class:`QtCore.QObject`
@@ -35,7 +70,8 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         self._widget.setAutoFillBackground(True)
         self._edit_widgets = {}
         self.keep_editor_size = True
-        """If True, resize the editor at least to its size Hint size, or if the section allows is, bigger."""
+        """If True, resize the editor at least to its size Hint size,
+        or if the section allows is, bigger."""
 
     @property
     def widget(self):
@@ -92,7 +128,8 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         return sh
 
     def set_widget_index(self, index):
-        """Set the index for the widget. The widget should retrieve data from the index and display it.
+        """Set the index for the widget. The widget should retrieve data from the index
+        and display it.
 
         You might want use the same function as for :meth:`WidgetDelegate.setEditorData`.
 
@@ -177,7 +214,8 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
 
         :param index: The index of the editor
         :type index: :class:`QtCore.QModelIndex`
-        :param endedithint: Hints that the delegate can give the model and view to make editing data comfortable for the user
+        :param endedithint: Hints that the delegate can give the model
+                            and view to make editing data comfortable for the user
         :type endedithint: :data:`QtGui.QAbstractItemDelegate.EndEditHint`
         :returns: None
         :rtype: None
@@ -200,7 +238,7 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         return self._edit_widgets.get(index)
 
     def editor_destroyed(self, index=None, *args):
-        """Callback for when the editor widget gets destroyed. Set edit_widget to None
+        """Callback for when the editor widget gets destroyed. Set edit_widget to None.
 
         :returns: None
         :rtype: None
@@ -377,6 +415,9 @@ class WidgetDelegateViewMixin(object):
         if not widget:
             # close all editors, then start editing
             delegate.close_editors()
+            # Force editing. If in editing state, view will refuse editing.
+            if self.state() == self.EditingState:
+                self.setState(self.NoState)
             self.edit(i)
             # get the editor widget. if there is None, there is nothing to do so return
             widget = delegate.edit_widget(i)
@@ -460,12 +501,11 @@ class WD_TreeView(WidgetDelegateViewMixin, QtGui.QTreeView):
 
     By default the resize mode of the header will resize to contents.
     """
+    pass
 
     def __init__(self, *args, **kwargs):
         """Initialize a new treeview
 
-        :returns: None
-        :rtype: None
         :raises: None
         """
         super(WD_TreeView, self).__init__(*args, **kwargs)
