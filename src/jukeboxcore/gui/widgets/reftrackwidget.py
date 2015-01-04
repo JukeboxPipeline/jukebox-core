@@ -1,7 +1,68 @@
 from PySide import QtGui, QtCore
 
 from jukeboxcore.gui.widgets.reftrackwidget_ui import Ui_ReftrackWidget
+from jukeboxcore.gui.Widgets.optionselector_ui import Ui_OptionSelector
+from jukeboxcore.gui.widgets.browser import ComboBoxBrowser
 from jukeboxcore.gui.widgetdelegate import WidgetDelegate
+from jukeboxcore.gui.main import JB_Dialog
+
+
+class OptionSelector(JB_Dialog, Ui_OptionSelector):
+    """Widget to select options when importing or referencing
+    """
+
+    def __init__(self, reftrack, parent=None):
+        """Initialize a new OptionSelector
+
+        :param reftrack: the reftrack to show options for
+        :type reftrack: :class:`jukeboxcore.reftrack.Reftrack`
+        :param parent: the parent widget
+        :type parent: :class:`QtGui.QWidget`
+        :raises: None
+        """
+        super(OptionSelector, self).__init__(parent)
+        self.setupUi(self)
+        self.selected = None
+        self.reftrack = reftrack
+        self.setup_ui()
+        self.setup_signals()
+        options = reftrack.get_options()
+        self.browser.set_model(options)
+
+    def setup_ui(self, ):
+        """Setup the ui
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        labels = self.reftrack.get_option_labels()
+        self.browser = ComboBoxBrowser(len(labels), headers=labels)
+        self.browser_vbox.addWidget(self.browser)
+
+    def setup_signals(self, ):
+        """Connect the signals with the slots to make the ui functional
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.select_pb.clicked.connect(self.select)
+
+    def select(self, ):
+        """Store the selected taskfileinfo self.selected and accept the dialog
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        s = self.browser.selected_indexes(self.browser.get_depth()-1)
+        i = s.internalPointer()
+        if i:
+            d = i.internal_data()
+            tfi = d.internal_data()
+            self.selected = tfi
+            self.accept()
 
 
 class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
@@ -170,7 +231,11 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
         :rtype: None
         :raises: NotImplementedError
         """
-        raise NotImplementedError
+        sel = OptionSelector(self.reftrack)
+        sel.exec_()
+        tfi = sel.selected
+        if o:
+            self.reftrack.reference(tfi)
 
     def import_file(self, ):
         """Import a file
@@ -179,7 +244,11 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
         :rtype: None
         :raises: NotImplementedError
         """
-        raise NotImplementedError
+        sel = OptionSelector(self.reftrack)
+        sel.exec_()
+        tfi = sel.selected
+        if o:
+            self.reftrack.import_file(tfi)
 
     def import_reference(self, ):
         """Import the referenec of the current reftrack
