@@ -38,13 +38,13 @@
       <bool>false</bool>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Box</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Plain</enum>
      </property>
      <property name="lineWidth">
-      <number>1</number>
+      <number>2</number>
      </property>
      <layout class="QHBoxLayout" name="reftrack_fr_hbox">
       <property name="spacing">
@@ -141,7 +141,7 @@
             <item>
              <widget class="QLabel" name="maintext_lb">
               <property name="text">
-               <string>char | Rotkaeppchen | modeling | v002</string>
+               <string/>
               </property>
              </widget>
             </item>

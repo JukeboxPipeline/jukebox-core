@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Fri Dec 19 19:07:30 2014
+# Created: Tue Jan 06 10:42:43 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -21,9 +21,9 @@ class Ui_ReftrackWidget(object):
         self.reftrack_fr = QtGui.QFrame(ReftrackWidget)
         self.reftrack_fr.setMaximumSize(QtCore.QSize(16777215, 48))
         self.reftrack_fr.setAutoFillBackground(False)
-        self.reftrack_fr.setFrameShape(QtGui.QFrame.NoFrame)
+        self.reftrack_fr.setFrameShape(QtGui.QFrame.Box)
         self.reftrack_fr.setFrameShadow(QtGui.QFrame.Plain)
-        self.reftrack_fr.setLineWidth(1)
+        self.reftrack_fr.setLineWidth(2)
         self.reftrack_fr.setObjectName("reftrack_fr")
         self.reftrack_fr_hbox = QtGui.QHBoxLayout(self.reftrack_fr)
         self.reftrack_fr_hbox.setSpacing(0)
@@ -68,6 +68,7 @@ class Ui_ReftrackWidget(object):
         self.horizontalLayout.setContentsMargins(-1, 0, -1, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.maintext_lb = QtGui.QLabel(self.upper_fr)
+        self.maintext_lb.setText("")
         self.maintext_lb.setObjectName("maintext_lb")
         self.horizontalLayout.addWidget(self.maintext_lb)
         self.main_vbox.addWidget(self.upper_fr)
@@ -214,7 +215,6 @@ class Ui_ReftrackWidget(object):
 
     def retranslateUi(self, ReftrackWidget):
         ReftrackWidget.setWindowTitle(QtGui.QApplication.translate("ReftrackWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.maintext_lb.setText(QtGui.QApplication.translate("ReftrackWidget", "char | Rotkaeppchen | modeling | v002", None, QtGui.QApplication.UnicodeUTF8))
         self.duplicate_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Duplicate", None, QtGui.QApplication.UnicodeUTF8))
         self.delete_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Delete", None, QtGui.QApplication.UnicodeUTF8))
         self.load_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Load", None, QtGui.QApplication.UnicodeUTF8))

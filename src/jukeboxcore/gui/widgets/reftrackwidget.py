@@ -1,7 +1,7 @@
 from PySide import QtGui, QtCore
 
 from jukeboxcore.gui.widgets.reftrackwidget_ui import Ui_ReftrackWidget
-from jukeboxcore.gui.Widgets.optionselector_ui import Ui_OptionSelector
+from jukeboxcore.gui.widgets.optionselector_ui import Ui_OptionSelector
 from jukeboxcore.gui.widgets.browser import ComboBoxBrowser
 from jukeboxcore.gui.widgetdelegate import WidgetDelegate
 from jukeboxcore.gui.main import JB_Dialog
@@ -28,6 +28,10 @@ class OptionSelector(JB_Dialog, Ui_OptionSelector):
         self.setup_signals()
         options = reftrack.get_options()
         self.browser.set_model(options)
+        columns = self.reftrack.get_option_columns()
+        for i, c in enumerate(columns):
+            self.browser.get_level(i).setModelColumn(c)
+        self.adjustSize()
 
     def setup_ui(self, ):
         """Setup the ui
@@ -57,10 +61,11 @@ class OptionSelector(JB_Dialog, Ui_OptionSelector):
         :raises: None
         """
         s = self.browser.selected_indexes(self.browser.get_depth()-1)
-        i = s.internalPointer()
+        if not s:
+            return
+        i = s[0].internalPointer()
         if i:
-            d = i.internal_data()
-            tfi = d.internal_data()
+            tfi = i.internal_data()
             self.selected = tfi
             self.accept()
 
@@ -143,10 +148,11 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
         """
         dr = QtCore.Qt.DisplayRole
         text = ""
-        for i in (1, 2, 3, 5):
+        for i in (1, 2, 3, 5, 6):
             new = item.data(i, dr)
             if new is not None:
                 text = " | ".join((text, new)) if text else new
+        self.maintext_lb.setText(text)
 
     def set_type_icon(self, item):
         """Set the type icon on type_icon_lb
@@ -187,6 +193,17 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
         self.importref_tb.setVisible(not irefres)
         repres = self.reftrack.is_restricted(self.reftrack.replace)
         self.replace_tb.setVisible(not repres)
+
+    def get_taskfileinfo_selection(self, ):
+        """Return a taskfileinfo that the user chose from the available options
+
+        :returns: the chosen taskfileinfo
+        :rtype: :class:`jukeboxcore.filesys.TaskFileInfo`
+        :raises: None
+        """
+        sel = OptionSelector(self.reftrack)
+        sel.exec_()
+        return sel.selected
 
     def duplicate(self, ):
         """Duplicate the current reftrack
@@ -229,12 +246,10 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
 
         :returns: None
         :rtype: None
-        :raises: NotImplementedError
+        :raises: None
         """
-        sel = OptionSelector(self.reftrack)
-        sel.exec_()
-        tfi = sel.selected
-        if o:
+        tfi = self.get_taskfileinfo_selection()
+        if tfi:
             self.reftrack.reference(tfi)
 
     def import_file(self, ):
@@ -244,10 +259,8 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
         :rtype: None
         :raises: NotImplementedError
         """
-        sel = OptionSelector(self.reftrack)
-        sel.exec_()
-        tfi = sel.selected
-        if o:
+        tfi = self.get_taskfileinfo_selection()
+        if tfi:
             self.reftrack.import_file(tfi)
 
     def import_reference(self, ):
@@ -264,9 +277,11 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
 
         :returns: None
         :rtype: None
-        :raises: NotImplementedError
+        :raises: None
         """
-        raise NotImplementedError
+        tfi = self.get_taskfileinfo_selection()
+        if tfi:
+            self.reftrack.replace(tfi)
 
 
 class ReftrackDelegate(WidgetDelegate):
