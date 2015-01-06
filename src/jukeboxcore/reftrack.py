@@ -1161,6 +1161,8 @@ Use delete if you want to get rid of a reference or import."
         refobjinter.import_reference(self.get_refobj())
         self.set_status(self.IMPORTED)
         self.update_restrictions()
+        for c in self.get_all_children():
+            c.update_restrictions()
         self.emit_data_changed()
 
     @restrictable
