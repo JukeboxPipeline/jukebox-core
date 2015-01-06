@@ -73,7 +73,6 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         # hide all columns but the first
         cc = m.columnCount(QtCore.QModelIndex())
         for i in range(1, cc):
-            print 'hide', i
             self.reftrack_treev.setColumnHidden(i, True)
 
     def setup_signals(self, ):
