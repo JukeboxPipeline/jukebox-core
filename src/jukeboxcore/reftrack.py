@@ -921,6 +921,18 @@ The Refobject provides the necessary info.")
         """
         return self.get_refobjinter().get_option_labels(self.get_typ(), self.get_element())
 
+    def get_option_columns(self):
+        """Return the column of the model to show for each level
+
+        Because each level might be displayed in a combobox. So you might want to provide the column
+        to show.
+
+        :returns: a list of columns
+        :rtype: list
+        :raises: None
+        """
+        return self.get_refobjinter().get_option_columns(self.get_typ(), self.get_element())
+
     def uptodate(self, ):
         """Return True, if the currently loaded entity is the newest version.
         Return False, if there is a newer version.
@@ -1241,7 +1253,7 @@ Use delete if you want to get rid of a reference or import."
             return
         todelete = self.get_children_to_delete()
         allchildren = self.get_all_children()
-        for c in todelete:
+        for c in reversed(todelete):
             c._delete()
         for c in allchildren:
             self.get_root().remove_reftrack(c)
@@ -1811,7 +1823,7 @@ class RefobjInterface(object):
         self.delete_refobj(refobj)
 
     @abc.abstractmethod
-    def get_all_refobjs(self, ):  #pragma: no cover
+    def get_all_refobjs(self, ):  #pragma: no coverg
         """Return all refobjs in the scene
 
         :returns: all refobjs in the scene
@@ -2089,7 +2101,24 @@ class RefobjInterface(object):
         :raises: None
         """
         inter = self.get_typ_interface(typ)
-        return inter.fetch_option_labels(element)
+        return inter.get_option_labels(element)
+
+    def get_option_columns(self, typ, element):
+        """Return the column of the model to show for each level
+
+        Because each level might be displayed in a combobox. So you might want to provide the column
+        to show.
+
+        :param typ: the typ of options. E.g. Asset, Alembic, Camera etc
+        :type typ: str
+        :param element: The element for wich the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: a list of columns
+        :rtype: list
+        :raises: None
+        """
+        inter = self.get_typ_interface(typ)
+        return inter.get_option_columns(element)
 
     def get_suggestions(self, reftrack):
         """Return a list with possible children for this reftrack
@@ -2182,6 +2211,7 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.create_options_model`
       * :meth:`ReftypeInterface.get_suggestions`
       * :meth:`ReftypeInterface.get_option_labels`
+      * :meth:`ReftypeInterface.get_option_columns`
 
     You might also want to reimplement:
 
@@ -2395,6 +2425,21 @@ class ReftypeInterface(object):
         :param element: The element for which the options should be fetched.
         :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
         :returns: label strings for all levels
+        :rtype: list
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_option_columns(self, element):  #pragma: no cover
+        """Return the column of the model to show for each level
+
+        Because each level might be displayed in a combobox. So you might want to provide the column
+        to show.
+
+        :param element: The element for wich the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: a list of columns
         :rtype: list
         :raises: NotImplementedError
         """
