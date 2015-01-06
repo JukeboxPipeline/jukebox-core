@@ -268,6 +268,7 @@ class WidgetDelegate(QtGui.QStyledItemDelegate):
         :raises: None
         """
         super(WidgetDelegate, self).updateEditorGeometry(editor, option, index)
+        editor.setGeometry(option.rect)
         if self.keep_editor_size:
             esh = editor.sizeHint()
             osh = option.rect.size()
