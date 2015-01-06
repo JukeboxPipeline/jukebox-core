@@ -1,4 +1,3 @@
-
 """Module for having arbitrary widgets in views.
 
 Delegate
@@ -28,6 +27,8 @@ from functools import partial
 from PySide import QtCore, QtGui
 
 from jukeboxcore.gui.widgets.commentwidget import CommentWidget
+from jukeboxcore.log import get_logger
+log = get_logger(__name__)
 
 
 class WidgetDelegate(QtGui.QStyledItemDelegate):
@@ -425,14 +426,22 @@ class WidgetDelegateViewMixin(object):
             return getattr(super(WidgetDelegateViewMixin, self), eventhandler)(event)
 
         # try to find the relative position to the widget
-        clickpos = self.get_pos_in_delegate(i, event.globalPos())
+        pid = self.get_pos_in_delegate(i, event.globalPos())
+        widgetatpos = widget.childAt(pid)
+        if widgetatpos:
+            widgettoclick = widgetatpos
+            g = widget.mapToGlobal(pid)
+            clickpos = widgettoclick.mapFromGlobal(g)
+        else:
+            widgettoclick = widget
+            clickpos = pid
         # create a new event for the editor widget.
         e = QtGui.QMouseEvent(event.type(),
                               clickpos,
                               event.button(),
                               event.buttons(),
                               event.modifiers())
-        getattr(widget, eventhandler)(e)
+        getattr(widgettoclick, eventhandler)(e)
         # make sure to accept the event. If the widget does not accept the event
         # it would be propagated to the view, and we would end in a recursion.
         e.accept()
