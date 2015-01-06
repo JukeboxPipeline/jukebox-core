@@ -354,6 +354,9 @@ class WidgetDelegateViewMixin(object):
     On a mouse click event, try to edit the index at click position.
     Then take the editor widget and issue the same click on that widget.
     """
+    def __init__(self, *args, **kwargs):
+        super(WidgetDelegateViewMixin, self).__init__(*args, **kwargs)
+        self.__recursing = False  # check if we are recursing if posting a click event
 
     def index_at_event(self, event):
         """Get the index under the position of the given MouseEvent
@@ -399,6 +402,10 @@ class WidgetDelegateViewMixin(object):
         :rtype: None
         :raises: None
         """
+        # if we are recursing because we sent a click event, and it got propagated to the parents
+        # and we recieve it again, terminate
+        if self.__recursing:
+            return
         # find index at mouse position
         i = self.index_at_event(event)
 
@@ -435,16 +442,18 @@ class WidgetDelegateViewMixin(object):
         else:
             widgettoclick = widget
             clickpos = pid
+
         # create a new event for the editor widget.
         e = QtGui.QMouseEvent(event.type(),
                               clickpos,
                               event.button(),
                               event.buttons(),
                               event.modifiers())
-        getattr(widgettoclick, eventhandler)(e)
-        # make sure to accept the event. If the widget does not accept the event
-        # it would be propagated to the view, and we would end in a recursion.
-        e.accept()
+        # before we send, make sure, we cannot recurse
+        self.__recursing = True
+        r = QtGui.QApplication.sendEvent(widgettoclick, e)
+        self.__recursing = False  # out of the recursion. now we can accept click events again
+        return r
 
     def mouseDoubleClickEvent(self, event):
         """If a widgetdelegate is double clicked,
