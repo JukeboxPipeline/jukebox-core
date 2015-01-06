@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Tue Jan 06 10:42:43 2015
+# Created: Tue Jan 06 17:08:54 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,6 +14,7 @@ class Ui_ReftrackWidget(object):
         ReftrackWidget.setObjectName("ReftrackWidget")
         ReftrackWidget.resize(685, 48)
         ReftrackWidget.setMaximumSize(QtCore.QSize(16777215, 48))
+        ReftrackWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
         ReftrackWidget.setAutoFillBackground(True)
         self.verticalLayout = QtGui.QVBoxLayout(ReftrackWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)

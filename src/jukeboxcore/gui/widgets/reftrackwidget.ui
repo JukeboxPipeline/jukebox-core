@@ -16,6 +16,9 @@
     <height>48</height>
    </size>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>

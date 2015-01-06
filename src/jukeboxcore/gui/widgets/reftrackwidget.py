@@ -70,7 +70,7 @@ class OptionSelector(JB_Dialog, Ui_OptionSelector):
             self.accept()
 
 
-class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
+class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
     """Widget to display Reftracks in a Widgetdelegate
     """
 
@@ -95,7 +95,7 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QWidget):
         :rtype: None
         :raises: None
         """
-        self.setup_icons
+        self.setup_icons()
 
     def setup_icons(self, ):
         """Setup the icons of the ui
