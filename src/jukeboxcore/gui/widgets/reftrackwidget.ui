@@ -106,10 +106,22 @@
          </property>
          <item>
           <widget class="QLabel" name="type_icon_lb">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="minimumSize">
             <size>
-             <width>0</width>
-             <height>0</height>
+             <width>48</width>
+             <height>48</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>48</width>
+             <height>48</height>
             </size>
            </property>
            <property name="text">
@@ -130,25 +142,46 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QWidget" name="upper_fr" native="true">
-           <property name="styleSheet">
-            <string notr="true"/>
+          <widget class="QFrame" name="upper_fr">
+           <property name="autoFillBackground">
+            <bool>true</bool>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="lineWidth">
+            <number>0</number>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout">
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
+            <property name="margin">
              <number>0</number>
             </property>
             <item>
-             <widget class="QLabel" name="maintext_lb">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
+             <widget class="QWidget" name="upper_content_widget" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <property name="leftMargin">
+                <number>9</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="maintext_lb">
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="textInteractionFlags">
+                  <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
@@ -199,6 +232,9 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Duplicate</string>
+              </property>
               <property name="text">
                <string>Duplicate</string>
               </property>
@@ -238,6 +274,9 @@
                 <width>16777215</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="toolTip">
+               <string>Delete</string>
               </property>
               <property name="text">
                <string>Delete</string>
@@ -279,6 +318,9 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Load</string>
+              </property>
               <property name="text">
                <string>Load</string>
               </property>
@@ -318,6 +360,9 @@
                 <width>16777215</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="toolTip">
+               <string>Unload</string>
               </property>
               <property name="text">
                <string>Unload</string>
@@ -359,6 +404,9 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Reference</string>
+              </property>
               <property name="text">
                <string>Reference</string>
               </property>
@@ -398,6 +446,9 @@
                 <width>16777215</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="toolTip">
+               <string>Import</string>
               </property>
               <property name="text">
                <string>Import</string>
@@ -439,6 +490,9 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Import</string>
+              </property>
               <property name="text">
                <string>Import</string>
               </property>
@@ -479,6 +533,9 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Replace</string>
+              </property>
               <property name="text">
                <string>Replace</string>
               </property>
@@ -518,6 +575,9 @@
                 <width>16777215</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="toolTip">
+               <string>Menu</string>
               </property>
               <property name="text">
                <string>Menu</string>

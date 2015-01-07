@@ -4,7 +4,7 @@ from jukeboxcore.gui.widgets.reftrackwidget_ui import Ui_ReftrackWidget
 from jukeboxcore.gui.widgets.optionselector_ui import Ui_OptionSelector
 from jukeboxcore.gui.widgets.browser import ComboBoxBrowser
 from jukeboxcore.gui.widgetdelegate import WidgetDelegate
-from jukeboxcore.gui.main import JB_Dialog
+from jukeboxcore.gui.main import JB_Dialog, get_icon
 
 
 class OptionSelector(JB_Dialog, Ui_OptionSelector):
@@ -88,6 +88,8 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         self.setup_ui()
         self.setup_signals()
 
+        self.upper_fr_default_bg_color = self.upper_fr.palette().color(QtGui.QPalette.Window)
+
     def setup_ui(self, ):
         """Setup the ui
 
@@ -104,7 +106,18 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         :rtype: None
         :raises: None
         """
-        pass
+        iconbtns = [("menu_border_24x24.png", self.menu_tb),
+                    ("duplicate_border_24x24.png", self.duplicate_tb),
+                    ("delete_border_24x24.png", self.delete_tb),
+                    ("reference_border_24x24.png", self.reference_tb),
+                    ("load_border_24x24.png", self.load_tb),
+                    ("unload_border_24x24.png", self.unload_tb),
+                    ("replace_border_24x24.png", self.replace_tb),
+                    ("import_border_24x24.png", self.importref_tb),
+                    ("import_border_24x24.png", self.importtf_tb)]
+        for iconname, btn in iconbtns:
+            i = get_icon(iconname, asicon=True)
+            btn.setIcon(i)
 
     def setup_signals(self, ):
         """Connect the signals with the slots to make the ui functional
@@ -135,7 +148,9 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         self.reftrack = self.item.internal_data()
         self.set_maintext(self.item)
         self.set_type_icon(self.item)
+        self.disable_restricted()
         self.hide_restricted()
+        self.set_top_bar_color(self.item)
 
     def set_maintext(self, item):
         """Set the maintext_lb to display text information about the given reftrack
@@ -170,6 +185,21 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         else:
             self.type_icon_lb.setPixmap(None)
 
+    def disable_restricted(self, ):
+        """Disable the restricted buttons
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        todisable = [(self.reftrack.duplicate, self.duplicate_tb),
+                     (self.reftrack.delete, self.delete_tb),
+                     (self.reftrack.reference, self.reference_tb),
+                     (self.reftrack.replace, self.replace_tb)]
+        for action, btn in todisable:
+            res = self.reftrack.is_restricted(action)
+            btn.setDisabled(res)
+
     def hide_restricted(self, ):
         """Hide the restricted buttons
 
@@ -177,22 +207,36 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         :rtype: None
         :raises: None
         """
-        dupres = self.reftrack.is_restricted(self.reftrack.duplicate)
-        self.duplicate_tb.setVisible(not dupres)
-        delres = self.reftrack.is_restricted(self.reftrack.delete)
-        self.delete_tb.setVisible(not delres)
-        refres = self.reftrack.is_restricted(self.reftrack.reference)
-        self.reference_tb.setVisible(not refres)
-        loadres = self.reftrack.is_restricted(self.reftrack.load)
-        self.load_tb.setVisible(not loadres)
-        unloadres = self.reftrack.is_restricted(self.reftrack.unload)
-        self.unload_tb.setVisible(not unloadres)
-        ifres = self.reftrack.is_restricted(self.reftrack.import_file)
-        self.importtf_tb.setVisible(not ifres)
-        irefres = self.reftrack.is_restricted(self.reftrack.import_reference)
-        self.importref_tb.setVisible(not irefres)
-        repres = self.reftrack.is_restricted(self.reftrack.replace)
-        self.replace_tb.setVisible(not repres)
+        tohide = [((self.reftrack.unload, self.unload_tb),
+                   (self.reftrack.load, self.load_tb)),
+                  ((self.reftrack.import_file, self.importtf_tb),
+                   (self.reftrack.import_reference, self.importref_tb))]
+        for (action1, btn1), (action2, btn2) in tohide:
+            res1 = self.reftrack.is_restricted(action1)
+            res2 = self.reftrack.is_restricted(action2)
+            if res1 != res2:
+                btn1.setEnabled(True)
+                btn1.setHidden(res1)
+                btn2.setHidden(res2)
+            else:  # both are restricted, then show one but disable it
+                btn1.setDisabled(True)
+                btn1.setVisible(True)
+                btn2.setVisible(False)
+
+    def set_top_bar_color(self, item):
+        """Set the color of the upper frame to the background color of the reftrack status
+
+        :param item: the item to represent
+        :type item: :class:`jukeboxcore.gui.treemodel.TreeItem`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        dr = QtCore.Qt.ForegroundRole
+        c = item.data(8, dr)
+        if not c:
+            c = self.upper_fr_default_bg_color
+        self.upper_fr.setStyleSheet('background-color: rgb(%s, %s, %s)' % (c.red(), c.green(), c.blue()))
 
     def get_taskfileinfo_selection(self, ):
         """Return a taskfileinfo that the user chose from the available options

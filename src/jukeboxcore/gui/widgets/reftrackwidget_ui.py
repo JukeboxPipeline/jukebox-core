@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Tue Jan 06 20:24:23 2015
+# Created: Wed Jan 07 15:10:36 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -50,7 +50,13 @@ class Ui_ReftrackWidget(object):
         self.type_icon_hbox.setContentsMargins(0, 0, 0, 0)
         self.type_icon_hbox.setObjectName("type_icon_hbox")
         self.type_icon_lb = QtGui.QLabel(self.type_icon_fr)
-        self.type_icon_lb.setMinimumSize(QtCore.QSize(0, 0))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.type_icon_lb.sizePolicy().hasHeightForWidth())
+        self.type_icon_lb.setSizePolicy(sizePolicy)
+        self.type_icon_lb.setMinimumSize(QtCore.QSize(48, 48))
+        self.type_icon_lb.setMaximumSize(QtCore.QSize(48, 48))
         self.type_icon_lb.setText("")
         self.type_icon_lb.setObjectName("type_icon_lb")
         self.type_icon_hbox.addWidget(self.type_icon_lb)
@@ -62,17 +68,26 @@ class Ui_ReftrackWidget(object):
         self.main_vbox.setContentsMargins(0, 0, 0, 0)
         self.main_vbox.setContentsMargins(0, 0, 0, 0)
         self.main_vbox.setObjectName("main_vbox")
-        self.upper_fr = QtGui.QWidget(self.main_fr)
-        self.upper_fr.setStyleSheet("")
+        self.upper_fr = QtGui.QFrame(self.main_fr)
+        self.upper_fr.setAutoFillBackground(True)
+        self.upper_fr.setFrameShape(QtGui.QFrame.NoFrame)
+        self.upper_fr.setLineWidth(0)
         self.upper_fr.setObjectName("upper_fr")
         self.horizontalLayout = QtGui.QHBoxLayout(self.upper_fr)
-        self.horizontalLayout.setContentsMargins(-1, 0, -1, 0)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.maintext_lb = QtGui.QLabel(self.upper_fr)
+        self.upper_content_widget = QtGui.QWidget(self.upper_fr)
+        self.upper_content_widget.setObjectName("upper_content_widget")
+        self.horizontalLayout_3 = QtGui.QHBoxLayout(self.upper_content_widget)
+        self.horizontalLayout_3.setContentsMargins(9, 0, -1, 0)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.maintext_lb = QtGui.QLabel(self.upper_content_widget)
+        self.maintext_lb.setStyleSheet("")
         self.maintext_lb.setText("")
         self.maintext_lb.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByKeyboard|QtCore.Qt.TextSelectableByMouse)
         self.maintext_lb.setObjectName("maintext_lb")
-        self.horizontalLayout.addWidget(self.maintext_lb)
+        self.horizontalLayout_3.addWidget(self.maintext_lb)
+        self.horizontalLayout.addWidget(self.upper_content_widget)
         self.main_vbox.addWidget(self.upper_fr)
         self.btn_fr = QtGui.QWidget(self.main_fr)
         self.btn_fr.setStyleSheet("")
