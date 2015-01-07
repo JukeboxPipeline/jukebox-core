@@ -1,3 +1,5 @@
+from functools import partial
+
 from PySide import QtGui, QtCore
 
 from jukeboxcore.gui.widgets.reftrackwidget_ui import Ui_ReftrackWidget
@@ -114,7 +116,9 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
                     ("unload_border_24x24.png", self.unload_tb),
                     ("replace_border_24x24.png", self.replace_tb),
                     ("import_border_24x24.png", self.importref_tb),
-                    ("import_border_24x24.png", self.importtf_tb)]
+                    ("import_border_24x24.png", self.importtf_tb),
+                    ("alien.png", self.alien_tb),
+                    ("imported.png", self.imported_tb)]
         for iconname, btn in iconbtns:
             i = get_icon(iconname, asicon=True)
             btn.setIcon(i)
@@ -134,6 +138,8 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         self.importtf_tb.clicked.connect(self.import_file)
         self.importref_tb.clicked.connect(self.import_reference)
         self.replace_tb.clicked.connect(self.replace)
+        self.imported_tb.clicked.connect(partial(self.toggle_tbstyle, button=self.imported_tb))
+        self.alien_tb.clicked.connect(partial(self.toggle_tbstyle, button=self.alien_tb))
 
     def set_index(self, index):
         """Display the data of the given index
@@ -151,6 +157,7 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         self.disable_restricted()
         self.hide_restricted()
         self.set_top_bar_color(self.item)
+        self.set_status_buttons()
 
     def set_maintext(self, item):
         """Set the maintext_lb to display text information about the given reftrack
@@ -237,6 +244,38 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         if not c:
             c = self.upper_fr_default_bg_color
         self.upper_fr.setStyleSheet('background-color: rgb(%s, %s, %s)' % (c.red(), c.green(), c.blue()))
+
+    def set_status_buttons(self, ):
+        """Depending on the status of the reftrack, enable or disable
+        the status buttons, for imported/alien status buttons
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        imported = self.reftrack.status() == self.reftrack.IMPORTED
+        alien = self.reftrack.alien()
+
+        for btn, enable in [(self.imported_tb, imported),
+                            (self.alien_tb, alien)]:
+            btn.setEnabled(enable)
+            btn.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
+
+    def toggle_tbstyle(self, button):
+        """Toogle the ToolButtonStyle of the given button between :data:`ToolButtonIconOnly` and :data:`ToolButtonTextBesideIcon`
+
+        :param button: a tool button
+        :type button: :class:`QtGui.QToolButton`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        old = button.toolButtonStyle()
+        if old == QtCore.Qt.ToolButtonIconOnly:
+            new = QtCore.Qt.ToolButtonTextBesideIcon
+        else:
+            new = QtCore.Qt.ToolButtonIconOnly
+        button.setToolButtonStyle(new)
 
     def get_taskfileinfo_selection(self, ):
         """Return a taskfileinfo that the user chose from the available options

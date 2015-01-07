@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Wed Jan 07 17:27:49 2015
+# Created: Wed Jan 07 18:16:19 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -95,6 +95,21 @@ class Ui_ReftrackWidget(object):
         self.horizontalLayout_2 = QtGui.QHBoxLayout(self.btn_fr)
         self.horizontalLayout_2.setContentsMargins(-1, 2, -1, 0)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.imported_tb = QtGui.QToolButton(self.btn_fr)
+        self.imported_tb.setEnabled(False)
+        self.imported_tb.setMaximumSize(QtCore.QSize(16777215, 16))
+        self.imported_tb.setIconSize(QtCore.QSize(16, 16))
+        self.imported_tb.setCheckable(False)
+        self.imported_tb.setAutoRaise(True)
+        self.imported_tb.setArrowType(QtCore.Qt.NoArrow)
+        self.imported_tb.setObjectName("imported_tb")
+        self.horizontalLayout_2.addWidget(self.imported_tb)
+        self.alien_tb = QtGui.QToolButton(self.btn_fr)
+        self.alien_tb.setEnabled(False)
+        self.alien_tb.setMaximumSize(QtCore.QSize(16777215, 16))
+        self.alien_tb.setAutoRaise(True)
+        self.alien_tb.setObjectName("alien_tb")
+        self.horizontalLayout_2.addWidget(self.alien_tb)
         spacerItem = QtGui.QSpacerItem(0, 0, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem)
         self.duplicate_tb = QtGui.QToolButton(self.btn_fr)
@@ -232,6 +247,10 @@ class Ui_ReftrackWidget(object):
 
     def retranslateUi(self, ReftrackWidget):
         ReftrackWidget.setWindowTitle(QtGui.QApplication.translate("ReftrackWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.imported_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "<html><head/><body><p>Imported</p><p><br/></p><p>The entity is not a reference but another file imported into the scene.</p><p><br/></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.imported_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Imported", None, QtGui.QApplication.UnicodeUTF8))
+        self.alien_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "<html><head/><body><p>Alien</p><p>Alien is a entity that is not linked to the parent Asset/Shot in the database.</p><p><br/></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.alien_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Alien", None, QtGui.QApplication.UnicodeUTF8))
         self.duplicate_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Duplicate", None, QtGui.QApplication.UnicodeUTF8))
         self.duplicate_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Duplicate", None, QtGui.QApplication.UnicodeUTF8))
         self.delete_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Delete", None, QtGui.QApplication.UnicodeUTF8))
