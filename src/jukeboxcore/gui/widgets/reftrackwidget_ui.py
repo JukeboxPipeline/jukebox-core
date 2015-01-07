@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Wed Jan 07 18:16:19 2015
+# Created: Wed Jan 07 20:39:42 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -95,21 +95,25 @@ class Ui_ReftrackWidget(object):
         self.horizontalLayout_2 = QtGui.QHBoxLayout(self.btn_fr)
         self.horizontalLayout_2.setContentsMargins(-1, 2, -1, 0)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.status_btn_hbox = QtGui.QHBoxLayout()
+        self.status_btn_hbox.setSpacing(0)
+        self.status_btn_hbox.setContentsMargins(0, 0, 0, 0)
+        self.status_btn_hbox.setObjectName("status_btn_hbox")
         self.imported_tb = QtGui.QToolButton(self.btn_fr)
         self.imported_tb.setEnabled(False)
-        self.imported_tb.setMaximumSize(QtCore.QSize(16777215, 16))
+        self.imported_tb.setMaximumSize(QtCore.QSize(16777215, 18))
         self.imported_tb.setIconSize(QtCore.QSize(16, 16))
         self.imported_tb.setCheckable(False)
         self.imported_tb.setAutoRaise(True)
-        self.imported_tb.setArrowType(QtCore.Qt.NoArrow)
         self.imported_tb.setObjectName("imported_tb")
-        self.horizontalLayout_2.addWidget(self.imported_tb)
+        self.status_btn_hbox.addWidget(self.imported_tb)
         self.alien_tb = QtGui.QToolButton(self.btn_fr)
         self.alien_tb.setEnabled(False)
-        self.alien_tb.setMaximumSize(QtCore.QSize(16777215, 16))
+        self.alien_tb.setMaximumSize(QtCore.QSize(16777215, 18))
         self.alien_tb.setAutoRaise(True)
         self.alien_tb.setObjectName("alien_tb")
-        self.horizontalLayout_2.addWidget(self.alien_tb)
+        self.status_btn_hbox.addWidget(self.alien_tb)
+        self.horizontalLayout_2.addLayout(self.status_btn_hbox)
         spacerItem = QtGui.QSpacerItem(0, 0, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem)
         self.duplicate_tb = QtGui.QToolButton(self.btn_fr)
