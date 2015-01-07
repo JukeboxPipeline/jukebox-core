@@ -99,7 +99,20 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         :rtype: None
         :raises: None
         """
+        self.setup_menu()
         self.setup_icons()
+
+    def setup_menu(self, ):
+        """Setup the menu that the menu_tb button uses
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.menu = QtGui.QMenu(self)
+        self.select_action = QtGui.QAction("Select", self)
+        self.menu.addAction(self.select_action)
+        self.menu_tb.setMenu(self.menu)
 
     def setup_icons(self, ):
         """Setup the icons of the ui
@@ -140,6 +153,8 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         self.replace_tb.clicked.connect(self.replace)
         self.imported_tb.clicked.connect(partial(self.toggle_tbstyle, button=self.imported_tb))
         self.alien_tb.clicked.connect(partial(self.toggle_tbstyle, button=self.alien_tb))
+
+        self.select_action.triggered.connect(self.select_content)
 
     def set_index(self, index):
         """Display the data of the given index
@@ -209,7 +224,8 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         todisable = [(self.reftrack.duplicate, self.duplicate_tb),
                      (self.reftrack.delete, self.delete_tb),
                      (self.reftrack.reference, self.reference_tb),
-                     (self.reftrack.replace, self.replace_tb)]
+                     (self.reftrack.replace, self.replace_tb),
+                     (self.reftrack.select_content, self.select_action)]
         for action, btn in todisable:
             res = self.reftrack.is_restricted(action)
             btn.setDisabled(res)
@@ -371,7 +387,16 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         """
         tfi = self.get_taskfileinfo_selection()
         if tfi:
-            self.reftrack.replace(tfi)    
+            self.reftrack.replace(tfi)
+
+    def select_content(self, *args, **kwargs):
+        """Select the content of the reftrack
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.reftrack.select_content()
 
 
 class ReftrackDelegate(WidgetDelegate):

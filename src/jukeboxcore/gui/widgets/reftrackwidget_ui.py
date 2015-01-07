@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Wed Jan 07 20:39:42 2015
+# Created: Wed Jan 07 22:33:49 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -237,6 +237,7 @@ class Ui_ReftrackWidget(object):
         self.menu_tb.setMinimumSize(QtCore.QSize(24, 24))
         self.menu_tb.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.menu_tb.setIconSize(QtCore.QSize(24, 24))
+        self.menu_tb.setPopupMode(QtGui.QToolButton.InstantPopup)
         self.menu_tb.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
         self.menu_tb.setAutoRaise(True)
         self.menu_tb.setArrowType(QtCore.Qt.NoArrow)

@@ -1310,6 +1310,17 @@ Use delete if you want to get rid of a reference or import."
                               element=self.get_element(),
                               parent=self.get_parent())
 
+    @restrictable
+    def select_content(self, ):
+        """Select the content of the given reftrack in the programm you are using
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        inter.select_content(self.get_refobj())
+
     def get_all_children(self):
         """Get all children including children of children
 
@@ -1505,6 +1516,7 @@ Use delete if you want to get rid of a reference or import."
         self.set_restricted(self.import_file, self.fetch_import_f_restriction())
         self.set_restricted(self.replace, self.fetch_replace_restriction())
         self.set_restricted(self.delete, self.fetch_delete_restriction())
+        self.set_restricted(self.select_content, self.fetch_select_restriction())
 
     def fetch_reference_restriction(self, ):
         """Fetch whether referencing is restricted
@@ -1582,6 +1594,15 @@ Use delete if you want to get rid of a reference or import."
         inter = self.get_refobjinter()
         return inter.fetch_action_restriction(self, 'delete')
 
+    def fetch_select_restriction(self):
+        """Fetch whether selection is restricted
+
+        :returns: True, if selection is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return not bool(self.status())
+
     def emit_data_changed(self):
         """Emit the data changed signal on the model of the treeitem
         if the treeitem has a model.
@@ -1628,6 +1649,7 @@ class RefobjInterface(object):
       * :meth:`RefobjInterface.get_reference`
       * :meth:`RefobjInterface.get_status`
       * :meth:`RefobjInterface.get_taskfile`
+      * :meth:`RefobjInterface.select_content`
 
     You might also want to reimplement :meth:`fetch_action_restriction`
 
@@ -2051,6 +2073,18 @@ class RefobjInterface(object):
         """
         tf = self.get_taskfile(refobj)
         return tf.task.element
+
+    @abc.abstractmethod
+    def select_content(self, refobj):  #pragma: no cover
+        """Select the content of the given refobj
+
+        :param refobj: the refobject to query
+        :type refobj: refobj
+        :returns: None
+        :rtype: None
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
 
     def fetch_options(self, typ, element):
         """Fetch the options for possible files to
