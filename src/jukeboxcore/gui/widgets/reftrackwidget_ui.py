@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Wed Jan 07 15:10:36 2015
+# Created: Wed Jan 07 17:27:49 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -232,13 +232,22 @@ class Ui_ReftrackWidget(object):
 
     def retranslateUi(self, ReftrackWidget):
         ReftrackWidget.setWindowTitle(QtGui.QApplication.translate("ReftrackWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.duplicate_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Duplicate", None, QtGui.QApplication.UnicodeUTF8))
         self.duplicate_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Duplicate", None, QtGui.QApplication.UnicodeUTF8))
+        self.delete_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Delete", None, QtGui.QApplication.UnicodeUTF8))
         self.delete_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Delete", None, QtGui.QApplication.UnicodeUTF8))
+        self.load_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Load", None, QtGui.QApplication.UnicodeUTF8))
         self.load_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Load", None, QtGui.QApplication.UnicodeUTF8))
+        self.unload_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Unload", None, QtGui.QApplication.UnicodeUTF8))
         self.unload_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Unload", None, QtGui.QApplication.UnicodeUTF8))
+        self.reference_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Reference", None, QtGui.QApplication.UnicodeUTF8))
         self.reference_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Reference", None, QtGui.QApplication.UnicodeUTF8))
+        self.importtf_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Import", None, QtGui.QApplication.UnicodeUTF8))
         self.importtf_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Import", None, QtGui.QApplication.UnicodeUTF8))
+        self.importref_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Import", None, QtGui.QApplication.UnicodeUTF8))
         self.importref_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Import", None, QtGui.QApplication.UnicodeUTF8))
+        self.replace_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Replace", None, QtGui.QApplication.UnicodeUTF8))
         self.replace_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Replace", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_tb.setToolTip(QtGui.QApplication.translate("ReftrackWidget", "Menu", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_tb.setText(QtGui.QApplication.translate("ReftrackWidget", "Menu", None, QtGui.QApplication.UnicodeUTF8))
 
