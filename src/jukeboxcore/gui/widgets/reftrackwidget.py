@@ -174,6 +174,13 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
             new = item.data(i, dr)
             if new is not None:
                 text = " | ".join((text, new)) if text else new
+
+        refobj = self.reftrack.get_refobj()
+        if refobj:
+            text += "\t\t" + refobj
+            reference = self.reftrack.get_refobjinter().get_reference(refobj)
+            if reference:
+                text += " | " + reference
         self.maintext_lb.setText(text)
 
     def set_type_icon(self, item):
@@ -364,7 +371,7 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         """
         tfi = self.get_taskfileinfo_selection()
         if tfi:
-            self.reftrack.replace(tfi)
+            self.reftrack.replace(tfi)    
 
 
 class ReftrackDelegate(WidgetDelegate):
