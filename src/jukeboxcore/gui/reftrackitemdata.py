@@ -3,11 +3,17 @@ e.g. a :class:`jukeboxcore.reftrack.Reftrack` object.
 """
 from functools import partial
 
-from PySide import QtCore
+from PySide import QtCore, QtGui
 
 from jukeboxcore import djadapter
 from jukeboxcore.gui import filesysitemdata
 from jukeboxcore.gui.treemodel import ItemData
+
+
+UPTODATE_RGB = (53, 69, 41)
+"""RGB values for the color, when a reftrack is uptodate"""
+OUTDATED_RGB = (69, 41, 41)
+"""RGB values for the color, when a reftrack is outdated"""
 
 
 def reftrack_type_data(rt, role):
@@ -173,6 +179,11 @@ def reftrack_uptodate_data(rt, role):
             return "Yes"
         else:
             return "No"
+    if role == QtCore.Qt.ForegroundRole:
+        if uptodate:
+            return QtGui.QColor(*UPTODATE_RGB)
+        elif rt.status():
+            return QtGui.QColor(*OUTDATED_RGB)
 
 
 def reftrack_alien_data(rt, role):
