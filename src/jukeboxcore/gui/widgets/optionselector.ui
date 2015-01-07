@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OptionSelector</class>
+ <widget class="QDialog" name="OptionSelector">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Select</string>
+  </property>
+  <layout class="QVBoxLayout" name="main_vbox">
+   <item>
+    <layout class="QVBoxLayout" name="browser_vbox"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="buttons_hbox">
+     <item>
+      <widget class="QPushButton" name="select_pb">
+       <property name="text">
+        <string>Select</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancel_pb">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>cancel_pb</sender>
+   <signal>clicked()</signal>
+   <receiver>OptionSelector</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>287</x>
+     <y>231</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -186,8 +186,6 @@ import abc
 import functools
 from contextlib import contextmanager
 
-from PySide import QtGui
-
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 from jukeboxcore.filesys import TaskFileInfo
@@ -493,7 +491,7 @@ The Refobject provides the necessary info.")
         self._refobj = refobj
         self._taskfileinfo = None  # the taskfileinfo that the refobj represents
         self._typ = None
-        self._typcolor = QtGui.QColor()
+        self._typicon = None
         self._element = None
         self._parent = None
         self._children = []
@@ -502,11 +500,9 @@ The Refobject provides the necessary info.")
         self._uptodate = None
         self._alien = True
         self._status = None
+        self._restricted = set([])  # restrict actions
         self._treeitem = self.create_treeitem()  # a treeitem for the model of the root
         """A treeitem for the model of the root. Will get set when parents gets set!"""
-
-        # restrict actions
-        self._restricted = set([])
 
         # initialize reftrack
         if not refobj:
@@ -686,16 +682,16 @@ The Refobject provides the necessary info.")
             raise ValueError("The given typ is not supported by RefobjInterface. Given %s, supported: %s" %
                              (typ, self._refobjinter.types.keys()))
         self._typ = typ
-        self._typcolor = self.get_refobjinter().get_typ_color(typ)
+        self._typicon = self.get_refobjinter().get_typ_icon(typ)
 
-    def get_typ_color(self, ):
-        """Return the color for the type
+    def get_typ_icon(self, ):
+        """Return the icon for the type
 
-        :returns: the color that should be used in UIs to identify the type
-        :rtype: :class:`QtGui.QColor`
+        :returns: the icon that should be used in UIs to identify the type
+        :rtype: :class:`QtGui.QIcon` | None
         :raises: None
         """
-        return self._typcolor
+        return self._typicon
 
     def get_refobjinter(self, ):
         """Return the refobject interface
@@ -925,6 +921,18 @@ The Refobject provides the necessary info.")
         """
         return self.get_refobjinter().get_option_labels(self.get_typ(), self.get_element())
 
+    def get_option_columns(self):
+        """Return the column of the model to show for each level
+
+        Because each level might be displayed in a combobox. So you might want to provide the column
+        to show.
+
+        :returns: a list of columns
+        :rtype: list
+        :raises: None
+        """
+        return self.get_refobjinter().get_option_columns(self.get_typ(), self.get_element())
+
     def uptodate(self, ):
         """Return True, if the currently loaded entity is the newest version.
         Return False, if there is a newer version.
@@ -1153,6 +1161,8 @@ Use delete if you want to get rid of a reference or import."
         refobjinter.import_reference(self.get_refobj())
         self.set_status(self.IMPORTED)
         self.update_restrictions()
+        for c in self.get_all_children():
+            c.update_restrictions()
         self.emit_data_changed()
 
     @restrictable
@@ -1218,6 +1228,7 @@ Use delete if you want to get rid of a reference or import."
         self.update_restrictions()
         self.emit_data_changed()
 
+    @restrictable
     def delete(self, removealien=True):
         """Delete the current entity.
 
@@ -1233,13 +1244,18 @@ Use delete if you want to get rid of a reference or import."
         :type removealien: :class:`bool`
         :returns: None
         :rtype: None
-        :raises: AssertionError
+        :raises: None
         """
-        assert self.status() is not None,\
-            "Can only delete entities that are already in the scene."
+        if self.status() is None:
+            parent = self.get_parent()
+            if parent:
+                parent.remove_child(self)
+            self._treeitem.parent().remove_child(self._treeitem)
+            self.get_root().remove_reftrack(self)
+            return
         todelete = self.get_children_to_delete()
         allchildren = self.get_all_children()
-        for c in todelete:
+        for c in reversed(todelete):
             c._delete()
         for c in allchildren:
             self.get_root().remove_reftrack(c)
@@ -1293,6 +1309,17 @@ Use delete if you want to get rid of a reference or import."
                               typ=self.get_typ(),
                               element=self.get_element(),
                               parent=self.get_parent())
+
+    @restrictable
+    def select_content(self, ):
+        """Select the content of the given reftrack in the programm you are using
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        inter.select_content(self.get_refobj())
 
     def get_all_children(self):
         """Get all children including children of children
@@ -1488,6 +1515,8 @@ Use delete if you want to get rid of a reference or import."
         self.set_restricted(self.import_reference, self.fetch_import_ref_restriction())
         self.set_restricted(self.import_file, self.fetch_import_f_restriction())
         self.set_restricted(self.replace, self.fetch_replace_restriction())
+        self.set_restricted(self.delete, self.fetch_delete_restriction())
+        self.set_restricted(self.select_content, self.fetch_select_restriction())
 
     def fetch_reference_restriction(self, ):
         """Fetch whether referencing is restricted
@@ -1530,18 +1559,18 @@ Use delete if you want to get rid of a reference or import."
         :raises: None
         """
         inter = self.get_refobjinter()
-        restricted = self.status() is not None
+        restricted = self.status() not in (self.LOADED, self.UNLOADED)
         return restricted or inter.fetch_action_restriction(self, 'import_reference')
 
     def fetch_import_f_restriction(self,):
-        """Fetch whether unloading is restricted
+        """Fetch whether importing a file is restricted
 
-        :returns: True, if unloading is restricted
+        :returns: True, if import is restricted
         :rtype: :class:`bool`
         :raises: None
         """
         inter = self.get_refobjinter()
-        restricted = self.status() not in (self.LOADED, self.UNLOADED)
+        restricted = self.status() is not None
         return restricted or inter.fetch_action_restriction(self, 'import_taskfile')
 
     def fetch_replace_restriction(self, ):
@@ -1554,6 +1583,25 @@ Use delete if you want to get rid of a reference or import."
         inter = self.get_refobjinter()
         restricted = self.status() is None
         return restricted or inter.fetch_action_restriction(self, 'replace')
+
+    def fetch_delete_restriction(self, ):
+        """Fetch whether deletion is restricted
+
+        :returns: True, if deletion is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        return inter.fetch_action_restriction(self, 'delete')
+
+    def fetch_select_restriction(self):
+        """Fetch whether selection is restricted
+
+        :returns: True, if selection is restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return not bool(self.status())
 
     def emit_data_changed(self):
         """Emit the data changed signal on the model of the treeitem
@@ -1601,6 +1649,7 @@ class RefobjInterface(object):
       * :meth:`RefobjInterface.get_reference`
       * :meth:`RefobjInterface.get_status`
       * :meth:`RefobjInterface.get_taskfile`
+      * :meth:`RefobjInterface.select_content`
 
     You might also want to reimplement :meth:`fetch_action_restriction`
 
@@ -1798,7 +1847,7 @@ class RefobjInterface(object):
         self.delete_refobj(refobj)
 
     @abc.abstractmethod
-    def get_all_refobjs(self, ):  #pragma: no cover
+    def get_all_refobjs(self, ):  #pragma: no coverg
         """Return all refobjs in the scene
 
         :returns: all refobjs in the scene
@@ -2025,6 +2074,18 @@ class RefobjInterface(object):
         tf = self.get_taskfile(refobj)
         return tf.task.element
 
+    @abc.abstractmethod
+    def select_content(self, refobj):  #pragma: no cover
+        """Select the content of the given refobj
+
+        :param refobj: the refobject to query
+        :type refobj: refobj
+        :returns: None
+        :rtype: None
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
     def fetch_options(self, typ, element):
         """Fetch the options for possible files to
         load replace etc for the given element.
@@ -2076,7 +2137,24 @@ class RefobjInterface(object):
         :raises: None
         """
         inter = self.get_typ_interface(typ)
-        return inter.fetch_option_labels(element)
+        return inter.get_option_labels(element)
+
+    def get_option_columns(self, typ, element):
+        """Return the column of the model to show for each level
+
+        Because each level might be displayed in a combobox. So you might want to provide the column
+        to show.
+
+        :param typ: the typ of options. E.g. Asset, Alembic, Camera etc
+        :type typ: str
+        :param element: The element for wich the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: a list of columns
+        :rtype: list
+        :raises: None
+        """
+        inter = self.get_typ_interface(typ)
+        return inter.get_option_columns(element)
 
     def get_suggestions(self, reftrack):
         """Return a list with possible children for this reftrack
@@ -2103,24 +2181,24 @@ class RefobjInterface(object):
         inter = self.get_typ_interface(reftrack.get_typ())
         return inter.get_suggestions(reftrack)
 
-    def get_typ_color(self, typ):
-        """Get the color that should be used to identify the type in an UI
+    def get_typ_icon(self, typ):
+        """Get the icon that should be used to identify the type in an UI
 
         :param typ: the typ. E.g. Asset, Alembic, Camera etc
         :type typ: str
-        :returns: a color for this type
-        :rtype: :class:`QtGui.QColor`
+        :returns: a icon for this type
+        :rtype: :class:`QtGui.QIcon` | None
         :raises: NotImplementedError
         """
         inter = self.get_typ_interface(typ)
-        return inter.get_typ_color()
+        return inter.get_typ_icon()
 
     def fetch_action_restriction(self, reftrack, action):
         """Return wheter the given action is restricted for the given reftrack
 
         available actions are:
 
-           ``reference``, ``load``, ``unload``, ``replace``, ``import_reference``, ``import_taskfile``
+           ``reference``, ``load``, ``unload``, ``replace``, ``import_reference``, ``import_taskfile``, ``delete``
 
         If action is not available, True is returned.
 
@@ -2135,7 +2213,8 @@ class RefobjInterface(object):
         inter = self.get_typ_interface(reftrack.get_typ())
         d = {'reference': inter.is_reference_restricted, 'load': inter.is_load_restricted,
              'unload': inter.is_unload_restricted, 'replace': inter.is_replace_restricted,
-             'import_reference': inter.is_import_ref_restricted, 'import_taskfile': inter.is_import_f_restricted}
+             'import_reference': inter.is_import_ref_restricted, 'import_taskfile': inter.is_import_f_restricted,
+             'delete': inter.is_delete_restricted,}
         f = d.get(action, None)
         if not f:
             return True
@@ -2168,10 +2247,11 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.create_options_model`
       * :meth:`ReftypeInterface.get_suggestions`
       * :meth:`ReftypeInterface.get_option_labels`
-      * :meth:`ReftypeInterface.get_typ_color`
+      * :meth:`ReftypeInterface.get_option_columns`
 
     You might also want to reimplement:
 
+      * :meth:`ReftypeInterface.get_typ_icon`
       * :meth:`ReftypeInterface.get_scene_suggestions`
       * :meth:`ReftypeInterface.is_reference_restricted`
       * :meth:`ReftypeInterface.is_load_restricted`
@@ -2387,6 +2467,21 @@ class ReftypeInterface(object):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_option_columns(self, element):  #pragma: no cover
+        """Return the column of the model to show for each level
+
+        Because each level might be displayed in a combobox. So you might want to provide the column
+        to show.
+
+        :param element: The element for wich the options should be fetched.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: a list of columns
+        :rtype: list
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_suggestions(self, reftrack):  #pragma: no cover
         """Return a list with possible children for this reftrack
 
@@ -2407,15 +2502,14 @@ class ReftypeInterface(object):
         """
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def get_typ_color(self, ):  #pragma: no cover
-        """Return a color that should be used to identify the type in an UI
+    def get_typ_icon(self, ):
+        """Return a icon that should be used to identify the type in an UI
 
-        :returns: a color for this type
-        :rtype: :class:`QtGui.QColor`
+        :returns: a icon for this type
+        :rtype: :class:`QtGui.QIcon` | None
         :raises: NotImplementedError
         """
-        raise NotImplementedError
+        return None
 
     def get_scene_suggestions(self, current):
         """Return a list with elements for reftracks for the current scene with this type.
@@ -2508,6 +2602,19 @@ class ReftypeInterface(object):
 
     def is_replace_restricted(self, reftrack):
         """Return whether replacing for the given reftrack should be restricted
+
+        This implementation returns always False
+
+        :param reftrack: the reftrack to query
+        :type reftrack: :class:`Reftrack`
+        :returns: True, if restricted
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        return False
+
+    def is_delete_restricted(self, reftrack):
+        """Return whether deleting for the given reftrack should be restricted
 
         This implementation returns always False
 

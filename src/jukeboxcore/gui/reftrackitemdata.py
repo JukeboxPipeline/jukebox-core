@@ -3,11 +3,17 @@ e.g. a :class:`jukeboxcore.reftrack.Reftrack` object.
 """
 from functools import partial
 
-from PySide import QtCore
+from PySide import QtCore, QtGui
 
 from jukeboxcore import djadapter
 from jukeboxcore.gui import filesysitemdata
 from jukeboxcore.gui.treemodel import ItemData
+
+
+UPTODATE_RGB = (53, 69, 41)
+"""RGB values for the color, when a reftrack is uptodate"""
+OUTDATED_RGB = (69, 41, 41)
+"""RGB values for the color, when a reftrack is outdated"""
 
 
 def reftrack_type_data(rt, role):
@@ -23,8 +29,8 @@ def reftrack_type_data(rt, role):
     """
     if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
         return rt.get_typ()
-    elif role == QtCore.Qt.ForegroundRole:
-        return rt.get_typ_color()
+    elif role == QtCore.Qt.DecorationRole:
+        return rt.get_typ_icon()
 
 
 def reftrack_elementgrp_data(rt, role):
@@ -43,9 +49,10 @@ def reftrack_elementgrp_data(rt, role):
         egrp = element.sequence
     elif isinstance(element, djadapter.models.Asset):
         egrp = element.atype
-    else:
+    elif element is not None:
         raise TypeError("Expected the element to be either Asset or Shot. Got %s" % type(element))
-
+    else:
+        return
     if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
         return egrp.name
 
@@ -62,6 +69,8 @@ def reftrack_element_data(rt, role):
     :raises: None
     """
     element = rt.get_element()
+    if element is None:
+        return
     if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
         return element.name
 
@@ -170,6 +179,11 @@ def reftrack_uptodate_data(rt, role):
             return "Yes"
         else:
             return "No"
+    if role == QtCore.Qt.ForegroundRole:
+        if uptodate:
+            return QtGui.QColor(*UPTODATE_RGB)
+        elif rt.status():
+            return QtGui.QColor(*OUTDATED_RGB)
 
 
 def reftrack_alien_data(rt, role):
@@ -290,3 +304,16 @@ class ReftrackItemData(ItemData):
         :raises: None
         """
         return self._reftrack
+
+    def flags(self, column):
+        """Return the item flags for the item
+
+        Default is QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+
+        :param column: the column to query
+        :type column: int
+        :returns: the item flags
+        :rtype: QtCore.Qt.ItemFlags
+        :raises: None
+        """
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
