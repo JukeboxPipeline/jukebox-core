@@ -1612,8 +1612,11 @@ Use delete if you want to get rid of a reference or import."
         :rtype: list
         :raises: None
         """
-        inter = self.get_refobjinter()
-        return inter.get_additional_actions(self)
+        if self.get_typ():
+            inter = self.get_refobjinter()
+            return inter.get_additional_actions(self)
+        else:
+            return []
 
 
 class RefobjInterface(object):
