@@ -1056,7 +1056,7 @@ The Refobject provides the necessary info.")
         # then test if it is in a global sequence. then the shot is global too.
         # test if the parent element is a shot, if they share the sequence, and element is global
         elif isinstance(element, djadapter.models.Shot)\
-            and (element.sequence == djadapter.GLOBAL_NAME\
+            and (element.sequence.name == djadapter.GLOBAL_NAME\
             or (isinstance(parentelement, djadapter.models.Shot)\
                 and parentelement.sequence == element.sequence and element.name == djadapter.GLOBAL_NAME)):
             self._alien = False
