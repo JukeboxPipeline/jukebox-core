@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Wed Jan 07 22:33:49 2015
+# Created: Thu Jan 08 15:14:32 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -81,6 +81,16 @@ class Ui_ReftrackWidget(object):
         self.horizontalLayout_3 = QtGui.QHBoxLayout(self.upper_content_widget)
         self.horizontalLayout_3.setContentsMargins(9, 0, -1, 0)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.identifier_lb = QtGui.QLabel(self.upper_content_widget)
+        self.identifier_lb.setMaximumSize(QtCore.QSize(35, 16777215))
+        font = QtGui.QFont()
+        font.setWeight(75)
+        font.setBold(True)
+        self.identifier_lb.setFont(font)
+        self.identifier_lb.setText("")
+        self.identifier_lb.setAlignment(QtCore.Qt.AlignCenter)
+        self.identifier_lb.setObjectName("identifier_lb")
+        self.horizontalLayout_3.addWidget(self.identifier_lb)
         self.maintext_lb = QtGui.QLabel(self.upper_content_widget)
         self.maintext_lb.setStyleSheet("")
         self.maintext_lb.setText("")
