@@ -192,6 +192,7 @@ from jukeboxcore.filesys import TaskFileInfo
 from jukeboxcore.gui.treemodel import TreeModel, TreeItem, ListItemData
 from jukeboxcore.gui.reftrackitemdata import ReftrackItemData
 from jukeboxcore.errors import ReftrackIntegrityError
+from jukeboxcore import djadapter
 
 
 class ReftrackRoot(object):
@@ -250,7 +251,8 @@ class ReftrackRoot(object):
                                      "Import Reference Restricted",
                                      "Import File Restricted",
                                      "Replace Restricted",
-                                     "Identifier"])
+                                     "Identifier",
+                                     "Reftrack Object"])
             rootitem = TreeItem(rootdata)
         if itemdataclass is None:
             itemdataclass = ReftrackItemData
@@ -1048,6 +1050,15 @@ The Refobject provides the necessary info.")
                 return self._alien
         element = self.get_element()
         if element == parentelement:
+            self._alien = False
+        # test if it is the element is a global shot
+        # first test if we have a shot
+        # then test if it is in a global sequence. then the shot is global too.
+        # test if the parent element is a shot, if they share the sequence, and element is global
+        elif isinstance(element, djadapter.models.Shot)\
+            and (element.sequence == djadapter.GLOBAL_NAME\
+            or (isinstance(parentelement, djadapter.models.Shot)\
+                and parentelement.sequence == element.sequence and element.name == djadapter.GLOBAL_NAME)):
             self._alien = False
         else:
             assets = parentelement.assets.all()

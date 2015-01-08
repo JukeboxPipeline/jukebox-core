@@ -7,6 +7,7 @@ from jukeboxcore import reftrack
 from jukeboxcore.gui.main import JB_MainWindow, get_icon
 from jukeboxcore.gui.widgetdelegate import WD_TreeView
 from jukeboxcore.gui.widgets.reftrackwidget import ReftrackDelegate
+from jukeboxcore.gui.reftrackitemdata import ReftrackSortFilterModel
 from reftrackwin_ui import Ui_reftrack_mwin
 
 
@@ -67,13 +68,30 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         self.reftrack_treev = WD_TreeView(parent=self)
         self.central_widget_vbox.insertWidget(1, self.reftrack_treev)
         self.setup_icons()
-        m = self.root.get_model()
-        self.reftrack_treev.setModel(m)
+        self.model = self.root.get_model()
+        self.proxy = self.create_proxy_model(self.model)
+        self.proxy.setFilterKeyColumn(-1)  # filter all columns
+        self.proxy.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
+        self.reftrack_treev.setModel(self.proxy)
         self.reftrack_treev.setItemDelegate(self.reftrackdelegate)
         # hide all columns but the first
-        cc = m.columnCount(QtCore.QModelIndex())
+        cc = self.proxy.columnCount(QtCore.QModelIndex())
         for i in range(1, cc):
             self.reftrack_treev.setColumnHidden(i, True)
+
+    def create_proxy_model(self, model):
+        """Create a sort filter proxy model for the given model
+
+        :param model: the model to wrap in a proxy
+        :type model: :class:`QtGui.QAbstractItemModel`
+        :returns: a new proxy model that can be used for sorting and filtering
+        :rtype: :class:`QtGui.QAbstractItemModel`
+        :raises: None
+        """
+        proxy = ReftrackSortFilterModel(self)
+        proxy.setSourceModel(model)
+        model.rowsInserted.connect(self.sort_model)
+        return proxy
 
     def setup_signals(self, ):
         """Connect the signals with the slots to make the ui functional
@@ -86,7 +104,7 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         self.addnew_tb.clicked.connect(self.open_addnew_win)
         self.search_le.editingFinished.connect(self.update_filter)
         for cb in (self.loaded_checkb, self.unloaded_checkb, self.imported_checkb, self.empty_checkb,
-                   self.newest_checkb, self.old_checkb, self.alien_checkb, self.global_checkb):
+                   self.newest_checkb, self.old_checkb, self.alien_checkb):
             cb.toggled.connect(self.update_filter)
 
     def setup_icons(self, ):
@@ -142,7 +160,46 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         :rtype: None
         :raises: NotImplementedError
         """
-        raise NotImplementedError
+        forbidden_statuses = []
+        if not self.loaded_checkb.isChecked():
+            forbidden_statuses.append(reftrack.Reftrack.LOADED)
+        if not self.unloaded_checkb.isChecked():
+            forbidden_statuses.append(reftrack.Reftrack.UNLOADED)
+        if not self.imported_checkb.isChecked():
+            forbidden_statuses.append(reftrack.Reftrack.IMPORTED)
+        if not self.empty_checkb.isChecked():
+            forbidden_statuses.append(None)
+        self.proxy.set_forbidden_statuses(forbidden_statuses)
+
+        forbidden_types = []
+        for typ, cb in self.typecbmap.items():
+            if not cb.isChecked():
+                forbidden_types.append(typ)
+        self.proxy.set_forbidden_types(forbidden_types)
+
+        forbidden_uptodate = []
+        if not self.old_checkb.isChecked():
+            forbidden_uptodate.append(False)
+        if not self.newest_checkb.isChecked():
+            forbidden_uptodate.append(True)
+        self.proxy.set_forbidden_uptodate(forbidden_uptodate)
+
+        forbidden_alien = [] if self.alien_checkb.isChecked() else [True]
+        self.proxy.set_forbidden_alien(forbidden_alien)
+
+        self.proxy.setFilterWildcard(self.search_le.text())
+
+    def sort_model(self, *args, **kwargs):
+        """Sort the proxy model
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.proxy.sort(17)  # sort the identifier
+        self.proxy.sort(2)  # sort the element
+        self.proxy.sort(1)  # sort the elementgrp
+        self.proxy.sort(0)  # sort the types
 
     def wrap_scene(self, ):
         """Wrap all reftracks in the scenen and get suggestions and display it in the view
