@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackadder.ui'
 #
-# Created: Thu Jan 08 22:08:13 2015
+# Created: Thu Jan 08 22:48:29 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -40,14 +40,6 @@ class Ui_reftrackadder_mwin(object):
         self.add_pb.setFont(font)
         self.add_pb.setObjectName("add_pb")
         self.button_vbox.addWidget(self.add_pb)
-        self.cancel_pb = QtGui.QPushButton(self.central_widget)
-        self.cancel_pb.setMinimumSize(QtCore.QSize(150, 0))
-        font = QtGui.QFont()
-        font.setWeight(75)
-        font.setBold(True)
-        self.cancel_pb.setFont(font)
-        self.cancel_pb.setObjectName("cancel_pb")
-        self.button_vbox.addWidget(self.cancel_pb)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.button_vbox.addItem(spacerItem)
         self.central_vbox.addLayout(self.button_vbox)
@@ -55,7 +47,6 @@ class Ui_reftrackadder_mwin(object):
 
         self.retranslateUi(reftrackadder_mwin)
         self.browser_tabw.setCurrentIndex(0)
-        QtCore.QObject.connect(self.cancel_pb, QtCore.SIGNAL("clicked()"), reftrackadder_mwin.close)
         QtCore.QMetaObject.connectSlotsByName(reftrackadder_mwin)
 
     def retranslateUi(self, reftrackadder_mwin):
@@ -64,5 +55,4 @@ class Ui_reftrackadder_mwin(object):
         self.browser_tabw.setTabText(self.browser_tabw.indexOf(self.asset_widget), QtGui.QApplication.translate("reftrackadder_mwin", "Assets", None, QtGui.QApplication.UnicodeUTF8))
         self.add_pb.setToolTip(QtGui.QApplication.translate("reftrackadder_mwin", "Add a new reftrack of the selected element and type to your tool.", None, QtGui.QApplication.UnicodeUTF8))
         self.add_pb.setText(QtGui.QApplication.translate("reftrackadder_mwin", "Add", None, QtGui.QApplication.UnicodeUTF8))
-        self.cancel_pb.setText(QtGui.QApplication.translate("reftrackadder_mwin", "Cancel", None, QtGui.QApplication.UnicodeUTF8))
 
