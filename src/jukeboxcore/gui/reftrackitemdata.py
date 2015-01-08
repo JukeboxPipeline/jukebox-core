@@ -240,6 +240,21 @@ def reftrack_restricted_data(rt, role, attr):
             return "Allowed"
 
 
+def reftrack_id_data(rt, role):
+    """Return the data for the id of the reftrack
+
+    :param rt: the :class:`jukeboxcore.reftrack.Reftrack` holds the data
+    :type rt: :class:`jukeboxcore.reftrack.Reftrack`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the id
+    :rtype: depending on the role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        return rt.get_id()
+
+
 class ReftrackItemData(ItemData):
     """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a :class:`jukeboxcore.reftrack.Reftrack`
     """
@@ -270,7 +285,8 @@ class ReftrackItemData(ItemData):
                partial(reftrack_restricted_data, attr='unload'),
                partial(reftrack_restricted_data, attr='import_reference'),
                partial(reftrack_restricted_data, attr='import_taskfile'),
-               partial(reftrack_restricted_data, attr='replace')]
+               partial(reftrack_restricted_data, attr='replace'),
+               reftrack_id_data]
 
     def column_count(self, ):
         """Return the number of columns that can be queried for data
