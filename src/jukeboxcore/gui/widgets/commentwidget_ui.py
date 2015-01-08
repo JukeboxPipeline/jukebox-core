@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'c:\Users\dz016.CA\Documents\Jukebox\jukebox\core\gui\widgets\commentwidget.ui'
+# Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\commentwidget.ui'
 #
-# Created: Mon Jun 23 20:21:36 2014
-#      by: pyside-uic 0.2.15 running on PySide 1.2.1
+# Created: Thu Jan 08 11:59:52 2015
+#      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -13,6 +13,7 @@ class Ui_CommentWidget(object):
     def setupUi(self, CommentWidget):
         CommentWidget.setObjectName("CommentWidget")
         CommentWidget.resize(400, 300)
+        CommentWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.comment_grid = QtGui.QGridLayout(CommentWidget)
         self.comment_grid.setObjectName("comment_grid")
         self.updated_dte = QtGui.QDateTimeEdit(CommentWidget)
