@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwin.ui'
 #
-# Created: Thu Dec 18 14:21:59 2014
+# Created: Thu Jan 08 18:17:21 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -83,10 +83,6 @@ class Ui_reftrack_mwin(object):
         self.alien_checkb.setChecked(True)
         self.alien_checkb.setObjectName("alien_checkb")
         self.filter_gb_grid.addWidget(self.alien_checkb, 4, 2, 1, 1)
-        self.global_checkb = QtGui.QCheckBox(self.filter_gb)
-        self.global_checkb.setChecked(True)
-        self.global_checkb.setObjectName("global_checkb")
-        self.filter_gb_grid.addWidget(self.global_checkb, 4, 3, 1, 1)
         self.search_le = QtGui.QLineEdit(self.filter_gb)
         self.search_le.setObjectName("search_le")
         self.filter_gb_grid.addWidget(self.search_le, 5, 1, 1, 4)
@@ -132,7 +128,5 @@ class Ui_reftrack_mwin(object):
         self.old_checkb.setText(QtGui.QApplication.translate("reftrack_mwin", "Old", None, QtGui.QApplication.UnicodeUTF8))
         self.alien_checkb.setToolTip(QtGui.QApplication.translate("reftrack_mwin", "Show aliens (do not acutally belong to the current scene/parent)", None, QtGui.QApplication.UnicodeUTF8))
         self.alien_checkb.setText(QtGui.QApplication.translate("reftrack_mwin", "Alien", None, QtGui.QApplication.UnicodeUTF8))
-        self.global_checkb.setToolTip(QtGui.QApplication.translate("reftrack_mwin", "Show also global reftracks from the global shot/sequence.", None, QtGui.QApplication.UnicodeUTF8))
-        self.global_checkb.setText(QtGui.QApplication.translate("reftrack_mwin", "Global", None, QtGui.QApplication.UnicodeUTF8))
         self.search_le.setToolTip(QtGui.QApplication.translate("reftrack_mwin", "You can search all for all kind of attributes. Seperate words with spaces to filter for multiple categories.", None, QtGui.QApplication.UnicodeUTF8))
 

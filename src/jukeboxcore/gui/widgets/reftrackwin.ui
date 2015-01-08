@@ -204,19 +204,6 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="3">
-        <widget class="QCheckBox" name="global_checkb">
-         <property name="toolTip">
-          <string>Show also global reftracks from the global shot/sequence.</string>
-         </property>
-         <property name="text">
-          <string>Global</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
        <item row="5" column="1" colspan="4">
         <widget class="QLineEdit" name="search_le">
          <property name="toolTip">

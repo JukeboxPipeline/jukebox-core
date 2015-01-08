@@ -7,6 +7,7 @@ from jukeboxcore import reftrack
 from jukeboxcore.gui.main import JB_MainWindow, get_icon
 from jukeboxcore.gui.widgetdelegate import WD_TreeView
 from jukeboxcore.gui.widgets.reftrackwidget import ReftrackDelegate
+from jukeboxcore.gui.reftrackitemdata import ReftrackSortFilterModel
 from reftrackwin_ui import Ui_reftrack_mwin
 
 
@@ -85,7 +86,7 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         :rtype: :class:`QtGui.QAbstractItemModel`
         :raises: None
         """
-        proxy = QtGui.QSortFilterProxyModel(self)
+        proxy = ReftrackSortFilterModel(self)
         proxy.setSourceModel(model)
         model.rowsInserted.connect(self.sort_model)
         return proxy
@@ -101,7 +102,7 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         self.addnew_tb.clicked.connect(self.open_addnew_win)
         self.search_le.editingFinished.connect(self.update_filter)
         for cb in (self.loaded_checkb, self.unloaded_checkb, self.imported_checkb, self.empty_checkb,
-                   self.newest_checkb, self.old_checkb, self.alien_checkb, self.global_checkb):
+                   self.newest_checkb, self.old_checkb, self.alien_checkb):
             cb.toggled.connect(self.update_filter)
 
     def setup_icons(self, ):
@@ -157,7 +158,32 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         :rtype: None
         :raises: NotImplementedError
         """
-        raise NotImplementedError
+        forbidden_statuses = []
+        if not self.loaded_checkb.isChecked():
+            forbidden_statuses.append(reftrack.Reftrack.LOADED)
+        if not self.unloaded_checkb.isChecked():
+            forbidden_statuses.append(reftrack.Reftrack.UNLOADED)
+        if not self.imported_checkb.isChecked():
+            forbidden_statuses.append(reftrack.Reftrack.IMPORTED)
+        if not self.empty_checkb.isChecked():
+            forbidden_statuses.append(None)
+        self.proxy.set_forbidden_statuses(forbidden_statuses)
+
+        forbidden_types = []
+        for typ, cb in self.typecbmap.items():
+            if not cb.isChecked():
+                forbidden_types.append(typ)
+        self.proxy.set_forbidden_types(forbidden_types)
+
+        forbidden_uptodate = []
+        if not self.old_checkb.isChecked():
+            forbidden_uptodate.append(False)
+        if not self.newest_checkb.isChecked():
+            forbidden_uptodate.append(True)
+        self.proxy.set_forbidden_uptodate(forbidden_uptodate)
+
+        forbidden_alien = [] if self.alien_checkb.isChecked() else [True]
+        self.proxy.set_forbidden_alien(forbidden_alien)
 
     def sort_model(self, *args, **kwargs):
         """Sort the proxy model
@@ -166,10 +192,10 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         :rtype: None
         :raises: None
         """
-        self.proxy.sort(17)
-        self.proxy.sort(2)
-        self.proxy.sort(1)
-        self.proxy.sort(0)
+        self.proxy.sort(17)  # sort the identifier
+        self.proxy.sort(2)  # sort the element
+        self.proxy.sort(1)  # sort the elementgrp
+        self.proxy.sort(0)  # sort the types
 
     def wrap_scene(self, ):
         """Wrap all reftracks in the scenen and get suggestions and display it in the view
