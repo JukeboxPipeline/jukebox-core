@@ -4,11 +4,16 @@ from PySide import QtGui
 from PySide import QtCore
 
 from jukeboxcore import reftrack
+from jukeboxcore import djadapter
 from jukeboxcore.gui.main import JB_MainWindow, get_icon
+from jukeboxcore.gui import treemodel
+from jukeboxcore.gui import djitemdata
 from jukeboxcore.gui.widgetdelegate import WD_TreeView
 from jukeboxcore.gui.widgets.reftrackwidget import ReftrackDelegate
+from jukeboxcore.gui.widgets.browser import ListBrowser
 from jukeboxcore.gui.reftrackitemdata import ReftrackSortFilterModel
 from reftrackwin_ui import Ui_reftrack_mwin
+from reftrackadder_ui import Ui_reftrackadder_mwin
 
 
 class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
@@ -39,6 +44,7 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         self.reftrackdelegate = ReftrackDelegate(self)
         self.typecbmap = {}
         """Map a type to a checkboxes that indicates if the type should be shown"""
+        self.reftrackadderwin = None  # the window to add new reftracks to the root
 
         self.setupUi(self)
 
@@ -151,7 +157,20 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         :rtype: None
         :raises: NotImplementedError
         """
-        raise NotImplementedError
+        if self.reftrackadderwin:
+            self.reftrackadderwin.close()
+        self.reftrackadderwin = ReftrackAdderWin(self.refobjinter, self.root, parent=self)
+        self.reftrackadderwin.destroyed.connect(self.addnewwin_destroyed)
+        self.reftrackadderwin.show()
+
+    def addnewwin_destroyed(self, *args, **kwargs):
+        """Delete the internal reference to the reftrackadderwin
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.reftrackadderwin = None
 
     def update_filter(self, *args, **kwargs):
         """Update the filter
@@ -209,3 +228,131 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         :raises: None
         """
         reftrack.Reftrack.wrap_scene(self.root, self.refobjinter)
+
+
+class ReftrackAdderWin(JB_MainWindow, Ui_reftrackadder_mwin):
+    """A window for adding new reftracks to reftrack treemodel.
+    """
+
+    def __init__(self, refobjinter, root, parent=None, flags=0):
+        """Initialize a new ReftrackAdder window with the given refobjinter that
+        will add new reftracks to the given root.
+
+        :param refobjinter:
+        :type refobjinter:
+        :param root:
+        :type root:
+        :param parent:
+        :type parent:
+        :param flags:
+        :type flags:
+        :raises: None
+        """
+        super(ReftrackAdderWin, self).__init__(parent, flags)
+        self.refobjinter = refobjinter
+        self.root = root
+
+        self.setupUi(self)
+        self.setup_ui()
+        self.setup_signals()
+
+    def setup_ui(self, ):
+        """Setup the general ui
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.shot_browser = ListBrowser(4, parent=self, headers=["Project", "Sequence", "Shot", "Type"])
+        self.asset_browser = ListBrowser(4, parent=self, headers=["Project", "Assettype", "Asset", "Type"])
+
+        self.shotmodel = self.create_shot_model()
+        self.assetmodel = self.create_asset_model()
+
+        self.shot_browser.set_model(self.shotmodel)
+        self.asset_browser.set_model(self.assetmodel)
+
+        self.shot_vbox.addWidget(self.shot_browser)
+        self.asset_vbox.addWidget(self.asset_browser)
+
+    def setup_signals(self, ):
+        """Connect the signals with the slots to make the ui functional
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.add_pb.clicked.connect(self.add_selected)
+
+    def create_shot_model(self, ):
+        """Return a treemodel with the levels: project, sequence, shot and reftrack type
+
+        :returns: a treemodel
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
+        :raises: None
+        """
+        rootdata = treemodel.ListItemData(['Name'])
+        rootitem = treemodel.TreeItem(rootdata)
+        prjs = djadapter.projects.all()
+        for prj in prjs:
+            prjdata = djitemdata.ProjectItemData(prj)
+            prjitem = treemodel.TreeItem(prjdata, rootitem)
+            for seq in prj.sequence_set.all():
+                seqdata = djitemdata.SequenceItemData(seq)
+                seqitem = treemodel.TreeItem(seqdata, prjitem)
+                for shot in seq.shot_set.all():
+                    shotdata = djitemdata.ShotItemData(shot)
+                    shotitem = treemodel.TreeItem(shotdata, seqitem)
+                    for typ in self.refobjinter.types:
+                        typdata = treemodel.ListItemData([typ])
+                        treemodel.TreeItem(typdata, shotitem)
+
+        return treemodel.TreeModel(rootitem)
+
+    def create_asset_model(self, ):
+        """Return a treemodel with the levels: project, assettype, asset and reftrack type
+
+        :returns: a treemodel
+        :rtype: :class:`jukeboxcore.gui.treemodel.TreeModel`
+        :raises: None
+        """
+        rootdata = treemodel.ListItemData(['Name'])
+        rootitem = treemodel.TreeItem(rootdata)
+        prjs = djadapter.projects.all()
+        for prj in prjs:
+            prjdata = djitemdata.ProjectItemData(prj)
+            prjitem = treemodel.TreeItem(prjdata, rootitem)
+            for atype in prj.atype_set.all():
+                atypedata = djitemdata.AtypeItemData(atype)
+                atypeitem = treemodel.TreeItem(atypedata, prjitem)
+                for asset in atype.asset_set.filter(project=prj):
+                    assetdata = djitemdata.AssetItemData(asset)
+                    assetitem = treemodel.TreeItem(assetdata, atypeitem)
+                    for typ in self.refobjinter.types:
+                        typdata = treemodel.ListItemData([typ])
+                        treemodel.TreeItem(typdata, assetitem)
+
+        return treemodel.TreeModel(rootitem)
+
+    def add_selected(self, ):
+        """Create a new reftrack with the selected element and type and add it to the root.
+
+        :returns: None
+        :rtype: None
+        :raises: NotImplementedError
+        """
+        browser = self.shot_browser if self.browser_tabw.currentIndex() == 0 else self.asset_browser
+        selelements = browser.selected_indexes(2)
+        if not selelements:
+            return
+        seltypes = browser.selected_indexes(3)
+        if not seltypes:
+            return
+        elementi = selelements[0]
+        typi = seltypes[0]
+        if not elementi.isValid() or not typi.isValid():
+            return
+        element = elementi.internalPointer().internal_data()
+        typ = typi.internalPointer().internal_data()[0]
+
+        reftrack.Reftrack(self.root, self.refobjinter, typ=typ, element=element)
