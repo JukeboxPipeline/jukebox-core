@@ -354,3 +354,157 @@ class ReftrackItemData(ItemData):
         :raises: None
         """
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+
+
+class ReftrackSortFilterModel(QtGui.QSortFilterProxyModel):
+    """A sort filter proxy model, that can filter rows in a treemodel
+    that uses ReftrackItemDatas.
+    """
+
+    def __init__(self, parent=None):
+        """Initialize a new reftrack sort filter model
+
+        :param parent: the parent object
+        :type parent: :class:`QtCore.QObject`
+        :raises: None
+        """
+        super(ReftrackSortFilterModel, self).__init__(parent)
+        # lists of forbidden values for different attributes
+        self._forbidden_status = []
+        self._forbidden_types = []
+        self._forbidden_uptodate = []
+        self._forbidden_alien = []
+
+    def filterAcceptsRow(self, row, parentindex):
+        """Return True, if the filter accepts the given row of the parent
+
+        :param row: the row to filter
+        :type row: :class:`int`
+        :param parentindex: the parent index
+        :type parentindex: :class:`QtCore.QModelIndex`
+        :returns: True, if the filter accepts the row
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        if parentindex.isValid():
+            m = parentindex.model()
+        else:
+            m = self.sourceModel()
+
+        i = m.index(row, 18, parentindex)
+        reftrack = i.data(REFTRACK_OBJECT_ROLE)
+        if not reftrack:
+            return True
+        else:
+            return self.filter_accept_reftrack(reftrack)
+
+    def filter_accept_reftrack(self, reftrack):
+        """Return True, if the filter accepts the given reftrack
+
+        :param reftrack: the reftrack to filter
+        :type reftrack: :class:`jukeboxcore.reftrack.Reftrack`
+        :returns: True, if the filter accepts the reftrack
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        if reftrack.status() in self._forbidden_status:
+            return False
+        if reftrack.get_typ() in self._forbidden_types:
+            return False
+        if reftrack.uptodate() in self._forbidden_uptodate:
+            return False
+        if reftrack.alien() in self._forbidden_alien:
+            return False
+        return True
+
+    def set_forbidden_statuses(self, statuses):
+        """Set all forbidden status values
+
+        :param statuses: a list with forbidden status values
+        :type statuses: list
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if self._forbidden_status == statuses:
+            return
+        self._forbidden_status = statuses
+        self.invalidateFilter()
+
+    def get_forbidden_statuses(self, ):
+        """Return all forbidden status values
+
+        :returns: a list with forbidden status values
+        :rtype: list
+        :raises: None
+        """
+        return self._forbidden_status
+
+    def set_forbidden_types(self, types):
+        """Set all forbidden type values
+
+        :param typees: a list with forbidden type values
+        :type typees: list
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if self._forbidden_types == types:
+            return
+        self._forbidden_types = types
+        self.invalidateFilter()
+
+    def get_forbidden_types(self, ):
+        """Return all forbidden type values
+
+        :returns: a list with forbidden type values
+        :rtype: list
+        :raises: None
+        """
+        return self._forbidden_types
+
+    def set_forbidden_uptodate(self, uptodate):
+        """Set all forbidden uptodate values
+
+        :param uptodatees: a list with forbidden uptodate values
+        :uptodate uptodatees: list
+        :returns: None
+        :ruptodate: None
+        :raises: None
+        """
+        if self._forbidden_uptodate == uptodate:
+            return
+        self._forbidden_uptodate = uptodate
+        self.invalidateFilter()
+
+    def get_forbidden_uptodates(self, ):
+        """Return all forbidden uptodate values
+
+        :returns: a list with forbidden uptodate values
+        :ruptodate: list
+        :raises: None
+        """
+        return self._forbidden_uptodate
+
+    def set_forbidden_alien(self, alien):
+        """Set all forbidden alien values
+
+        :param alienes: a list with forbidden alien values
+        :alien alienes: list
+        :returns: None
+        :ralien: None
+        :raises: None
+        """
+        if self._forbidden_alien == alien:
+            return
+        self._forbidden_alien = alien
+        self.invalidateFilter()
+
+    def get_forbidden_aliens(self, ):
+        """Return all forbidden alien values
+
+        :returns: a list with forbidden alien values
+        :ralien: list
+        :raises: None
+        """
+        return self._forbidden_alien
