@@ -99,20 +99,7 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         :rtype: None
         :raises: None
         """
-        self.setup_menu()
         self.setup_icons()
-
-    def setup_menu(self, ):
-        """Setup the menu that the menu_tb button uses
-
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        self.menu = QtGui.QMenu(self)
-        self.select_action = QtGui.QAction("Select", self)
-        self.menu.addAction(self.select_action)
-        self.menu_tb.setMenu(self.menu)
 
     def setup_icons(self, ):
         """Setup the icons of the ui
@@ -154,8 +141,6 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         self.imported_tb.clicked.connect(partial(self.toggle_tbstyle, button=self.imported_tb))
         self.alien_tb.clicked.connect(partial(self.toggle_tbstyle, button=self.alien_tb))
 
-        self.select_action.triggered.connect(self.select_content)
-
     def set_index(self, index):
         """Display the data of the given index
 
@@ -173,6 +158,7 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         self.hide_restricted()
         self.set_top_bar_color(self.item)
         self.set_status_buttons()
+        self.set_menu()
 
     def set_maintext(self, item):
         """Set the maintext_lb to display text information about the given reftrack
@@ -224,8 +210,7 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         todisable = [(self.reftrack.duplicate, self.duplicate_tb),
                      (self.reftrack.delete, self.delete_tb),
                      (self.reftrack.reference, self.reference_tb),
-                     (self.reftrack.replace, self.replace_tb),
-                     (self.reftrack.select_content, self.select_action)]
+                     (self.reftrack.replace, self.replace_tb),]
         for action, btn in todisable:
             res = self.reftrack.is_restricted(action)
             btn.setDisabled(res)
@@ -299,6 +284,29 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         else:
             new = QtCore.Qt.ToolButtonIconOnly
         button.setToolButtonStyle(new)
+
+    def set_menu(self, ):
+        """Setup the menu that the menu_tb button uses
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.menu = QtGui.QMenu(self)
+        actions = self.reftrack.get_additional_actions()
+        self.actions = []
+        for a in actions:
+            if a.icon:
+                qaction = QtGui.QAction(a.icon, a.name, self)
+            else:
+                qaction = QtGui.QAction(a.name, self)
+            qaction.setCheckable(a.checkable)
+            qaction.setChecked(a.checked)
+            qaction.setEnabled(a.enabled)
+            qaction.triggered.connect(a.action)
+            self.actions.append(qaction)
+            self.menu.addAction(qaction)
+        self.menu_tb.setMenu(self.menu)
 
     def get_taskfileinfo_selection(self, ):
         """Return a taskfileinfo that the user chose from the available options
@@ -388,15 +396,6 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         tfi = self.get_taskfileinfo_selection()
         if tfi:
             self.reftrack.replace(tfi)
-
-    def select_content(self, *args, **kwargs):
-        """Select the content of the reftrack
-
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        self.reftrack.select_content()
 
 
 class ReftrackDelegate(WidgetDelegate):

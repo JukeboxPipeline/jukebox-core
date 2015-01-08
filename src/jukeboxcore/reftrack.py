@@ -1310,17 +1310,6 @@ Use delete if you want to get rid of a reference or import."
                               element=self.get_element(),
                               parent=self.get_parent())
 
-    @restrictable
-    def select_content(self, ):
-        """Select the content of the given reftrack in the programm you are using
-
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        inter = self.get_refobjinter()
-        inter.select_content(self.get_refobj())
-
     def get_all_children(self):
         """Get all children including children of children
 
@@ -1516,7 +1505,6 @@ Use delete if you want to get rid of a reference or import."
         self.set_restricted(self.import_file, self.fetch_import_f_restriction())
         self.set_restricted(self.replace, self.fetch_replace_restriction())
         self.set_restricted(self.delete, self.fetch_delete_restriction())
-        self.set_restricted(self.select_content, self.fetch_select_restriction())
 
     def fetch_reference_restriction(self, ):
         """Fetch whether referencing is restricted
@@ -1594,15 +1582,6 @@ Use delete if you want to get rid of a reference or import."
         inter = self.get_refobjinter()
         return inter.fetch_action_restriction(self, 'delete')
 
-    def fetch_select_restriction(self):
-        """Fetch whether selection is restricted
-
-        :returns: True, if selection is restricted
-        :rtype: :class:`bool`
-        :raises: None
-        """
-        return not bool(self.status())
-
     def emit_data_changed(self):
         """Emit the data changed signal on the model of the treeitem
         if the treeitem has a model.
@@ -1618,6 +1597,23 @@ Use delete if you want to get rid of a reference or import."
             parent = start.parent()
             end = m.index(start.row(), item.column_count()-1, parent)
             m.dataChanged.emit(start, end)
+
+    def get_additional_actions(self,):
+        """Return a list of additional actions you want to provide for the menu
+        of the reftrack.
+
+        E.e. you want to have a menu entry, that will select the entity in your programm.
+
+        This will call :meth:`RefobjInterface.get_additional_actions`.
+
+        The base implementation returns an empty list.
+
+        :returns: A list of :class:`ReftrackAction`
+        :rtype: list
+        :raises: None
+        """
+        inter = self.get_refobjinter()
+        return inter.get_additional_actions(self)
 
 
 class RefobjInterface(object):
@@ -1649,7 +1645,6 @@ class RefobjInterface(object):
       * :meth:`RefobjInterface.get_reference`
       * :meth:`RefobjInterface.get_status`
       * :meth:`RefobjInterface.get_taskfile`
-      * :meth:`RefobjInterface.select_content`
 
     You might also want to reimplement :meth:`fetch_action_restriction`
 
@@ -2074,18 +2069,6 @@ class RefobjInterface(object):
         tf = self.get_taskfile(refobj)
         return tf.task.element
 
-    @abc.abstractmethod
-    def select_content(self, refobj):  #pragma: no cover
-        """Select the content of the given refobj
-
-        :param refobj: the refobject to query
-        :type refobj: refobj
-        :returns: None
-        :rtype: None
-        :raises: NotImplementedError
-        """
-        raise NotImplementedError
-
     def fetch_options(self, typ, element):
         """Fetch the options for possible files to
         load replace etc for the given element.
@@ -2221,6 +2204,56 @@ class RefobjInterface(object):
         else:
             return f(reftrack)
 
+    def get_additional_actions(self, reftrack):
+        """Return a list of additional actions you want to provide for the menu
+        of the reftrack.
+
+        E.e. you want to have a menu entry, that will select the entity in your programm.
+
+        This will call :meth:`ReftypeInterface.get_additional_actions`.
+
+        The base implementation returns an empty list.
+
+        :param reftrack: the reftrack to return the actions for
+        :type reftrack: :class:`Reftrack`
+        :returns: A list of :class:`ReftrackAction`
+        :rtype: list
+        :raises: None
+        """
+        inter = self.get_typ_interface(reftrack.get_typ())
+        return inter.get_additional_actions(reftrack)
+
+
+class ReftrackAction(object):
+    """A little container for additional actions for
+    reftracks. A action can call an arbitrary function, has a name and
+    optional an Icon.
+    """
+
+    def __init__(self, name, action, icon=None, checkable=False, checked=False, enabled=True):
+        """Initialize a new action with the given name, actionfunction and optional an icon
+
+        :param name: the name of the action. Will be shown in GUIs
+        :type name: str
+        :param action: the function that should be called when the action is triggered.
+        :type action: callable
+        :param icon: Optional Icon for GUIs
+        :type icon: :class:`QtGui.QIcon`
+        :param checkable: If true, the action will be checkable in the UI
+        :type checkable: :class:`bool`
+        :param checked: If True, the action wil be checked by default
+        :type checked: :class:`bool`
+        :param eneabled: Whether the action should be enabled
+        :type eneabled: :class:`bool`
+        :raises: None
+        """
+        self.name = name
+        self.action = action
+        self.icon = icon
+        self.checkable = checkable
+        self.checked = checked
+        self.enabled = enabled
+
 
 class ReftypeInterface(object):
     """Interface for manipulating the content of an entity in the scene
@@ -2259,6 +2292,7 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.is_import_ref_restricted`
       * :meth:`ReftypeInterface.is_import_f_restricted`
       * :meth:`ReftypeInterface.is_replace_restricted`
+      * :meth:`ReftypeInterface.get_additional_actions`
 
     """
 
@@ -2625,3 +2659,19 @@ class ReftypeInterface(object):
         :raises: None
         """
         return False
+
+    def get_additional_actions(self, reftrack):
+        """Return a list of additional actions you want to provide for the menu
+        of the reftrack.
+
+        E.e. you want to have a menu entry, that will select the entity in your programm.
+
+        The base implementation returns an empty list.
+
+        :param reftrack: the reftrack to return the actions for
+        :type reftrack: :class:`Reftrack`
+        :returns: A list of :class:`ReftrackAction`
+        :rtype: list
+        :raises: None
+        """
+        return []
