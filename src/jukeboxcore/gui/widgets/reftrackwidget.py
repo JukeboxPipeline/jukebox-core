@@ -153,6 +153,7 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         self.item = index.internalPointer()
         self.reftrack = self.item.internal_data()
         self.set_maintext(self.item)
+        self.set_identifiertext(self.item)
         self.set_type_icon(self.item)
         self.disable_restricted()
         self.hide_restricted()
@@ -176,13 +177,24 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
             if new is not None:
                 text = " | ".join((text, new)) if text else new
 
-        refobj = self.reftrack.get_refobj()
-        if refobj:
-            text += "\t\t" + refobj
-            reference = self.reftrack.get_refobjinter().get_reference(refobj)
-            if reference:
-                text += " | " + reference
         self.maintext_lb.setText(text)
+
+    def set_identifiertext(self, item):
+        """Set the identifier text on the identifier_lb
+
+        :param item: the item to represent
+        :type item: :class:`jukeboxcore.gui.treemodel.TreeItem`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        dr = QtCore.Qt.DisplayRole
+        t = item.data(17, dr)
+        if t is None:
+            t = -1
+        else:
+            t = t+1
+        self.identifier_lb.setText("#%s" % t)
 
     def set_type_icon(self, item):
         """Set the type icon on type_icon_lb
