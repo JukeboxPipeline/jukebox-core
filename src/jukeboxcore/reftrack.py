@@ -250,7 +250,8 @@ class ReftrackRoot(object):
                                      "Import Reference Restricted",
                                      "Import File Restricted",
                                      "Replace Restricted",
-                                     "Identifier"])
+                                     "Identifier",
+                                     "Reftrack Object"])
             rootitem = TreeItem(rootdata)
         if itemdataclass is None:
             itemdataclass = ReftrackItemData

@@ -7,6 +7,7 @@ from jukeboxcore.gui.widgets.optionselector_ui import Ui_OptionSelector
 from jukeboxcore.gui.widgets.browser import ComboBoxBrowser
 from jukeboxcore.gui.widgetdelegate import WidgetDelegate
 from jukeboxcore.gui.main import JB_Dialog, get_icon
+from jukeboxcore.gui.reftrackitemdata import REFTRACK_OBJECT_ROLE
 
 
 class OptionSelector(JB_Dialog, Ui_OptionSelector):
@@ -86,7 +87,6 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         super(ReftrackWidget, self).__init__(parent)
         self.setupUi(self)
         self.reftrack = None
-        self.item = None
         self.setup_ui()
         self.setup_signals()
 
@@ -150,62 +150,63 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
         :rtype: None
         :raises: None
         """
-        self.item = index.internalPointer()
-        self.reftrack = self.item.internal_data()
-        self.set_maintext(self.item)
-        self.set_identifiertext(self.item)
-        self.set_type_icon(self.item)
+        self.index = index
+        self.reftrack = index.model().index(index.row(), 18, index.parent()).data(REFTRACK_OBJECT_ROLE)
+        self.set_maintext(self.index)
+        self.set_identifiertext(self.index)
+        self.set_type_icon(self.index)
         self.disable_restricted()
         self.hide_restricted()
-        self.set_top_bar_color(self.item)
+        self.set_top_bar_color(self.index)
         self.set_status_buttons()
         self.set_menu()
 
-    def set_maintext(self, item):
+    def set_maintext(self, index):
         """Set the maintext_lb to display text information about the given reftrack
 
-        :param item: the item to represent
-        :type item: :class:`jukeboxcore.gui.treemodel.TreeItem`
+        :param index: the index
+        :type index: :class:`QtGui.QModelIndex`
         :returns: None
         :rtype: None
         :raises: None
         """
         dr = QtCore.Qt.DisplayRole
         text = ""
+        model = index.model()
         for i in (1, 2, 3, 5, 6):
-            new = item.data(i, dr)
+            new = model.index(index.row(), i, index.parent()).data(dr)
             if new is not None:
                 text = " | ".join((text, new)) if text else new
 
         self.maintext_lb.setText(text)
 
-    def set_identifiertext(self, item):
+    def set_identifiertext(self, index):
         """Set the identifier text on the identifier_lb
 
-        :param item: the item to represent
-        :type item: :class:`jukeboxcore.gui.treemodel.TreeItem`
+        :param index: the index
+        :type index: :class:`QtGui.QModelIndex`
         :returns: None
         :rtype: None
         :raises: None
         """
         dr = QtCore.Qt.DisplayRole
-        t = item.data(17, dr)
+        t = index.model().index(index.row(), 17, index.parent()).data(dr)
         if t is None:
             t = -1
         else:
             t = t+1
         self.identifier_lb.setText("#%s" % t)
 
-    def set_type_icon(self, item):
+    def set_type_icon(self, index):
         """Set the type icon on type_icon_lb
 
-        :param item: the item to represent
-        :type item: :class:`jukeboxcore.gui.treemodel.TreeItem`
+        :param index: the index
+        :type index: :class:`QtGui.QModelIndex`
         :returns: None
         :rtype: None
         :raises: None
         """
-        icon = item.data(0, QtCore.Qt.DecorationRole)
+        icon = index.model().index(index.row(), 0, index.parent()).data(QtCore.Qt.DecorationRole)
         if icon:
             pix = icon.pixmap(self.type_icon_lb.size())
             self.type_icon_lb.setPixmap(pix)
@@ -250,17 +251,17 @@ class ReftrackWidget(Ui_ReftrackWidget, QtGui.QFrame):
                 btn1.setVisible(True)
                 btn2.setVisible(False)
 
-    def set_top_bar_color(self, item):
+    def set_top_bar_color(self, index):
         """Set the color of the upper frame to the background color of the reftrack status
 
-        :param item: the item to represent
-        :type item: :class:`jukeboxcore.gui.treemodel.TreeItem`
+        :param index: the index
+        :type index: :class:`QtGui.QModelIndex`
         :returns: None
         :rtype: None
         :raises: None
         """
         dr = QtCore.Qt.ForegroundRole
-        c = item.data(8, dr)
+        c = index.model().index(index.row(), 8, index.parent()).data(dr)
         if not c:
             c = self.upper_fr_default_bg_color
         self.upper_fr.setStyleSheet('background-color: rgb(%s, %s, %s)' % (c.red(), c.green(), c.blue()))

@@ -67,13 +67,28 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         self.reftrack_treev = WD_TreeView(parent=self)
         self.central_widget_vbox.insertWidget(1, self.reftrack_treev)
         self.setup_icons()
-        m = self.root.get_model()
-        self.reftrack_treev.setModel(m)
+        self.model = self.root.get_model()
+        self.proxy = self.create_proxy_model(self.model)
+        self.reftrack_treev.setModel(self.proxy)
         self.reftrack_treev.setItemDelegate(self.reftrackdelegate)
         # hide all columns but the first
-        cc = m.columnCount(QtCore.QModelIndex())
+        cc = self.proxy.columnCount(QtCore.QModelIndex())
         for i in range(1, cc):
             self.reftrack_treev.setColumnHidden(i, True)
+
+    def create_proxy_model(self, model):
+        """Create a sort filter proxy model for the given model
+
+        :param model: the model to wrap in a proxy
+        :type model: :class:`QtGui.QAbstractItemModel`
+        :returns: a new proxy model that can be used for sorting and filtering
+        :rtype: :class:`QtGui.QAbstractItemModel`
+        :raises: None
+        """
+        proxy = QtGui.QSortFilterProxyModel(self)
+        proxy.setSourceModel(model)
+        model.rowsInserted.connect(self.sort_model)
+        return proxy
 
     def setup_signals(self, ):
         """Connect the signals with the slots to make the ui functional
@@ -143,6 +158,18 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         :raises: NotImplementedError
         """
         raise NotImplementedError
+
+    def sort_model(self, *args, **kwargs):
+        """Sort the proxy model
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.proxy.sort(17)
+        self.proxy.sort(2)
+        self.proxy.sort(1)
+        self.proxy.sort(0)
 
     def wrap_scene(self, ):
         """Wrap all reftracks in the scenen and get suggestions and display it in the view

@@ -16,6 +16,9 @@ OUTDATED_RGB = (69, 41, 41)
 """RGB values for the color, when a reftrack is outdated"""
 
 
+REFTRACK_OBJECT_ROLE = QtCore.Qt.UserRole + 1
+
+
 def reftrack_type_data(rt, role):
     """Return the data for the type (e.g. Asset, Alembic, Camera etc)
 
@@ -255,6 +258,23 @@ def reftrack_id_data(rt, role):
         return rt.get_id()
 
 
+def reftrack_object_data(rt, role):
+    """Return the reftrack for REFTRACK_OBJECT_ROLE
+
+    :param rt: the :class:`jukeboxcore.reftrack.Reftrack` holds the data
+    :type rt: :class:`jukeboxcore.reftrack.Reftrack`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the id
+    :rtype: depending on the role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        return str(rt)
+    if role == REFTRACK_OBJECT_ROLE:
+        return rt
+
+
 class ReftrackItemData(ItemData):
     """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents a :class:`jukeboxcore.reftrack.Reftrack`
     """
@@ -286,7 +306,8 @@ class ReftrackItemData(ItemData):
                partial(reftrack_restricted_data, attr='import_reference'),
                partial(reftrack_restricted_data, attr='import_taskfile'),
                partial(reftrack_restricted_data, attr='replace'),
-               reftrack_id_data]
+               reftrack_id_data,
+               reftrack_object_data]
 
     def column_count(self, ):
         """Return the number of columns that can be queried for data
