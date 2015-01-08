@@ -207,7 +207,7 @@
        <item row="5" column="1" colspan="4">
         <widget class="QLineEdit" name="search_le">
          <property name="toolTip">
-          <string>You can search all for all kind of attributes. Seperate words with spaces to filter for multiple categories.</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type in a wildcard expression. If the expression matches any attribute, the row will be shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>

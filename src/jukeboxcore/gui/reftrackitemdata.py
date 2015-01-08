@@ -386,6 +386,8 @@ class ReftrackSortFilterModel(QtGui.QSortFilterProxyModel):
         :rtype: :class:`bool`
         :raises: None
         """
+        if not super(ReftrackSortFilterModel, self).filterAcceptsRow(row, parentindex):
+            return False
         if parentindex.isValid():
             m = parentindex.model()
         else:

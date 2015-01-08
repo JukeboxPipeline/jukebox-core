@@ -70,6 +70,8 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         self.setup_icons()
         self.model = self.root.get_model()
         self.proxy = self.create_proxy_model(self.model)
+        self.proxy.setFilterKeyColumn(-1)  # filter all columns
+        self.proxy.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
         self.reftrack_treev.setModel(self.proxy)
         self.reftrack_treev.setItemDelegate(self.reftrackdelegate)
         # hide all columns but the first
@@ -184,6 +186,8 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
 
         forbidden_alien = [] if self.alien_checkb.isChecked() else [True]
         self.proxy.set_forbidden_alien(forbidden_alien)
+
+        self.proxy.setFilterWildcard(self.search_le.text())
 
     def sort_model(self, *args, **kwargs):
         """Sort the proxy model

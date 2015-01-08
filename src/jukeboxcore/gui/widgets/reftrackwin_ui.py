@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwin.ui'
 #
-# Created: Thu Jan 08 18:17:21 2015
+# Created: Thu Jan 08 19:39:14 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -128,5 +128,5 @@ class Ui_reftrack_mwin(object):
         self.old_checkb.setText(QtGui.QApplication.translate("reftrack_mwin", "Old", None, QtGui.QApplication.UnicodeUTF8))
         self.alien_checkb.setToolTip(QtGui.QApplication.translate("reftrack_mwin", "Show aliens (do not acutally belong to the current scene/parent)", None, QtGui.QApplication.UnicodeUTF8))
         self.alien_checkb.setText(QtGui.QApplication.translate("reftrack_mwin", "Alien", None, QtGui.QApplication.UnicodeUTF8))
-        self.search_le.setToolTip(QtGui.QApplication.translate("reftrack_mwin", "You can search all for all kind of attributes. Seperate words with spaces to filter for multiple categories.", None, QtGui.QApplication.UnicodeUTF8))
+        self.search_le.setToolTip(QtGui.QApplication.translate("reftrack_mwin", "<html><head/><body><p>Type in a wildcard expression. If the expression matches any attribute, the row will be shown.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 
