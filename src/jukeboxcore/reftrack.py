@@ -249,7 +249,8 @@ class ReftrackRoot(object):
                                      "Unloading Restricted",
                                      "Import Reference Restricted",
                                      "Import File Restricted",
-                                     "Replace Restricted"])
+                                     "Replace Restricted",
+                                     "Identifier"])
             rootitem = TreeItem(rootdata)
         if itemdataclass is None:
             itemdataclass = ReftrackItemData
@@ -501,6 +502,7 @@ The Refobject provides the necessary info.")
         self._alien = True
         self._status = None
         self._restricted = set([])  # restrict actions
+        self._id = -1  # ID is just for the user/interface to sort reftracks of the same element, type and parent
         self._treeitem = self.create_treeitem()  # a treeitem for the model of the root
         """A treeitem for the model of the root. Will get set when parents gets set!"""
 
@@ -516,6 +518,7 @@ The Refobject provides the necessary info.")
             self.set_status(refobjinter.get_status(self._refobj))
             root.update_refobj(None, refobj, self)
             self.fetch_uptodate()
+            self._id = refobjinter.get_id(self._refobj)
 
         self._root.add_reftrack(self)
         self.update_restrictions()
@@ -801,10 +804,66 @@ The Refobject provides the necessary info.")
                 refobjinter.set_parent(refobj, parent.get_refobj())
             # add to parent
             self._parent.add_child(self)
+        if not self.get_refobj():
+            self.set_id(self.fetch_new_id())
 
         pitem = self._parent._treeitem if self._parent else self.get_root().get_rootitem()
         self._treeitem.set_parent(pitem)
         self.fetch_alien()
+
+    def get_id(self, ):
+        """Return the id of the reftrack
+
+        An id is a integer number that will be unique between
+        all reftracks of the same parent, element and type, that have a
+        refobject
+
+        :returns: the id
+        :rtype: int
+        :raises: None
+        """
+        return self._id
+
+    def set_id(self, identifier):
+        """Set the id of the given reftrack
+
+        This will set the id on the refobject
+
+        :param identifier: the identifier number
+        :type identifier: int
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self._id = identifier
+        refobj = self.get_refobj()
+        if refobj:
+            self.get_refobjinter().set_id(refobj, identifier)
+
+    def fetch_new_id(self, ):
+        """Return a new id for the given reftrack to be set on the refobject
+
+        The id can identify reftracks that share the same parent, type and element.
+
+        :returns: A new id
+        :rtype: int
+        :raises: None
+        """
+        parent = self.get_parent()
+        if parent:
+            others = parent._children
+        else:
+            others = [r for r in self.get_root()._reftracks if r.get_parent() is None]
+        others = [r for r in others
+                  if r != self
+                  and r.get_typ() == self.get_typ()
+                  and r.get_element() == self.get_element()]
+        highest = -1
+        for r in others:
+            identifier = r.get_id()
+            if identifier > highest:
+                highest = identifier
+        return highest + 1
 
     def create_treeitem(self, ):
         """Create a new treeitem for this reftrack instance.
@@ -1039,7 +1098,7 @@ The Refobject provides the necessary info.")
             prefobj = parent.get_refobj()
         else:
             prefobj = None
-        refobj = self.get_refobjinter().create(self.get_typ(), prefobj)
+        refobj = self.get_refobjinter().create(self.get_typ(), self.get_id(), prefobj)
         return refobj
 
     @restrictable
@@ -1639,6 +1698,8 @@ class RefobjInterface(object):
       * :meth:`RefobjInterface.get_children`
       * :meth:`RefobjInterface.get_typ`
       * :meth:`RefobjInterface.set_typ`
+      * :meth:`RefobjInterface.get_id`
+      * :meth:`RefobjInterface.set_id`
       * :meth:`RefobjInterface.create_refobj`
       * :meth:`RefobjInterface.referenced_by`
       * :meth:`RefobjInterface.delete_refobj`
@@ -1741,7 +1802,7 @@ class RefobjInterface(object):
         :type refobj: refobj
         :returns: a list with children refobjects
         :rtype: list
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1755,7 +1816,7 @@ class RefobjInterface(object):
         :type refobj: refobj
         :returns: the entity type
         :rtype: str
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1769,7 +1830,33 @@ class RefobjInterface(object):
         :type typ: str
         :returns: None
         :rtype: None
-        :raises: None
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_id(self, refobj):  #pragma: no cover
+        """Return the identifier of the given refobject
+
+        :param refobj: the refobj to query
+        :type refobj: refobj
+        :returns: the refobj id. Used to identify refobjects of the same parent, element and type in the UI
+        :rtype: int
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def set_id(self, refobj, identifier):  #pragma: no cover
+        """Set the identifier on the given refobj
+
+        :param refobj: the refobj to edit
+        :type refobj: refobj
+        :param identifier: the refobj id. Used to identify refobjects of the same parent, element and type in the UI
+        :type identifier: int
+        :returns: None
+        :rtype: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1784,7 +1871,7 @@ class RefobjInterface(object):
 
         :returns: the new refobj
         :rtype: refobj
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
@@ -1798,15 +1885,17 @@ class RefobjInterface(object):
         :type refobj: refobj
         :returns: the reference that holds the given refobj
         :rtype: reference | None
-        :raises: None
+        :raises: NotImplementedError
         """
         raise NotImplementedError
 
-    def create(self, typ, parent=None):
+    def create(self, typ, identifier, parent=None):
         """Create a new refobj with the given typ and parent
 
         :param typ: the entity type
         :type typ: str
+        :param identifier: the refobj id. Used to identify refobjects of the same parent, element and type in the UI
+        :type identifier: int
         :param parent: the parent refobject
         :type parent: refobj
         :returns: The created refobj
@@ -1815,6 +1904,7 @@ class RefobjInterface(object):
         """
         refobj = self.create_refobj()
         self.set_typ(refobj, typ)
+        self.set_id(refobj, identifier)
         if parent:
             self.set_parent(refobj, parent)
         return refobj
