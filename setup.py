@@ -40,7 +40,7 @@ with open(initfile) as fp:
 
 long_description = read('README.rst', 'HISTORY.rst')
 install_requires = ['pyside', 'configobj', 'django>=1.7', 'psycopg2', 'jukedj']
-tests_require = ['pytest', 'pytest-cov', 'mock', 'nose']
+tests_require = ['pytest', 'pytest-cov', 'mock', 'nose', 'sphinx']
 
 
 setup(
