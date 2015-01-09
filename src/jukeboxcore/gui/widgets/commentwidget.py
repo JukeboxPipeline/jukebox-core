@@ -17,7 +17,6 @@ class CommentWidget(commentwidget_ui.Ui_CommentWidget, QtGui.QFrame):
         """
         super(CommentWidget, self).__init__(parent)
         self.setupUi(self)
-        self.setAutoFillBackground(True)
         self.setFrameShadow(self.Sunken)
         self.setFrameStyle(self.StyledPanel)
         self.setFrameShadow(self.Sunken)

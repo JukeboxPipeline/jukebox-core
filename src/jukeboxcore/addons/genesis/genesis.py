@@ -260,7 +260,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         task = taskitem.internal_data()
         rtype = djadapter.RELEASETYPES['work']
         descriptor = self.shot_descriptor_le.text()
-        if not self.check_selection_for_save(task, descriptor):
+        if not self.check_selection_for_save(task, rtype, descriptor):
             return
 
         tfi = TaskFileInfo.get_next(task=task, releasetype=rtype,
@@ -283,7 +283,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         task = taskitem.internal_data()
         rtype = djadapter.RELEASETYPES['work']
         descriptor = self.asset_descriptor_le.text()
-        if not self.check_selection_for_save(task, descriptor):
+        if not self.check_selection_for_save(task, rtype, descriptor):
             return
 
         tfi = TaskFileInfo.get_next(task=task, releasetype=rtype,
@@ -372,12 +372,14 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """
         raise NotImplementedError
 
-    def check_selection_for_save(self, task, descriptor):
+    def check_selection_for_save(self, task, releasetype, descriptor):
         """Emit warnings if the descriptor is None or the current file
         is of a different task.
 
         :param task: the selected task
         :type task: :class:`djadapter.models.Task`
+        :param releasetype: the releasetype to save (probably work)
+        :type releasetype: str
         :param descriptor: the descriptor
         :type descriptor: str
         :returns: True if check was successfull.
@@ -394,7 +396,10 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
             return False
         cur = self.get_current_file()
         if cur and task != cur.task:
-            self.statusbar.showMessage("Task is different. Not supperoted atm!")
+            self.statusbar.showMessage("Task is different. Not supported atm!")
+            return False
+        elif cur and releasetype != cur.releasetype:
+            self.statusbar.showMessage("Releasetype is different. Not supported atm!")
             return False
         return True
 

@@ -26,3 +26,9 @@ History
 * Fixes for widgetdelegate.
 * Browser for taskfiles.
 * Qt resource files compilation and proper integration in stylesheets.
+
+3.0.0 (2015-01-09)
+++++++++++++++++++++++++++++++++++++++++
+
+* Reference workflow
+* Fixes for widgetdelegate

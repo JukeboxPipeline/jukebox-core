@@ -38,3 +38,33 @@ class ConfigError(JukeboxException):
 class MenuExistsError(JukeboxException):
     """Jukebox Exception that is raised when a MenuManger tries to create a menu that already exists."""
     pass
+
+
+class IntegrityError(JukeboxException):
+    """Jukebox Exception that is raised when the pipeline cannot execute an action
+    because it would affect the integrity of the pipeline.
+    """
+    pass
+
+
+class ReftrackIntegrityError(IntegrityError):
+    """Jukebox Integrity Exception that is raised when an action concerning the reference workflow
+    cannot be executed because it would affect the integrity of the reference workflow.
+
+    You can access a list of :class:`jukeboxcore.reftrack.Reftrack` that would cause the error
+    with :data:`ReftrackIntegrityError.reftracks`.
+    """
+    def __init__(self, msg=None, reftracks=None):
+        """Initialize a new exception with a error message and the reftracks that
+        would cause an integrity error.
+
+        :param msg: the error message
+        :type msg: :class:`str` | None
+        :param reftracks: the reftracks that would cause an integrity error
+        :type reftracks: list of :class:`jukeboxcore.reftrack.Reftrack` | None
+        :raises: None
+        """
+        super(ReftrackIntegrityError, self).__init__(msg)
+        if reftracks is None:
+            reftracks = []
+        self.reftracks = reftracks

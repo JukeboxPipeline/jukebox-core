@@ -43,7 +43,7 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         w = QtGui.QWidget(self)
         w.setLayout(self.central_vbox)
         self.setCentralWidget(w)
-        releasetypes= [djadapter.RELEASETYPES["work"]]
+        releasetypes = [djadapter.RELEASETYPES["work"]]
         self.browser = FileBrowser(self.filetype, releasetypes, None, self)
         self.central_vbox.insertWidget(0, self.browser)
 
@@ -95,17 +95,24 @@ class ReleaseWin(JB_MainWindow, Ui_release_mwin):
         if not tf:
             self.statusbar.showMessage("Select a file to release, please!")
             return
-        tfi = TaskFileInfo(tf.task, tf.version, tf.releasetype, tf.typ, tf.descriptor)
+        tfi = TaskFileInfo.create_from_taskfile(tf)
         checks = self.get_checks()
         cleanups = self.get_cleanups()
         comment = self.get_comment()
         r = Release(tfi, checks, cleanups, comment)
         self.statusbar.showMessage("Release in progress...")
-        success = r.release()
+        try:
+            success = r.release()
+        except OSError:
+            self.statusbar.showMessage("Could not copy workfile!")
+            return
+        except Exception as e:
+            self.statusbar.showMessage("%s" % e)
+            return
         if success:
             self.statusbar.showMessage("Success!")
         else:
-            self.statusbar.showMessage("Release canceled by user!")
+            self.statusbar.showMessage("Release failed!")
 
     def set_release_actions(self, actions):
         """Set the widget that gives users options about the release, e.g. importing references

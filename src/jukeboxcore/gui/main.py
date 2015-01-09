@@ -55,7 +55,7 @@ def load_all_resources():
         if full_mod_name not in sys.modules:
             module = importer.find_module(mod_name
                         ).load_module(full_mod_name)
-            log.debug("Loaded resource from: %s" % module)
+            log.debug("Loaded resource from: %s", module)
 
 
 def set_main_style(widget):

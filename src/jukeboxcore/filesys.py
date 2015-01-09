@@ -23,6 +23,7 @@ def copy_file(old, new):
     """
     oldp = old.get_fullpath()
     newp = new.get_fullpath()
+    log.info("Copying %s to %s", oldp, newp)
     new.create_directory()
     shutil.copy(oldp, newp)
 
@@ -36,7 +37,9 @@ def delete_file(f):
     :rtype: None
     :raises: :class:`OSError`
     """
-    os.remove(f.get_fullpath())
+    fp = f.get_fullpath()
+    log.info("Deleting file %s", fp)
+    os.remove(fp)
 
 
 class FileInfo(object):
@@ -166,6 +169,29 @@ class TaskFileInfo(FileInfo):
             ver = 1
         return TaskFileInfo(task=task, version=ver, releasetype=releasetype, typ=typ, descriptor=descriptor)
 
+    @classmethod
+    def create_from_taskfile(self, taskfile):
+        """Create a new TaskFileInfo and return it for the given taskfile
+
+        :param taskfile: the taskfile to represent
+        :type taskfile: :class:`jukeboxcore.djadapter.models.TaskFile`
+        :returns: a taskfileinfo
+        :rtype: :class:`TaskFileInfo`
+        :raises: None
+        """
+        return TaskFileInfo(task=taskfile.task, version=taskfile.version, releasetype=taskfile.releasetype,
+                            descriptor=taskfile.descriptor, typ=taskfile.typ)
+
+    def is_latest(self, ):
+        """Return True, if the version is the newest.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        latest = self.get_latest(self.task, self.releasetype, self.typ, self.descriptor)
+        return latest.version == self.version
+
     def create_db_entry(self, comment=''):
         """Create a db entry for this task file info
         and link it with a optional comment
@@ -173,7 +199,7 @@ class TaskFileInfo(FileInfo):
         :param comment: a comment for the task file entry
         :type comment: str
         :returns: The created TaskFile django instance and the comment. If the comment was empty, None is returned instead
-        :rtype: tuple of :class:`dj.models.TaskFile` and :class:`dj.models.Note` | None
+        :rtype: tuple of :class:`dj.models.TaskFile` and :class:`dj.models.Note`
         :raises: ValidationError, If the comment could not be created, the TaskFile is deleted and the Exception is propagated.
         """
         jbfile = JB_File(self)

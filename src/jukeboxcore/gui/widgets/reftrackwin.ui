@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>reftrack_mwin</class>
+ <widget class="QMainWindow" name="reftrack_mwin">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>742</width>
+    <height>898</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Reftrack Tool</string>
+  </property>
+  <widget class="QWidget" name="central_widget">
+   <layout class="QVBoxLayout" name="central_widget_vbox">
+    <item>
+     <layout class="QHBoxLayout" name="addnew_hbox">
+      <item>
+       <spacer name="addnew_spacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QToolButton" name="addnew_tb">
+        <property name="toolTip">
+         <string>Add a new empty Reftrack to the view below.</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="filtersep_hbox">
+      <item>
+       <widget class="QToolButton" name="showfilter_tb">
+        <property name="toolTip">
+         <string>Show/Hide Filters</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="arrowType">
+         <enum>Qt::DownArrow</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="filtersep_line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="filter_gb">
+      <property name="title">
+       <string>Filter</string>
+      </property>
+      <layout class="QGridLayout" name="filter_gb_grid">
+       <item row="3" column="4">
+        <spacer name="filter_space">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="loaded_checkb">
+         <property name="toolTip">
+          <string>Show Loaded (a Reference that is loaded)</string>
+         </property>
+         <property name="text">
+          <string>Loaded</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="search_lb">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>Search:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QCheckBox" name="imported_checkb">
+         <property name="toolTip">
+          <string>Show imported</string>
+         </property>
+         <property name="text">
+          <string>Imported</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="unloaded_checkb">
+         <property name="toolTip">
+          <string>Show References that are unloaded.</string>
+         </property>
+         <property name="text">
+          <string>Unloaded</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="newest_checkb">
+         <property name="toolTip">
+          <string>Show newest</string>
+         </property>
+         <property name="text">
+          <string>Newest</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QCheckBox" name="empty_checkb">
+         <property name="toolTip">
+          <string>Show empyt (not in the scene)</string>
+         </property>
+         <property name="text">
+          <string>Empty</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="old_checkb">
+         <property name="toolTip">
+          <string>Show outdated</string>
+         </property>
+         <property name="text">
+          <string>Old</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QCheckBox" name="alien_checkb">
+         <property name="toolTip">
+          <string>Show aliens (do not acutally belong to the current scene/parent)</string>
+         </property>
+         <property name="text">
+          <string>Alien</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1" colspan="4">
+        <widget class="QLineEdit" name="search_le">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type in a wildcard expression. If the expression matches any attribute, the row will be shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="5">
+        <widget class="Line" name="filter_sep_line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="5">
+        <layout class="QGridLayout" name="typefilter_grid">
+         <item row="0" column="0">
+          <spacer name="typefilter_space">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>showfilter_tb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>filter_gb</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>18</x>
+     <y>742</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>813</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

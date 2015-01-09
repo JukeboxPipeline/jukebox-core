@@ -20,7 +20,7 @@ def setup_jukebox_logger():
     log = logging.getLogger("jb")
     log.propagate = False
     handler = logging.StreamHandler(sys.stdout)
-    fmt = "%(levelname)-8s:%(name)s:'%(message)s'"
+    fmt = "%(levelname)-8s:%(name)s: %(message)s"
     formatter = logging.Formatter(fmt)
     handler.setFormatter(formatter)
     log.addHandler(handler)

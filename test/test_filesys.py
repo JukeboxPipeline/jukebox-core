@@ -295,3 +295,19 @@ def test_create_db_entry(task1, task2, taskfiles, user):
     assert tf.typ == filesys.TaskFileInfo.TYPES['mayamainscene']
     tf.delete()
     note.delete()
+
+
+def test_create_from_taskfile(taskfiles, task1, task2):
+    tfi = filesys.TaskFileInfo.create_from_taskfile(taskfiles[3])
+    assert tfi.task == task2
+    assert tfi.version == 1
+    assert tfi.releasetype == djadapter.RELEASETYPES['work']
+    assert tfi.typ == filesys.TaskFileInfo.TYPES['mayamainscene']
+    assert tfi.descriptor == 'take1'
+
+    tfi2 = filesys.TaskFileInfo.create_from_taskfile(taskfiles[0])
+    assert tfi2.task == task1
+    assert tfi2.version == 1
+    assert tfi2.releasetype == djadapter.RELEASETYPES['release']
+    assert tfi2.typ == filesys.TaskFileInfo.TYPES['mayamainscene']
+    assert tfi2.descriptor is None

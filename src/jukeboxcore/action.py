@@ -159,7 +159,6 @@ class ActionCollection(object):
         """Run all action units on the given object.
 
         :param obj: the object to be processed
-        :type obj: :class:`object`
         :returns: None
         :rtype: None
         :raises: None
