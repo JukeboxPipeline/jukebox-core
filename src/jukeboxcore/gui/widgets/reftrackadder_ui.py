@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackadder.ui'
 #
-# Created: Thu Jan 08 22:48:29 2015
+# Created: Fri Jan 09 14:02:42 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,14 +32,16 @@ class Ui_reftrackadder_mwin(object):
         self.central_vbox.addWidget(self.browser_tabw)
         self.button_vbox = QtGui.QHBoxLayout()
         self.button_vbox.setObjectName("button_vbox")
-        self.add_pb = QtGui.QPushButton(self.central_widget)
-        self.add_pb.setMinimumSize(QtCore.QSize(150, 0))
+        self.add_tb = QtGui.QToolButton(self.central_widget)
+        self.add_tb.setMinimumSize(QtCore.QSize(50, 40))
         font = QtGui.QFont()
-        font.setWeight(75)
-        font.setBold(True)
-        self.add_pb.setFont(font)
-        self.add_pb.setObjectName("add_pb")
-        self.button_vbox.addWidget(self.add_pb)
+        font.setWeight(50)
+        font.setBold(False)
+        self.add_tb.setFont(font)
+        self.add_tb.setIconSize(QtCore.QSize(20, 20))
+        self.add_tb.setAutoRaise(False)
+        self.add_tb.setObjectName("add_tb")
+        self.button_vbox.addWidget(self.add_tb)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.button_vbox.addItem(spacerItem)
         self.central_vbox.addLayout(self.button_vbox)
@@ -53,6 +55,6 @@ class Ui_reftrackadder_mwin(object):
         reftrackadder_mwin.setWindowTitle(QtGui.QApplication.translate("reftrackadder_mwin", "Add Reftracks", None, QtGui.QApplication.UnicodeUTF8))
         self.browser_tabw.setTabText(self.browser_tabw.indexOf(self.shot_widget), QtGui.QApplication.translate("reftrackadder_mwin", "Shots", None, QtGui.QApplication.UnicodeUTF8))
         self.browser_tabw.setTabText(self.browser_tabw.indexOf(self.asset_widget), QtGui.QApplication.translate("reftrackadder_mwin", "Assets", None, QtGui.QApplication.UnicodeUTF8))
-        self.add_pb.setToolTip(QtGui.QApplication.translate("reftrackadder_mwin", "Add a new reftrack of the selected element and type to your tool.", None, QtGui.QApplication.UnicodeUTF8))
-        self.add_pb.setText(QtGui.QApplication.translate("reftrackadder_mwin", "Add", None, QtGui.QApplication.UnicodeUTF8))
+        self.add_tb.setToolTip(QtGui.QApplication.translate("reftrackadder_mwin", "Add a new reftrack of the selected element and type to your tool.", None, QtGui.QApplication.UnicodeUTF8))
+        self.add_tb.setText(QtGui.QApplication.translate("reftrackadder_mwin", "Add", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -37,17 +37,17 @@
     <item>
      <layout class="QHBoxLayout" name="button_vbox">
       <item>
-       <widget class="QPushButton" name="add_pb">
+       <widget class="QToolButton" name="add_tb">
         <property name="minimumSize">
          <size>
-          <width>150</width>
-          <height>0</height>
+          <width>50</width>
+          <height>40</height>
          </size>
         </property>
         <property name="font">
          <font>
-          <weight>75</weight>
-          <bold>true</bold>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="toolTip">
@@ -55,6 +55,15 @@
         </property>
         <property name="text">
          <string>Add</string>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="autoRaise">
+         <bool>false</bool>
         </property>
        </widget>
       </item>

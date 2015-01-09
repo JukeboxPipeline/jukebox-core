@@ -72,6 +72,7 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         w.setLayout(self.central_widget_vbox)
         self.setCentralWidget(w)
         self.reftrack_treev = WD_TreeView(parent=self)
+        self.reftrack_treev.setHeaderHidden(True)
         self.central_widget_vbox.insertWidget(1, self.reftrack_treev)
         self.setup_icons()
         self.model = self.root.get_model()
@@ -120,7 +121,7 @@ class ReftrackWin(JB_MainWindow, Ui_reftrack_mwin):
         :rtype: None
         :raises: None
         """
-        plus_icon = get_icon('glyphicons_433_plus.png', asicon=True)
+        plus_icon = get_icon('glyphicons_433_plus_bright.png', asicon=True)
         self.addnew_tb.setIcon(plus_icon)
 
     def setup_filter(self, ):
@@ -263,6 +264,9 @@ class ReftrackAdderWin(JB_MainWindow, Ui_reftrackadder_mwin):
         :rtype: None
         :raises: None
         """
+        plus_icon = get_icon('glyphicons_433_plus_bright.png', asicon=True)
+        self.add_tb.setIcon(plus_icon)
+
         self.shot_browser = ListBrowser(4, parent=self, headers=["Project", "Sequence", "Shot", "Type"])
         self.asset_browser = ListBrowser(4, parent=self, headers=["Project", "Assettype", "Asset", "Type"])
 
@@ -282,7 +286,7 @@ class ReftrackAdderWin(JB_MainWindow, Ui_reftrackadder_mwin):
         :rtype: None
         :raises: None
         """
-        self.add_pb.clicked.connect(self.add_selected)
+        self.add_tb.clicked.connect(self.add_selected)
 
     def create_shot_model(self, ):
         """Return a treemodel with the levels: project, sequence, shot and reftrack type
