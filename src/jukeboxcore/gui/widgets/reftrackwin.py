@@ -303,7 +303,7 @@ class ReftrackAdderWin(JB_MainWindow, Ui_reftrackadder_mwin):
                 for shot in seq.shot_set.all():
                     shotdata = djitemdata.ShotItemData(shot)
                     shotitem = treemodel.TreeItem(shotdata, seqitem)
-                    for typ in self.refobjinter.types:
+                    for typ in self.refobjinter.get_available_types_for_scene(shot):
                         typdata = treemodel.ListItemData([typ])
                         treemodel.TreeItem(typdata, shotitem)
 
@@ -328,7 +328,7 @@ class ReftrackAdderWin(JB_MainWindow, Ui_reftrackadder_mwin):
                 for asset in atype.asset_set.filter(project=prj):
                     assetdata = djitemdata.AssetItemData(asset)
                     assetitem = treemodel.TreeItem(assetdata, atypeitem)
-                    for typ in self.refobjinter.types:
+                    for typ in self.refobjinter.get_available_types_for_scene(asset):
                         typdata = treemodel.ListItemData([typ])
                         treemodel.TreeItem(typdata, assetitem)
 
