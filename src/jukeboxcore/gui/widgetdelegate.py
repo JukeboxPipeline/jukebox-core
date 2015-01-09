@@ -452,8 +452,10 @@ class WidgetDelegateViewMixin(object):
                               event.modifiers())
         # before we send, make sure, we cannot recurse
         self.__recursing = True
-        r = QtGui.QApplication.sendEvent(widgettoclick, e)
-        self.__recursing = False  # out of the recursion. now we can accept click events again
+        try:
+            r = QtGui.QApplication.sendEvent(widgettoclick, e)
+        finally:
+            self.__recursing = False  # out of the recursion. now we can accept click events again
         return r
 
     def mouseDoubleClickEvent(self, event):
