@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackwidget.ui'
 #
-# Created: Thu Jan 08 15:14:32 2015
+# Created: Fri Jan 09 14:49:47 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,15 +12,15 @@ from PySide import QtCore, QtGui
 class Ui_ReftrackWidget(object):
     def setupUi(self, ReftrackWidget):
         ReftrackWidget.setObjectName("ReftrackWidget")
-        ReftrackWidget.resize(685, 50)
-        ReftrackWidget.setMaximumSize(QtCore.QSize(16777215, 50))
+        ReftrackWidget.resize(685, 56)
+        ReftrackWidget.setMaximumSize(QtCore.QSize(16777215, 56))
         ReftrackWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
         ReftrackWidget.setAutoFillBackground(True)
         self.verticalLayout = QtGui.QVBoxLayout(ReftrackWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.reftrack_fr = QtGui.QFrame(ReftrackWidget)
-        self.reftrack_fr.setMaximumSize(QtCore.QSize(16777215, 50))
+        self.reftrack_fr.setMaximumSize(QtCore.QSize(16777215, 56))
         self.reftrack_fr.setAutoFillBackground(False)
         self.reftrack_fr.setFrameShape(QtGui.QFrame.StyledPanel)
         self.reftrack_fr.setFrameShadow(QtGui.QFrame.Plain)
@@ -36,13 +36,13 @@ class Ui_ReftrackWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.type_icon_fr.sizePolicy().hasHeightForWidth())
         self.type_icon_fr.setSizePolicy(sizePolicy)
-        self.type_icon_fr.setMinimumSize(QtCore.QSize(48, 48))
-        self.type_icon_fr.setMaximumSize(QtCore.QSize(48, 48))
+        self.type_icon_fr.setMinimumSize(QtCore.QSize(52, 52))
+        self.type_icon_fr.setMaximumSize(QtCore.QSize(52, 52))
         self.type_icon_fr.setBaseSize(QtCore.QSize(0, 0))
         self.type_icon_fr.setAutoFillBackground(False)
         self.type_icon_fr.setStyleSheet("")
-        self.type_icon_fr.setFrameShape(QtGui.QFrame.NoFrame)
-        self.type_icon_fr.setFrameShadow(QtGui.QFrame.Plain)
+        self.type_icon_fr.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.type_icon_fr.setFrameShadow(QtGui.QFrame.Raised)
         self.type_icon_fr.setLineWidth(1)
         self.type_icon_fr.setObjectName("type_icon_fr")
         self.type_icon_hbox = QtGui.QVBoxLayout(self.type_icon_fr)

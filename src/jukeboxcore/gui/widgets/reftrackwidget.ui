@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>685</width>
-    <height>50</height>
+    <height>56</height>
    </rect>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>50</height>
+    <height>56</height>
    </size>
   </property>
   <property name="focusPolicy">
@@ -34,7 +34,7 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>50</height>
+       <height>56</height>
       </size>
      </property>
      <property name="autoFillBackground">
@@ -66,14 +66,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>48</width>
-          <height>48</height>
+          <width>52</width>
+          <height>52</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>48</width>
-          <height>48</height>
+          <width>52</width>
+          <height>52</height>
          </size>
         </property>
         <property name="baseSize">
@@ -89,10 +89,10 @@
          <string notr="true"/>
         </property>
         <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
+         <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Plain</enum>
+         <enum>QFrame::Raised</enum>
         </property>
         <property name="lineWidth">
          <number>1</number>
