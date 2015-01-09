@@ -67,7 +67,7 @@ class Refobj(object):
 
     instances = []
 
-    def __init__(self, typ, parent, reference, taskfile, referencedby):
+    def __init__(self, typ, parent, reference, taskfile, referencedby, identifier=-1):
         """Initialize a new refobj
 
         :param typ: the type of the entity
@@ -80,6 +80,8 @@ class Refobj(object):
         :type taskfile: :class:`jukeboxcore.djadapter.models.TaskFile`
         :param referencedby: The reference that holds this refobj.
         :type referencedby: :class:`Reference` | None
+        :param identifier: a identifier for the gui
+        :type identifier: int
         :rtype: None
         :raises: None
         """
@@ -93,6 +95,7 @@ class Refobj(object):
         self.reference = reference
         self.taskfile = taskfile
         self.referencedby = referencedby
+        self.identifier = identifier
 
     def get_status(self, ):
         """Return the status
@@ -208,7 +211,7 @@ class DummyRefobjInterface(RefobjInterface):
         :rtype: refobj
         :raises: None
         """
-        return Refobj(None, None, None, None, False)
+        return Refobj(None, None, None, None, False,)
 
     def referenced_by(self, refobj):
         """Return the reference that holds the given refobj.
@@ -295,6 +298,34 @@ class DummyRefobjInterface(RefobjInterface):
         :raises: None
         """
         return refobj.taskfile
+
+    def get_id(self, refobj):
+        """Return the id of the reftrack
+
+        An id is a integer number that will be unique between
+        all reftracks of the same parent, element and type, that have a
+        refobject
+
+        :param refobj: the refobj to query
+        :type refobj: refobj
+        :returns: the identifier
+        :rtype: int
+        :raises: None
+        """
+        return refobj.identifier
+
+    def set_id(self, refobj, identifier):
+        """Set the identifier on the given refobj
+
+        :param refobj: the refobj to edit
+        :type refobj: refobj
+        :param identifier: the refobj id. Used to identify refobjects of the same parent, element and type in the UI
+        :type identifier: int
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        refobj.identifier = identifier
 
 
 class AssetReftypeInterface(ReftypeInterface):
