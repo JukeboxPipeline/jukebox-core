@@ -2327,6 +2327,27 @@ class RefobjInterface(object):
         inter = self.get_typ_interface(reftrack.get_typ())
         return inter.get_additional_actions(reftrack)
 
+    def get_available_types_for_scene(self, element):
+        """Return a list of types that can be used in combination with the given element
+        to add new reftracks to the scene.
+
+        This allows for example the user, to add new reftracks (aliens) to the scene.
+        So e.g. for a shader, it wouldn't make sense to make it available to be added to the scene, because
+        one would use them only as children of let's say an asset or cache.
+        Some types might only be available for shots or assets etc.
+
+        :param element: the element that could be used in conjuction with the returned types to create new reftracks.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: a list of types
+        :rtype: :class:`list`
+        :raises: None
+        """
+        available = []
+        for typ, inter in self.types.items():
+            if inter(self).is_available_for_scene(element):
+                available.append(typ)
+        return available
+
 
 class ReftrackAction(object):
     """A little container for additional actions for
@@ -2385,6 +2406,7 @@ class ReftypeInterface(object):
       * :meth:`ReftypeInterface.get_suggestions`
       * :meth:`ReftypeInterface.get_option_labels`
       * :meth:`ReftypeInterface.get_option_columns`
+      * :meth:`ReftypeInterface.is_available_for_scene`
 
     You might also want to reimplement:
 
@@ -2636,6 +2658,22 @@ class ReftypeInterface(object):
         :type reftrack: :class:`Reftrack`
         :returns: list of suggestions, tuples of type and element.
         :rtype: list
+        :raises: NotImplementedError
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def is_available_for_scene(self, element):
+        """Return True, if it should be possible to add a new reftrack with the given
+        element and the type of the interface to the scene.
+
+        Some types might only make sense for a shot or asset. Others should never be available, because
+        you would only use them as children of other reftracks (e.g. a shader).
+
+        :param element: the element that could be used in conjuction with the returned types to create new reftracks.
+        :type element: :class:`jukeboxcore.djadapter.models.Asset` | :class:`jukeboxcore.djadapter.models.Shot`
+        :returns: True, if available
+        :rtype: :class:`bool`
         :raises: NotImplementedError
         """
         raise NotImplementedError
