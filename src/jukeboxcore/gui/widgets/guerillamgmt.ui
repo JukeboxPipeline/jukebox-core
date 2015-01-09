@@ -1,0 +1,1311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>guerillamgmt_mwin</class>
+ <widget class="QMainWindow" name="guerillamgmt_mwin">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1109</width>
+    <height>1221</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="central_widget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="pages_tabw">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="projects_widget" native="true">
+       <attribute name="title">
+        <string>Projects</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="projects_vbox">
+        <item>
+         <widget class="QTableView" name="projects_tablev">
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="projects_btns_vbox">
+          <item>
+           <widget class="QPushButton" name="create_prj_btn">
+            <property name="text">
+             <string>Create</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="view_prj_btn">
+            <property name="text">
+             <string>View</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="project_widget" native="true">
+       <attribute name="title">
+        <string>Project</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1048</width>
+             <height>1421</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="13" column="0">
+             <widget class="QLabel" name="label_14">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Users</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_7">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Framerate</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Short</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Description</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <widget class="QLabel" name="label_10">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Scale</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QLabel" name="label_8">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Resolution</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_6">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Semester</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Created</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="10" column="0">
+             <widget class="QLabel" name="label_11">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Sequences</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Path</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Name</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="12" column="0">
+             <widget class="QLabel" name="label_13">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Departments</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="11" column="0">
+             <widget class="QLabel" name="label_12">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Assettypes</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="1">
+             <widget class="QSpinBox" name="spinBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="2">
+             <widget class="QSpinBox" name="spinBox_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="10" column="1" colspan="2">
+             <widget class="QTableView" name="tableView">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>3</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>300</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="1" colspan="2">
+             <widget class="QComboBox" name="comboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1" colspan="2">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEdit_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1" colspan="2">
+             <widget class="QDateTimeEdit" name="dateTimeEdit">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" colspan="2">
+             <widget class="QPlainTextEdit" name="plainTextEdit_6">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEdit_3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEdit_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEdit">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="11" column="1" colspan="2">
+             <widget class="QTableView" name="tableView_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>3</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>250</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="12" column="1" colspan="2">
+             <widget class="QTableView" name="tableView_3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>3</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>250</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="13" column="1" colspan="2">
+             <widget class="QTableView" name="tableView_4">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>3</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>300</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="sequence_widget" native="true">
+       <attribute name="title">
+        <string>Sequence</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_2">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_2">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1065</width>
+             <height>1137</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_16">
+              <property name="text">
+               <string>Project</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEdit_6"/>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_17">
+              <property name="text">
+               <string>Description</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>Name</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_18">
+              <property name="text">
+               <string>Shots</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="lineEdit_7"/>
+            </item>
+            <item row="2" column="1">
+             <widget class="QPlainTextEdit" name="plainTextEdit">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QTableView" name="tableView_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>3</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="shot_widget" native="true">
+       <attribute name="title">
+        <string>Shot</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_3">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_3">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1065</width>
+             <height>1137</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_25">
+              <property name="text">
+               <string>Start</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_26">
+              <property name="text">
+               <string>End</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="1">
+             <widget class="QTableView" name="tableView_7">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>300</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QPlainTextEdit" name="plainTextEdit_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>125</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="lineEdit_10"/>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEdit_8"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="lineEdit_9"/>
+            </item>
+            <item row="7" column="0">
+             <widget class="QLabel" name="label_23">
+              <property name="text">
+               <string>Assets</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_21">
+              <property name="text">
+               <string>Sequence</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="1">
+             <widget class="QTableView" name="tableView_6">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>300</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
+             <widget class="QLabel" name="label_24">
+              <property name="text">
+               <string>Tasks</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_22">
+              <property name="text">
+               <string>Description</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_20">
+              <property name="text">
+               <string>Project</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_19">
+              <property name="text">
+               <string>Name</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_27">
+              <property name="text">
+               <string>Handlesize</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QSpinBox" name="spinBox_3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="suffix">
+               <string>f</string>
+              </property>
+              <property name="minimum">
+               <number>-99999</number>
+              </property>
+              <property name="maximum">
+               <number>99999</number>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QSpinBox" name="spinBox_4">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="suffix">
+               <string>f</string>
+              </property>
+              <property name="minimum">
+               <number>-99999</number>
+              </property>
+              <property name="maximum">
+               <number>99999</number>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QSpinBox" name="spinBox_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="suffix">
+               <string>f</string>
+              </property>
+              <property name="minimum">
+               <number>-99999</number>
+              </property>
+              <property name="maximum">
+               <number>99999</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="assettype_widget" native="true">
+       <attribute name="title">
+        <string>Assettype</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_4">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_4">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1065</width>
+             <height>1137</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_30">
+              <property name="text">
+               <string>Projects</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_29">
+              <property name="text">
+               <string>Description</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_28">
+              <property name="text">
+               <string>Name</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEdit_11"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPlainTextEdit" name="plainTextEdit_3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QTableView" name="tableView_8">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>5</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="asset_widget" native="true">
+       <attribute name="title">
+        <string>Asset</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_5">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_5">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1065</width>
+             <height>1137</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_34">
+              <property name="text">
+               <string>Description</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_35">
+              <property name="text">
+               <string>Assets</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_36">
+              <property name="text">
+               <string>Tasks</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_33">
+              <property name="text">
+               <string>Assettype</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_32">
+              <property name="text">
+               <string>Project</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_31">
+              <property name="text">
+               <string>Name</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEdit_12"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="lineEdit_13"/>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="lineEdit_14"/>
+            </item>
+            <item row="3" column="1">
+             <widget class="QPlainTextEdit" name="plainTextEdit_4">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>125</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QTableView" name="tableView_9">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>3</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QTableView" name="tableView_10">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>3</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="department_widget" native="true">
+       <attribute name="title">
+        <string>Department</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_6">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_6">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1065</width>
+             <height>1137</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_40">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Ordervalue</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_38">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Short</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_37">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Name</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_39">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Description</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QRadioButton" name="radioButton_2">
+              <property name="text">
+               <string>Asset</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_41">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Projects</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QRadioButton" name="radioButton">
+              <property name="text">
+               <string>Shot</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" colspan="2">
+             <widget class="QSpinBox" name="spinBox_6"/>
+            </item>
+            <item row="2" column="1" colspan="2">
+             <widget class="QPlainTextEdit" name="plainTextEdit_5">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>125</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>125</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEdit_15"/>
+            </item>
+            <item row="0" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEdit_16"/>
+            </item>
+            <item row="5" column="1" colspan="2">
+             <widget class="QTableView" name="tableView_11"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="task_widget">
+       <attribute name="title">
+        <string>Task</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_7">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_7">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1065</width>
+             <height>1137</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_42">
+              <property name="text">
+               <string>Department</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_43">
+              <property name="text">
+               <string>Users</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_46">
+              <property name="text">
+               <string>Link</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_45">
+              <property name="text">
+               <string>Deadline</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_44">
+              <property name="text">
+               <string>Status</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEdit_17"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="comboBox_2"/>
+            </item>
+            <item row="2" column="1">
+             <widget class="QDateEdit" name="dateEdit"/>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="lineEdit_18"/>
+            </item>
+            <item row="4" column="1">
+             <widget class="QTableWidget" name="tableWidget"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="user_widget">
+       <attribute name="title">
+        <string>User</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_8">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_8">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1065</width>
+             <height>1137</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_49">
+              <property name="text">
+               <string>Last</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_47">
+              <property name="text">
+               <string>Username</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_50">
+              <property name="text">
+               <string>Email</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_48">
+              <property name="text">
+               <string>First</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEdit_19"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="lineEdit_21"/>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="lineEdit_22"/>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="lineEdit_20"/>
+            </item>
+            <item row="4" column="0">
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
