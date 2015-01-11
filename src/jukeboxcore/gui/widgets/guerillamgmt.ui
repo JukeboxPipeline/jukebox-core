@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1109</width>
-    <height>1221</height>
+    <width>832</width>
+    <height>895</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <property name="currentIndex">
        <number>1</number>
       </property>
-      <widget class="QWidget" name="projects_widget" native="true">
+      <widget class="QWidget" name="projects_widget">
        <attribute name="title">
         <string>Projects</string>
        </attribute>
@@ -35,16 +35,16 @@
         <item>
          <layout class="QHBoxLayout" name="projects_btns_vbox">
           <item>
-           <widget class="QPushButton" name="create_prj_btn">
+           <widget class="QPushButton" name="view_prj_btn">
             <property name="text">
-             <string>Create</string>
+             <string>View</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="view_prj_btn">
+           <widget class="QPushButton" name="create_prj_btn">
             <property name="text">
-             <string>View</string>
+             <string>Create</string>
             </property>
            </widget>
           </item>
@@ -52,7 +52,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="project_widget" native="true">
+      <widget class="QWidget" name="project_widget">
        <attribute name="title">
         <string>Project</string>
        </attribute>
@@ -66,13 +66,13 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-348</y>
-             <width>1048</width>
-             <height>1493</height>
+             <y>0</y>
+             <width>771</width>
+             <height>1552</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="16" column="0">
+            <item row="17" column="0">
              <widget class="QLabel" name="label_14">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -88,7 +88,7 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="0">
+            <item row="7" column="0">
              <widget class="QLabel" name="label_7">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -100,11 +100,11 @@
                <string>Framerate</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="7" column="1">
+            <item row="8" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
                <widget class="QSpinBox" name="spinBox_7">
@@ -128,8 +128,15 @@
               </item>
              </layout>
             </item>
-            <item row="13" column="1">
+            <item row="14" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QPushButton" name="pushButton_3">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QPushButton" name="pushButton_5">
                 <property name="text">
@@ -141,13 +148,6 @@
                <widget class="QPushButton" name="pushButton_4">
                 <property name="text">
                  <string>Create</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_3">
-                <property name="text">
-                 <string>View</string>
                 </property>
                </widget>
               </item>
@@ -165,11 +165,11 @@
                <string>Short</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="6" column="1">
+            <item row="7" column="1">
              <widget class="QDoubleSpinBox" name="doubleSpinBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -179,7 +179,7 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
+            <item row="4" column="0">
              <widget class="QLabel" name="label_4">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -195,7 +195,7 @@
               </property>
              </widget>
             </item>
-            <item row="9" column="0">
+            <item row="10" column="0">
              <widget class="QLabel" name="label_10">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -207,11 +207,11 @@
                <string>Scale</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="7" column="0">
+            <item row="8" column="0">
              <widget class="QLabel" name="label_8">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -223,11 +223,11 @@
                <string>Resolution</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
+            <item row="6" column="0">
              <widget class="QLabel" name="label_6">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -239,11 +239,11 @@
                <string>Semester</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="5" column="0">
              <widget class="QLabel" name="label_5">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -255,11 +255,11 @@
                <string>Created</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="10" column="0">
+            <item row="11" column="0">
              <widget class="QLabel" name="label_11">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -269,22 +269,6 @@
               </property>
               <property name="text">
                <string>Sequences</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Path</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
@@ -303,11 +287,11 @@
                <string>Name</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="9" column="1">
+            <item row="10" column="1">
              <widget class="QComboBox" name="comboBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -317,7 +301,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
+            <item row="5" column="1">
              <widget class="QDateTimeEdit" name="dateTimeEdit">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -337,7 +321,7 @@
               </property>
              </widget>
             </item>
-            <item row="14" column="0">
+            <item row="15" column="0">
              <widget class="QLabel" name="label_13">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -353,7 +337,7 @@
               </property>
              </widget>
             </item>
-            <item row="10" column="1">
+            <item row="11" column="1">
              <widget class="QTableView" name="tableView">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -369,7 +353,7 @@
               </property>
              </widget>
             </item>
-            <item row="12" column="1">
+            <item row="13" column="1">
              <widget class="QTableView" name="tableView_2">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -385,7 +369,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="6" column="1">
              <widget class="QLineEdit" name="lineEdit_5">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -395,17 +379,7 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_3">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>1</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item row="12" column="0">
+            <item row="13" column="0">
              <widget class="QLabel" name="label_12">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -421,7 +395,7 @@
               </property>
              </widget>
             </item>
-            <item row="14" column="1">
+            <item row="15" column="1">
              <widget class="QTableView" name="tableView_3">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -437,7 +411,7 @@
               </property>
              </widget>
             </item>
-            <item row="16" column="1">
+            <item row="17" column="1">
              <widget class="QTableView" name="tableView_4">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -463,7 +437,7 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
+            <item row="4" column="1">
              <widget class="QPlainTextEdit" name="plainTextEdit_6">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -473,15 +447,8 @@
               </property>
              </widget>
             </item>
-            <item row="11" column="1">
+            <item row="12" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout">
-              <item>
-               <widget class="QPushButton" name="pushButton_2">
-                <property name="text">
-                 <string>Create</string>
-                </property>
-               </widget>
-              </item>
               <item>
                <widget class="QPushButton" name="pushButton">
                 <property name="text">
@@ -489,10 +456,101 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_2">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
-            <item row="15" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_4"/>
+            <item row="16" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QPushButton" name="pushButton_16">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_17">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_18">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="18" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QPushButton" name="pushButton_21">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_20">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_19">
+                <property name="text">
+                 <string>Remove</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_25">
+              <item>
+               <widget class="QLineEdit" name="lineEdit_3">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>1</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_47">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Path</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -500,7 +558,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="sequence_widget" native="true">
+      <widget class="QWidget" name="sequence_widget">
        <attribute name="title">
         <string>Sequence</string>
        </attribute>
@@ -515,25 +573,15 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1065</width>
-             <height>1137</height>
+             <width>788</width>
+             <height>811</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_16">
-              <property name="text">
-               <string>Project</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="1">
              <widget class="QLineEdit" name="lineEdit_6"/>
             </item>
-            <item row="2" column="0">
+            <item row="3" column="0">
              <widget class="QLabel" name="label_17">
               <property name="text">
                <string>Description</string>
@@ -549,11 +597,11 @@
                <string>Name</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
+            <item row="4" column="0">
              <widget class="QLabel" name="label_18">
               <property name="text">
                <string>Shots</string>
@@ -563,10 +611,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_7"/>
-            </item>
-            <item row="2" column="1">
+            <item row="3" column="1">
              <widget class="QPlainTextEdit" name="plainTextEdit">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -576,7 +621,7 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
+            <item row="4" column="1">
              <widget class="QTableView" name="tableView_5">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -586,13 +631,55 @@
               </property>
              </widget>
             </item>
+            <item row="5" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
+              <item>
+               <widget class="QPushButton" name="pushButton_25">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_24">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_19">
+              <item>
+               <widget class="QLineEdit" name="lineEdit_7"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_42">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_16">
+              <property name="text">
+               <string>Project</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="shot_widget" native="true">
+      <widget class="QWidget" name="shot_widget">
        <attribute name="title">
         <string>Shot</string>
        </attribute>
@@ -607,32 +694,26 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1065</width>
-             <height>1137</height>
+             <width>771</width>
+             <height>933</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_25">
-              <property name="text">
-               <string>Start</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
+            <item row="4" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_21">
+              <item>
+               <widget class="QLineEdit" name="lineEdit_10"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_44">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_26">
-              <property name="text">
-               <string>End</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="8" column="1">
+            <item row="12" column="1">
              <widget class="QTableView" name="tableView_7">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -648,7 +729,7 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="1">
+            <item row="9" column="1">
              <widget class="QPlainTextEdit" name="plainTextEdit_2">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -664,16 +745,10 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_10"/>
-            </item>
             <item row="0" column="1">
              <widget class="QLineEdit" name="lineEdit_8"/>
             </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_9"/>
-            </item>
-            <item row="7" column="0">
+            <item row="10" column="0">
              <widget class="QLabel" name="label_23">
               <property name="text">
                <string>Assets</string>
@@ -683,17 +758,7 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>Sequence</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="1">
+            <item row="10" column="1">
              <widget class="QTableView" name="tableView_6">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -709,7 +774,7 @@
               </property>
              </widget>
             </item>
-            <item row="8" column="0">
+            <item row="12" column="0">
              <widget class="QLabel" name="label_24">
               <property name="text">
                <string>Tasks</string>
@@ -719,20 +784,10 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="0">
+            <item row="9" column="0">
              <widget class="QLabel" name="label_22">
               <property name="text">
                <string>Description</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_20">
-              <property name="text">
-               <string>Project</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -745,76 +800,215 @@
                <string>Name</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="label_27">
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_21">
               <property name="text">
-               <string>Handlesize</string>
+               <string>Sequence</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="QSpinBox" name="spinBox_3">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_20">
+              <property name="text">
+               <string>Project</string>
               </property>
-              <property name="suffix">
-               <string>f</string>
-              </property>
-              <property name="minimum">
-               <number>-99999</number>
-              </property>
-              <property name="maximum">
-               <number>99999</number>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
-             <widget class="QSpinBox" name="spinBox_4">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="suffix">
-               <string>f</string>
-              </property>
-              <property name="minimum">
-               <number>-99999</number>
-              </property>
-              <property name="maximum">
-               <number>99999</number>
-              </property>
-             </widget>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_20">
+              <item>
+               <widget class="QLineEdit" name="lineEdit_9"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_43">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="11" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_13">
+              <item>
+               <widget class="QPushButton" name="pushButton_26">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_27">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_28">
+                <property name="text">
+                 <string>Remove</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_29">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="13" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_14">
+              <item>
+               <widget class="QPushButton" name="pushButton_30">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_31">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item row="5" column="1">
-             <widget class="QSpinBox" name="spinBox_5">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="suffix">
-               <string>f</string>
-              </property>
-              <property name="minimum">
-               <number>-99999</number>
-              </property>
-              <property name="maximum">
-               <number>99999</number>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_22">
+              <item>
+               <widget class="QLabel" name="label_25">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Start</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBox_3">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="suffix">
+                 <string>f</string>
+                </property>
+                <property name="minimum">
+                 <number>-99999</number>
+                </property>
+                <property name="maximum">
+                 <number>99999</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_26">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>End</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBox_4">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="suffix">
+                 <string>f</string>
+                </property>
+                <property name="minimum">
+                 <number>-99999</number>
+                </property>
+                <property name="maximum">
+                 <number>99999</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_27">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Handlesize</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBox_5">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="suffix">
+                 <string>f</string>
+                </property>
+                <property name="minimum">
+                 <number>-99999</number>
+                </property>
+                <property name="maximum">
+                 <number>99999</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -822,7 +1016,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="assettype_widget" native="true">
+      <widget class="QWidget" name="assettype_widget">
        <attribute name="title">
         <string>Assettype</string>
        </attribute>
@@ -837,8 +1031,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1065</width>
-             <height>1137</height>
+             <width>788</width>
+             <height>811</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
@@ -895,13 +1089,38 @@
               </property>
              </widget>
             </item>
+            <item row="3" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_15">
+              <item>
+               <widget class="QPushButton" name="pushButton_32">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_34">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_33">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
            </layout>
           </widget>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="asset_widget" native="true">
+      <widget class="QWidget" name="asset_widget">
        <attribute name="title">
         <string>Asset</string>
        </attribute>
@@ -916,12 +1135,76 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1065</width>
-             <height>1137</height>
+             <width>788</width>
+             <height>811</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
-            <item row="3" column="0">
+            <item row="7" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_16">
+              <item>
+               <widget class="QPushButton" name="pushButton_36">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_35">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_37">
+                <property name="text">
+                 <string>Remove</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_38">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="9" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_17">
+              <item>
+               <widget class="QPushButton" name="pushButton_39">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_40">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="3" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_23">
+              <item>
+               <widget class="QLineEdit" name="lineEdit_14"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_45">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="5" column="0">
              <widget class="QLabel" name="label_34">
               <property name="text">
                <string>Description</string>
@@ -931,7 +1214,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="6" column="0">
              <widget class="QLabel" name="label_35">
               <property name="text">
                <string>Assets</string>
@@ -941,30 +1224,10 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
+            <item row="8" column="0">
              <widget class="QLabel" name="label_36">
               <property name="text">
                <string>Tasks</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_33">
-              <property name="text">
-               <string>Assettype</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_32">
-              <property name="text">
-               <string>Project</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -984,13 +1247,7 @@
             <item row="0" column="1">
              <widget class="QLineEdit" name="lineEdit_12"/>
             </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_13"/>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_14"/>
-            </item>
-            <item row="3" column="1">
+            <item row="5" column="1">
              <widget class="QPlainTextEdit" name="plainTextEdit_4">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1006,7 +1263,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
+            <item row="6" column="1">
              <widget class="QTableView" name="tableView_9">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1016,7 +1273,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="8" column="1">
              <widget class="QTableView" name="tableView_10">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1026,13 +1283,47 @@
               </property>
              </widget>
             </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_33">
+              <property name="text">
+               <string>Assettype</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_24">
+              <item>
+               <widget class="QLineEdit" name="lineEdit_13"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_46">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_32">
+              <property name="text">
+               <string>Project</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="department_widget" native="true">
+      <widget class="QWidget" name="department_widget">
        <attribute name="title">
         <string>Department</string>
        </attribute>
@@ -1047,8 +1338,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1065</width>
-             <height>1137</height>
+             <width>788</width>
+             <height>811</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
@@ -1116,14 +1407,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="2">
-             <widget class="QRadioButton" name="radioButton_2">
-              <property name="text">
-               <string>Asset</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
+            <item row="6" column="0">
              <widget class="QLabel" name="label_41">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -1139,17 +1423,53 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
-             <widget class="QRadioButton" name="radioButton">
-              <property name="text">
-               <string>Shot</string>
-              </property>
-             </widget>
+            <item row="7" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QPushButton" name="pushButton_13">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_14">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_15">
+                <property name="text">
+                 <string>Remove</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
-            <item row="3" column="1" colspan="2">
+            <item row="4" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QRadioButton" name="radioButton_2">
+                <property name="text">
+                 <string>Asset</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="radioButton">
+                <property name="text">
+                 <string>Shot</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="3" column="1">
              <widget class="QSpinBox" name="spinBox_6"/>
             </item>
-            <item row="2" column="1" colspan="2">
+            <item row="2" column="1">
              <widget class="QPlainTextEdit" name="plainTextEdit_5">
               <property name="minimumSize">
                <size>
@@ -1165,13 +1485,13 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1" colspan="2">
+            <item row="1" column="1">
              <widget class="QLineEdit" name="lineEdit_15"/>
             </item>
-            <item row="0" column="1" colspan="2">
+            <item row="0" column="1">
              <widget class="QLineEdit" name="lineEdit_16"/>
             </item>
-            <item row="5" column="1" colspan="2">
+            <item row="6" column="1">
              <widget class="QTableView" name="tableView_11"/>
             </item>
            </layout>
@@ -1195,11 +1515,36 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1065</width>
-             <height>1137</height>
+             <width>788</width>
+             <height>811</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
+            <item row="6" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QPushButton" name="pushButton_10">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_11">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_12">
+                <property name="text">
+                 <string>Remove</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
             <item row="0" column="0">
              <widget class="QLabel" name="label_42">
               <property name="text">
@@ -1210,20 +1555,10 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="5" column="0">
              <widget class="QLabel" name="label_43">
               <property name="text">
                <string>Users</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_46">
-              <property name="text">
-               <string>Link</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1259,11 +1594,79 @@
             <item row="2" column="1">
              <widget class="QDateEdit" name="dateEdit"/>
             </item>
-            <item row="3" column="1">
-             <widget class="QLineEdit" name="lineEdit_18"/>
-            </item>
-            <item row="4" column="1">
+            <item row="5" column="1">
              <widget class="QTableWidget" name="tableWidget"/>
+            </item>
+            <item row="3" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_18">
+              <item>
+               <widget class="QLineEdit" name="lineEdit_18"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_41">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_46">
+              <property name="text">
+               <string>Link</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="users_widget">
+       <attribute name="title">
+        <string>Users</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_9">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_9">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>788</width>
+             <height>811</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <item>
+             <widget class="QTableView" name="tableView_13"/>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
+              <item>
+               <widget class="QPushButton" name="pushButton_22">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_23">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -1286,11 +1689,36 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1065</width>
-             <height>1137</height>
+             <width>788</width>
+             <height>811</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
+            <item row="5" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QPushButton" name="pushButton_6">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_7">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_8">
+                <property name="text">
+                 <string>Remove</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_49">
               <property name="text">
@@ -1332,17 +1760,41 @@
              <widget class="QLineEdit" name="lineEdit_20"/>
             </item>
             <item row="4" column="0">
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>Projects</string>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
               </property>
-             </spacer>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QTableView" name="tableView_12"/>
+            </item>
+            <item row="8" column="0">
+             <widget class="QLabel" name="label_51">
+              <property name="text">
+               <string>Tasks</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="1">
+             <widget class="QTreeView" name="treeView"/>
+            </item>
+            <item row="9" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QPushButton" name="pushButton_9">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
