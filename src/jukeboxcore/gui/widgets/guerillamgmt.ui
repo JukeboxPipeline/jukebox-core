@@ -6,74 +6,87 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>832</width>
-    <height>895</height>
+    <width>1512</width>
+    <height>1221</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="central_widget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="central_vbox">
     <item>
      <widget class="QTabWidget" name="pages_tabw">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="projects_widget">
+      <widget class="QWidget" name="prjs_widget">
        <attribute name="title">
         <string>Projects</string>
        </attribute>
-       <layout class="QVBoxLayout" name="projects_vbox">
+       <layout class="QVBoxLayout" name="prjs_vbox">
         <item>
-         <widget class="QTableView" name="projects_tablev">
+         <widget class="QTableView" name="prjs_tablev">
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="projects_btns_vbox">
+         <layout class="QHBoxLayout" name="prjs_btns_vbox">
           <item>
-           <widget class="QPushButton" name="view_prj_btn">
+           <widget class="QPushButton" name="prjs_view_prj_btn">
             <property name="text">
              <string>View</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="create_prj_btn">
+           <widget class="QPushButton" name="prjs_create_prj_btn">
             <property name="text">
              <string>Create</string>
             </property>
            </widget>
           </item>
+          <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="project_widget">
+      <widget class="QWidget" name="prj_widget">
        <attribute name="title">
         <string>Project</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QScrollArea" name="scrollArea">
+         <widget class="QScrollArea" name="prj_sa">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
+          <widget class="QWidget" name="prj_sa_widget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>771</width>
+             <width>1451</width>
              <height>1552</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout">
             <item row="17" column="0">
-             <widget class="QLabel" name="label_14">
+             <widget class="QLabel" name="prj_users_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -89,7 +102,7 @@
              </widget>
             </item>
             <item row="7" column="0">
-             <widget class="QLabel" name="label_7">
+             <widget class="QLabel" name="prj_fps_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -105,56 +118,81 @@
              </widget>
             </item>
             <item row="8" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <layout class="QHBoxLayout" name="prj_res_hbox">
               <item>
-               <widget class="QSpinBox" name="spinBox_7">
+               <widget class="QSpinBox" name="prj_res_x_sb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>1</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="maximum">
+                 <number>9999</number>
+                </property>
+                <property name="value">
+                 <number>1920</number>
+                </property>
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="spinBox_2">
+               <widget class="QSpinBox" name="prj_res_y_sb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>1</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="maximum">
+                 <number>9999</number>
+                </property>
+                <property name="value">
+                 <number>1080</number>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
             <item row="14" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <layout class="QHBoxLayout" name="prj_atype_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_3">
+               <widget class="QPushButton" name="prj_atype_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_5">
+               <widget class="QPushButton" name="prj_atype_add_pb">
                 <property name="text">
                  <string>Add</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_4">
+               <widget class="QPushButton" name="prj_atype_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_2">
+             <widget class="QLabel" name="prj_short_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -170,17 +208,23 @@
              </widget>
             </item>
             <item row="7" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox">
+             <widget class="QDoubleSpinBox" name="prj_fps_dsb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>1</verstretch>
                </sizepolicy>
               </property>
+              <property name="maximum">
+               <double>999.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>25.000000000000000</double>
+              </property>
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="QLabel" name="label_4">
+             <widget class="QLabel" name="prj_desc_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -196,7 +240,7 @@
              </widget>
             </item>
             <item row="10" column="0">
-             <widget class="QLabel" name="label_10">
+             <widget class="QLabel" name="prj_scale_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -212,7 +256,7 @@
              </widget>
             </item>
             <item row="8" column="0">
-             <widget class="QLabel" name="label_8">
+             <widget class="QLabel" name="prj_res_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -228,7 +272,7 @@
              </widget>
             </item>
             <item row="6" column="0">
-             <widget class="QLabel" name="label_6">
+             <widget class="QLabel" name="prj_semester_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -244,7 +288,7 @@
              </widget>
             </item>
             <item row="5" column="0">
-             <widget class="QLabel" name="label_5">
+             <widget class="QLabel" name="prj_created_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -260,7 +304,7 @@
              </widget>
             </item>
             <item row="11" column="0">
-             <widget class="QLabel" name="label_11">
+             <widget class="QLabel" name="prj_seq_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -276,7 +320,7 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="prj_name_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -292,37 +336,86 @@
              </widget>
             </item>
             <item row="10" column="1">
-             <widget class="QComboBox" name="comboBox">
+             <widget class="QComboBox" name="prj_scale_cb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>1</verstretch>
                </sizepolicy>
               </property>
+              <property name="currentIndex">
+               <number>1</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>millimeter</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>centimeter</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>meter</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>kilometer</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>inch</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>foot</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>yard</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>mile</string>
+               </property>
+              </item>
              </widget>
             </item>
             <item row="5" column="1">
-             <widget class="QDateTimeEdit" name="dateTimeEdit">
+             <widget class="QDateTimeEdit" name="prj_created_dte">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>1</verstretch>
                </sizepolicy>
               </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_2">
+             <widget class="QLineEdit" name="prj_short_le">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>1</verstretch>
                </sizepolicy>
               </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item row="15" column="0">
-             <widget class="QLabel" name="label_13">
+             <widget class="QLabel" name="prj_dep_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -338,7 +431,7 @@
              </widget>
             </item>
             <item row="11" column="1">
-             <widget class="QTableView" name="tableView">
+             <widget class="QTableView" name="prj_seq_tablev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -354,7 +447,7 @@
              </widget>
             </item>
             <item row="13" column="1">
-             <widget class="QTableView" name="tableView_2">
+             <widget class="QTableView" name="prj_atype_tablev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -370,17 +463,20 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <widget class="QLineEdit" name="lineEdit_5">
+             <widget class="QLineEdit" name="prj_semester_le">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>1</verstretch>
                </sizepolicy>
               </property>
+              <property name="placeholderText">
+               <string>e.g. SS15 or WS15/16</string>
+              </property>
              </widget>
             </item>
             <item row="13" column="0">
-             <widget class="QLabel" name="label_12">
+             <widget class="QLabel" name="prj_atype_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -396,7 +492,7 @@
              </widget>
             </item>
             <item row="15" column="1">
-             <widget class="QTableView" name="tableView_3">
+             <widget class="QTableView" name="prj_dep_tablev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -412,7 +508,7 @@
              </widget>
             </item>
             <item row="17" column="1">
-             <widget class="QTableView" name="tableView_4">
+             <widget class="QTableView" name="prj_user_tablev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -428,17 +524,20 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit">
+             <widget class="QLineEdit" name="prj_name_le">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>1</verstretch>
                </sizepolicy>
               </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="QPlainTextEdit" name="plainTextEdit_6">
+             <widget class="QPlainTextEdit" name="prj_desc_pte">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -448,87 +547,136 @@
              </widget>
             </item>
             <item row="12" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout">
+             <layout class="QHBoxLayout" name="prj_seq_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="prj_seq_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_2">
+               <widget class="QPushButton" name="prj_seq_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>
             <item row="16" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <layout class="QHBoxLayout" name="prj_dep_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_16">
+               <widget class="QPushButton" name="prj_dep_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_17">
+               <widget class="QPushButton" name="prj_dep_add_pb">
                 <property name="text">
                  <string>Add</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_18">
+               <widget class="QPushButton" name="prj_dep_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="18" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <layout class="QHBoxLayout" name="prj_user_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_21">
+               <widget class="QPushButton" name="prj_user_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_20">
+               <widget class="QPushButton" name="prj_user_add_pb">
                 <property name="text">
                  <string>Add</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_19">
+               <widget class="QPushButton" name="prj_user_remove_pb">
                 <property name="text">
                  <string>Remove</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QPushButton" name="prj_user_create_pb">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="2" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_25">
+             <layout class="QHBoxLayout" name="prj_path_hbox">
               <item>
-               <widget class="QLineEdit" name="lineEdit_3">
+               <widget class="QLineEdit" name="prj_path_le">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>1</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_47">
+               <widget class="QPushButton" name="prj_path_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
@@ -537,7 +685,7 @@
              </layout>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_3">
+             <widget class="QLabel" name="prj_path_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -558,31 +706,35 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="sequence_widget">
+      <widget class="QWidget" name="seq_widget">
        <attribute name="title">
         <string>Sequence</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="seq_vbox">
         <item>
-         <widget class="QScrollArea" name="scrollArea_2">
+         <widget class="QScrollArea" name="seq_sa">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_2">
+          <widget class="QWidget" name="seq_sa_widget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>788</width>
-             <height>811</height>
+             <width>1468</width>
+             <height>1137</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout_2">
+           <layout class="QGridLayout" name="seq_grid">
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_6"/>
+             <widget class="QLineEdit" name="seq_name_le">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="label_17">
+             <widget class="QLabel" name="seq_desc_lb">
               <property name="text">
                <string>Description</string>
               </property>
@@ -592,7 +744,7 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_15">
+             <widget class="QLabel" name="seq_name_lb">
               <property name="text">
                <string>Name</string>
               </property>
@@ -602,7 +754,7 @@
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="QLabel" name="label_18">
+             <widget class="QLabel" name="seq_shot_lb">
               <property name="text">
                <string>Shots</string>
               </property>
@@ -612,7 +764,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QPlainTextEdit" name="plainTextEdit">
+             <widget class="QPlainTextEdit" name="seq_desc_pte">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -622,7 +774,7 @@
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="QTableView" name="tableView_5">
+             <widget class="QTableView" name="seq_shot_tablev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -632,30 +784,47 @@
              </widget>
             </item>
             <item row="5" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <layout class="QHBoxLayout" name="seq_shot_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_25">
+               <widget class="QPushButton" name="seq_shot_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_24">
+               <widget class="QPushButton" name="seq_shot_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="1" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_19">
+             <layout class="QHBoxLayout" name="seq_prj_hbox">
               <item>
-               <widget class="QLineEdit" name="lineEdit_7"/>
+               <widget class="QLineEdit" name="seq_prj_le">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_42">
+               <widget class="QPushButton" name="seq_prj_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
@@ -664,7 +833,7 @@
              </layout>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_16">
+             <widget class="QLabel" name="seq_prj_lb">
               <property name="text">
                <string>Project</string>
               </property>
@@ -683,29 +852,33 @@
        <attribute name="title">
         <string>Shot</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QVBoxLayout" name="shot_vbox">
         <item>
-         <widget class="QScrollArea" name="scrollArea_3">
+         <widget class="QScrollArea" name="shot_sa">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_3">
+          <widget class="QWidget" name="shot_sa_widget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>771</width>
-             <height>933</height>
+             <width>1468</width>
+             <height>1137</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout_3">
+           <layout class="QGridLayout" name="0">
             <item row="4" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_21">
+             <layout class="QHBoxLayout" name="shot_seq_hbox">
               <item>
-               <widget class="QLineEdit" name="lineEdit_10"/>
+               <widget class="QLineEdit" name="shot_seq_le">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_44">
+               <widget class="QPushButton" name="shot_seq_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
@@ -714,7 +887,7 @@
              </layout>
             </item>
             <item row="12" column="1">
-             <widget class="QTableView" name="tableView_7">
+             <widget class="QTableView" name="shot_task_tablev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -730,7 +903,7 @@
              </widget>
             </item>
             <item row="9" column="1">
-             <widget class="QPlainTextEdit" name="plainTextEdit_2">
+             <widget class="QPlainTextEdit" name="shot_desc_pte">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -746,10 +919,14 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_8"/>
+             <widget class="QLineEdit" name="shot_name_le">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
             <item row="10" column="0">
-             <widget class="QLabel" name="label_23">
+             <widget class="QLabel" name="shot_asset_lb">
               <property name="text">
                <string>Assets</string>
               </property>
@@ -759,7 +936,7 @@
              </widget>
             </item>
             <item row="10" column="1">
-             <widget class="QTableView" name="tableView_6">
+             <widget class="QTableView" name="shot_asset_tablev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -775,7 +952,7 @@
              </widget>
             </item>
             <item row="12" column="0">
-             <widget class="QLabel" name="label_24">
+             <widget class="QLabel" name="shot_task_lb">
               <property name="text">
                <string>Tasks</string>
               </property>
@@ -785,7 +962,7 @@
              </widget>
             </item>
             <item row="9" column="0">
-             <widget class="QLabel" name="label_22">
+             <widget class="QLabel" name="shot_desc_lb">
               <property name="text">
                <string>Description</string>
               </property>
@@ -795,7 +972,7 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_19">
+             <widget class="QLabel" name="shot_name_lb">
               <property name="text">
                <string>Name</string>
               </property>
@@ -805,7 +982,7 @@
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="QLabel" name="label_21">
+             <widget class="QLabel" name="shot_seq_lb">
               <property name="text">
                <string>Sequence</string>
               </property>
@@ -815,7 +992,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_20">
+             <widget class="QLabel" name="shot_prj_lb">
               <property name="text">
                <string>Project</string>
               </property>
@@ -825,12 +1002,16 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_20">
+             <layout class="QHBoxLayout" name="shot_prj_hbox">
               <item>
-               <widget class="QLineEdit" name="lineEdit_9"/>
+               <widget class="QLineEdit" name="shot_prj_le">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_43">
+               <widget class="QPushButton" name="shot_prj_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
@@ -839,59 +1020,85 @@
              </layout>
             </item>
             <item row="11" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_13">
+             <layout class="QHBoxLayout" name="shot_asset_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_26">
+               <widget class="QPushButton" name="shot_asset_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_27">
+               <widget class="QPushButton" name="shot_asset_add_pb">
                 <property name="text">
                  <string>Add</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_28">
+               <widget class="QPushButton" name="shot_asset_remove_pb">
                 <property name="text">
                  <string>Remove</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_29">
+               <widget class="QPushButton" name="shot_asset_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="13" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_14">
+             <layout class="QHBoxLayout" name="shot_task_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_30">
+               <widget class="QPushButton" name="shot_task_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_31">
+               <widget class="QPushButton" name="shot_task_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="5" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_22">
+             <layout class="QHBoxLayout" name="shot_frames_hbox">
               <item>
-               <widget class="QLabel" name="label_25">
+               <widget class="QLabel" name="shot_start_lb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -907,7 +1114,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="spinBox_3">
+               <widget class="QSpinBox" name="shot_start_sb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -923,10 +1130,13 @@
                 <property name="maximum">
                  <number>99999</number>
                 </property>
+                <property name="value">
+                 <number>1001</number>
+                </property>
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_26">
+               <widget class="QLabel" name="shot_end_lb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -942,7 +1152,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="spinBox_4">
+               <widget class="QSpinBox" name="shot_end_sb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -958,10 +1168,13 @@
                 <property name="maximum">
                  <number>99999</number>
                 </property>
+                <property name="value">
+                 <number>1050</number>
+                </property>
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_27">
+               <widget class="QLabel" name="shot_handle_lb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -977,12 +1190,15 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="spinBox_5">
+               <widget class="QSpinBox" name="shot_handle_sb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>The pre and postroll.</string>
                 </property>
                 <property name="suffix">
                  <string>f</string>
@@ -993,10 +1209,134 @@
                 <property name="maximum">
                  <number>99999</number>
                 </property>
+                <property name="value">
+                 <number>8</number>
+                </property>
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer">
+               <spacer name="shot_frames_hspacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="atype_widget">
+       <attribute name="title">
+        <string>Assettype</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="atype_vbox">
+        <item>
+         <widget class="QScrollArea" name="atype_sa">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="atype_sa_widget">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1468</width>
+             <height>1137</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="atype_sa_widget_grid">
+            <item row="2" column="0">
+             <widget class="QLabel" name="atype_prj_lb">
+              <property name="text">
+               <string>Projects</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="atype_desc_lb">
+              <property name="text">
+               <string>Description</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="atype_name_lb">
+              <property name="text">
+               <string>Name</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="atype_name_le">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPlainTextEdit" name="atype_desc_pte">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QTableView" name="atype_prj_tablev">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>5</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <layout class="QHBoxLayout" name="atype_prj_btns_hbox">
+              <item>
+               <widget class="QPushButton" name="atype_prj_view_pb">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="atype_prj_add_pb">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="atype_prj_create_pb">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_9">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -1016,187 +1356,113 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="assettype_widget">
-       <attribute name="title">
-        <string>Assettype</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
-        <item>
-         <widget class="QScrollArea" name="scrollArea_4">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_4">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>788</width>
-             <height>811</height>
-            </rect>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_30">
-              <property name="text">
-               <string>Projects</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_29">
-              <property name="text">
-               <string>Description</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_28">
-              <property name="text">
-               <string>Name</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_11"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="QPlainTextEdit" name="plainTextEdit_3">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>1</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QTableView" name="tableView_8">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>5</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_15">
-              <item>
-               <widget class="QPushButton" name="pushButton_32">
-                <property name="text">
-                 <string>View</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_34">
-                <property name="text">
-                 <string>Add</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_33">
-                <property name="text">
-                 <string>Create</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="asset_widget">
        <attribute name="title">
         <string>Asset</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <layout class="QVBoxLayout" name="asset_vbox">
         <item>
-         <widget class="QScrollArea" name="scrollArea_5">
+         <widget class="QScrollArea" name="asset_sa">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_5">
+          <widget class="QWidget" name="asset_sa_widget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>788</width>
-             <height>811</height>
+             <width>1468</width>
+             <height>1137</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout_5">
+           <layout class="QGridLayout" name="asset_sa_widget_grid">
             <item row="7" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_16">
+             <layout class="QHBoxLayout" name="asset_asset_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_36">
+               <widget class="QPushButton" name="asset_asset_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_35">
+               <widget class="QPushButton" name="asset_asset_add_pb">
                 <property name="text">
                  <string>Add</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_37">
+               <widget class="QPushButton" name="asset_asset_remove_pb">
                 <property name="text">
                  <string>Remove</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_38">
+               <widget class="QPushButton" name="asset_asset_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_10">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="9" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_17">
+             <layout class="QHBoxLayout" name="asset_task_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_39">
+               <widget class="QPushButton" name="asset_task_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_40">
+               <widget class="QPushButton" name="asset_task_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_11">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="3" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_23">
+             <layout class="QHBoxLayout" name="asset_atype_hbox">
               <item>
-               <widget class="QLineEdit" name="lineEdit_14"/>
+               <widget class="QLineEdit" name="asset_atype_le">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_45">
+               <widget class="QPushButton" name="asset_atype_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
@@ -1205,7 +1471,7 @@
              </layout>
             </item>
             <item row="5" column="0">
-             <widget class="QLabel" name="label_34">
+             <widget class="QLabel" name="asset_desc_lb">
               <property name="text">
                <string>Description</string>
               </property>
@@ -1215,7 +1481,7 @@
              </widget>
             </item>
             <item row="6" column="0">
-             <widget class="QLabel" name="label_35">
+             <widget class="QLabel" name="asset_asset_lb">
               <property name="text">
                <string>Assets</string>
               </property>
@@ -1225,7 +1491,7 @@
              </widget>
             </item>
             <item row="8" column="0">
-             <widget class="QLabel" name="label_36">
+             <widget class="QLabel" name="asset_task_lb">
               <property name="text">
                <string>Tasks</string>
               </property>
@@ -1235,7 +1501,7 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_31">
+             <widget class="QLabel" name="asset_name_lb">
               <property name="text">
                <string>Name</string>
               </property>
@@ -1245,10 +1511,14 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_12"/>
+             <widget class="QLineEdit" name="asset_name_le">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
             <item row="5" column="1">
-             <widget class="QPlainTextEdit" name="plainTextEdit_4">
+             <widget class="QPlainTextEdit" name="asset_desc_pte">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -1264,7 +1534,7 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <widget class="QTableView" name="tableView_9">
+             <widget class="QTableView" name="asset_asset_tablev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -1274,7 +1544,7 @@
              </widget>
             </item>
             <item row="8" column="1">
-             <widget class="QTableView" name="tableView_10">
+             <widget class="QTableView" name="asset_task_tablev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -1284,7 +1554,7 @@
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="label_33">
+             <widget class="QLabel" name="asset_atype_lb">
               <property name="text">
                <string>Assettype</string>
               </property>
@@ -1294,12 +1564,16 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_24">
+             <layout class="QHBoxLayout" name="asset_prj_hbox">
               <item>
-               <widget class="QLineEdit" name="lineEdit_13"/>
+               <widget class="QLineEdit" name="asset_prj_le">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_46">
+               <widget class="QPushButton" name="asset_prj_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
@@ -1308,7 +1582,7 @@
              </layout>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_32">
+             <widget class="QLabel" name="asset_prj_lb">
               <property name="text">
                <string>Project</string>
               </property>
@@ -1323,28 +1597,28 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="department_widget">
+      <widget class="QWidget" name="dep_widget">
        <attribute name="title">
         <string>Department</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
+       <layout class="QVBoxLayout" name="dep_vbox">
         <item>
-         <widget class="QScrollArea" name="scrollArea_6">
+         <widget class="QScrollArea" name="dep_sa">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_6">
+          <widget class="QWidget" name="dep_sa_widget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>788</width>
-             <height>811</height>
+             <width>1468</width>
+             <height>1137</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout_6">
+           <layout class="QGridLayout" name="dep_sa_widget_grid">
             <item row="3" column="0">
-             <widget class="QLabel" name="label_40">
+             <widget class="QLabel" name="dep_ordervalue_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1360,7 +1634,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_38">
+             <widget class="QLabel" name="dep_short_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1376,7 +1650,7 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_37">
+             <widget class="QLabel" name="dep_name_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1392,7 +1666,7 @@
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_39">
+             <widget class="QLabel" name="dep_desc_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1408,7 +1682,7 @@
              </widget>
             </item>
             <item row="6" column="0">
-             <widget class="QLabel" name="label_41">
+             <widget class="QLabel" name="dep_prj_lb">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1424,53 +1698,85 @@
              </widget>
             </item>
             <item row="7" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <layout class="QHBoxLayout" name="dep_prj_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_13">
+               <widget class="QPushButton" name="dep_prj_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_14">
+               <widget class="QPushButton" name="dep_prj_add_pb">
                 <property name="text">
                  <string>Add</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_15">
+               <widget class="QPushButton" name="dep_prj_remove_pb">
                 <property name="text">
                  <string>Remove</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_12">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="4" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <layout class="QHBoxLayout" name="dep_assetflag_hbox">
               <item>
-               <widget class="QRadioButton" name="radioButton_2">
+               <widget class="QRadioButton" name="dep_shot_rb">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
-                 <string>Asset</string>
+                 <string>Shot</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QRadioButton" name="radioButton">
+               <widget class="QRadioButton" name="dep_asset_rb">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
-                 <string>Shot</string>
+                 <string>Asset</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
             <item row="3" column="1">
-             <widget class="QSpinBox" name="spinBox_6"/>
+             <widget class="QSpinBox" name="dep_ordervalue_sb">
+              <property name="toolTip">
+               <string>A value for ordering the departments in the UIs. The default departments are have values from 10, 20, 30, 40...</string>
+              </property>
+             </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QPlainTextEdit" name="plainTextEdit_5">
+             <widget class="QPlainTextEdit" name="dep_desc_pte">
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -1486,13 +1792,21 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_15"/>
+             <widget class="QLineEdit" name="dep_short_le">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_16"/>
+             <widget class="QLineEdit" name="dep_name_le">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
             <item row="6" column="1">
-             <widget class="QTableView" name="tableView_11"/>
+             <widget class="QTableView" name="dep_prj_tablev"/>
             </item>
            </layout>
           </widget>
@@ -1504,59 +1818,62 @@
        <attribute name="title">
         <string>Task</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_8">
+       <layout class="QVBoxLayout" name="task_vbox">
         <item>
-         <widget class="QScrollArea" name="scrollArea_7">
+         <widget class="QScrollArea" name="task_sa">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_7">
+          <widget class="QWidget" name="task_sa_widget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>788</width>
-             <height>811</height>
+             <width>1468</width>
+             <height>1137</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
-            <item row="6" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item row="7" column="1">
+             <layout class="QHBoxLayout" name="task_user_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_10">
+               <widget class="QPushButton" name="task_user_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_11">
+               <widget class="QPushButton" name="task_user_add_pb">
                 <property name="text">
                  <string>Add</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_12">
+               <widget class="QPushButton" name="task_user_remove_pb">
                 <property name="text">
                  <string>Remove</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_42">
-              <property name="text">
-               <string>Department</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="label_43">
+            <item row="6" column="0">
+             <widget class="QLabel" name="task_user_lb">
               <property name="text">
                <string>Users</string>
               </property>
@@ -1565,8 +1882,8 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_45">
+            <item row="3" column="0">
+             <widget class="QLabel" name="task_deadline_lb">
               <property name="text">
                <string>Deadline</string>
               </property>
@@ -1575,8 +1892,8 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_44">
+            <item row="2" column="0">
+             <widget class="QLabel" name="task_status_lb">
               <property name="text">
                <string>Status</string>
               </property>
@@ -1585,25 +1902,50 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_17"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="QComboBox" name="comboBox_2"/>
-            </item>
             <item row="2" column="1">
-             <widget class="QDateEdit" name="dateEdit"/>
-            </item>
-            <item row="5" column="1">
-             <widget class="QTableWidget" name="tableWidget"/>
-            </item>
-            <item row="3" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_18">
+             <widget class="QComboBox" name="task_status_cb">
               <item>
-               <widget class="QLineEdit" name="lineEdit_18"/>
+               <property name="text">
+                <string>New</string>
+               </property>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_41">
+               <property name="text">
+                <string>Open</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Done</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QDateEdit" name="task_deadline_de">
+              <property name="date">
+               <date>
+                <year>2015</year>
+                <month>1</month>
+                <day>1</day>
+               </date>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QTableWidget" name="task_user_tablev"/>
+            </item>
+            <item row="4" column="1">
+             <layout class="QHBoxLayout" name="task_link_hbox">
+              <item>
+               <widget class="QLineEdit" name="task_link_le">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="task_link_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
@@ -1611,10 +1953,38 @@
               </item>
              </layout>
             </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_46">
+            <item row="4" column="0">
+             <widget class="QLabel" name="task_link_lb">
               <property name="text">
                <string>Link</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="task_dep_hbox">
+              <item>
+               <widget class="QLineEdit" name="task_dep_le">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="task_dep_view_pb">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="task_dep_lb">
+              <property name="text">
+               <string>Department</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1631,40 +2001,53 @@
        <attribute name="title">
         <string>Users</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_10">
+       <layout class="QVBoxLayout" name="users_vbox">
         <item>
-         <widget class="QScrollArea" name="scrollArea_9">
+         <widget class="QScrollArea" name="users_sa">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_9">
+          <widget class="QWidget" name="users_sa_widget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>788</width>
-             <height>811</height>
+             <width>1468</width>
+             <height>1137</height>
             </rect>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_11">
+           <layout class="QVBoxLayout" name="users_sa_widget_vbox">
             <item>
-             <widget class="QTableView" name="tableView_13"/>
+             <widget class="QTableView" name="users_tablev"/>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <layout class="QHBoxLayout" name="users_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_22">
+               <widget class="QPushButton" name="users_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_23">
+               <widget class="QPushButton" name="users_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_14">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>
@@ -1680,87 +2063,100 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <item>
-         <widget class="QScrollArea" name="scrollArea_8">
+         <widget class="QScrollArea" name="user_sa">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_8">
+          <widget class="QWidget" name="user_sa_widget">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>788</width>
-             <height>811</height>
+             <width>1468</width>
+             <height>1137</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout_8">
+           <layout class="QGridLayout" name="user_sa_widget_grid">
             <item row="5" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <layout class="QHBoxLayout" name="user_prj_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_6">
+               <widget class="QPushButton" name="user_prj_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_7">
+               <widget class="QPushButton" name="user_prj_add_pb">
                 <property name="text">
                  <string>Add</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_8">
+               <widget class="QPushButton" name="user_prj_remove_pb">
                 <property name="text">
                  <string>Remove</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_15">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_49">
+             <widget class="QLabel" name="user_last_lb">
               <property name="text">
                <string>Last</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_47">
+             <widget class="QLabel" name="user_username_lb">
               <property name="text">
                <string>Username</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="label_50">
+             <widget class="QLabel" name="user_email_lb">
               <property name="text">
                <string>Email</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_48">
+             <widget class="QLabel" name="user_first_lb">
               <property name="text">
                <string>First</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_19"/>
+             <widget class="QLineEdit" name="user_username_le"/>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_21"/>
+             <widget class="QLineEdit" name="user_first_le"/>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="lineEdit_22"/>
+             <widget class="QLineEdit" name="user_email_le"/>
             </item>
             <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_20"/>
+             <widget class="QLineEdit" name="user_last_le"/>
             </item>
             <item row="4" column="0">
-             <widget class="QLabel" name="label_9">
+             <widget class="QLabel" name="user_prj_lb">
               <property name="text">
                <string>Projects</string>
               </property>
@@ -1770,10 +2166,10 @@
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="QTableView" name="tableView_12"/>
+             <widget class="QTableView" name="user_prj_tablev"/>
             </item>
             <item row="8" column="0">
-             <widget class="QLabel" name="label_51">
+             <widget class="QLabel" name="user_task_lb">
               <property name="text">
                <string>Tasks</string>
               </property>
@@ -1783,16 +2179,29 @@
              </widget>
             </item>
             <item row="8" column="1">
-             <widget class="QTreeView" name="treeView"/>
+             <widget class="QTreeView" name="user_task_tablev"/>
             </item>
             <item row="9" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <layout class="QHBoxLayout" name="user_task_btns_hbox">
               <item>
-               <widget class="QPushButton" name="pushButton_9">
+               <widget class="QPushButton" name="user_task_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_16">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>
