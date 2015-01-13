@@ -10,6 +10,7 @@ from jukeboxcore.gui import djitemdata
 from jukeboxcore.plugins import JB_CoreStandaloneGuiPlugin
 from jukeboxcore.gui.widgets.guerillamgmt_ui import Ui_guerillamgmt_mwin
 from jukeboxcore.gui.widgets.guerilla.projectcreator_ui import Ui_projectcreator_dialog
+from jukeboxcore.gui.widgets.guerilla.seqcreator_ui import Ui_seqcreator_dialog
 
 
 class ProjectCreatorDialog(JB_Dialog, Ui_projectcreator_dialog):
@@ -48,6 +49,45 @@ class ProjectCreatorDialog(JB_Dialog, Ui_projectcreator_dialog):
             self.accept()
         except:
             log.exception("Could not create new project")
+
+
+class SequenceCreatorDialog(JB_Dialog, Ui_seqcreator_dialog):
+    """A Dialog to create a sequence
+    """
+
+    def __init__(self, project, parent=None, flags=0):
+        """Initialize a new sequence creator dialog
+
+        :param project: The project for the sequence
+        :type project: :class:`jukeboxcore.djadapter.models.Project`
+        :param parent: the parent object
+        :type parent: :class:`QtCore.QObject`
+        :param flags: the window flags
+        :type flags: :data:`QtCore.Qt.WindowFlags`
+        :raises: None
+        """
+        super(SequenceCreatorDialog, self).__init__(parent, flags)
+        self._project = project
+        self.sequence = None
+        self.setupUi(self)
+        self.create_pb.clicked.connect(self.create_seq)
+
+    def create_seq(self, ):
+        """Create a sequence and store it in the self.sequence
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        name = self.name_le.text()
+        desc = self.desc_pte.toPlainText()
+        try:
+            seq = djadapter.models.Sequence(name=name, project=self._project, description=desc)
+            seq.save()
+            self.sequence = seq
+            self.accept()
+        except:
+            log.exception("Could not create new sequence")
 
 
 class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
@@ -489,7 +529,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         :rtype: None | :class:`jukeboxcore.djadapter.models.Project`
         :raises: None
         """
-        dialog = ProjectCreatorDialog()
+        dialog = ProjectCreatorDialog(parent=self)
         dialog.exec_()
         prj = dialog.project
         if prj and atypes:
@@ -501,6 +541,73 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
                 dep.projects.add(prj)
                 dep.save()
         return prj
+
+    def prj_view_seq(self, *args, **kwargs):
+        """View the, in the prj_seq_tablev selected, sequence.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_prj:
+            return
+        i = self.prj_seq_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            seq = item.internal_data()
+            self.view_seq(seq)
+
+    def prj_create_seq(self, *args, **kwargs):
+        """Create a new Sequence for the current project
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_prj:
+            return
+        seq = self.create_seq(project=self.cur_prj)
+        if seq:
+            seqdata = djitemdata.SequenceItemData(seq)
+            treemodel.TreeItem(seqdata, self.prj_seq_model.root)
+
+    def view_seq(self, seq):
+        """View the given sequence on the sequence page
+
+        :param seq: the sequence to view
+        :type seq: :class:`jukeboxcore.djadapter.models.Sequence`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        log.debug('Viewing sequence %s', seq.name)
+        self.cur_seq = seq
+        self.pages_tabw.setCurrentIndex(2)
+        self.seq_name_le.setText(seq.name)
+        self.seq_prj_le.setText(seq.project.name)
+        self.seq_desc_pte.setPlainText(seq.description)
+
+        shotrootdata = treemodel.ListItemData(['Name', "Description", "Duration", "Start", "End"])
+        shotrootitem = treemodel.TreeItem(shotrootdata)
+        for shot in seq.shot_set.all():
+            shotdata = djitemdata.ShotItemData(shot)
+            treemodel.TreeItem(shotdata, shotrootitem)
+        self.seq_shot_model = treemodel.TreeModel(shotrootitem)
+        self.seq_shot_tablev.setModel(self.seq_shot_model)
+
+    def create_seq(self, project):
+        """Create and return a new sequence
+
+        :param project: the project for the sequence
+        :type deps: :class:`jukeboxcore.djadapter.models.Project`
+        :returns: The created sequence or None
+        :rtype: None | :class:`jukeboxcore.djadapter.models.Sequence`
+        :raises: None
+        """
+        dialog = SequenceCreatorDialog(project=project, parent=self)
+        dialog.exec_()
+        seq = dialog.sequence
+        return seq
 
 
 class GuerillaMGMT(JB_CoreStandaloneGuiPlugin):
