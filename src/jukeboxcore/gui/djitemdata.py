@@ -1077,6 +1077,7 @@ def department_description_data(Department, role):
     if role == QtCore.Qt.DisplayRole:
         return Department.description
 
+
 def department_ordervalue_data(department, role):
     """Return the data for description
 
