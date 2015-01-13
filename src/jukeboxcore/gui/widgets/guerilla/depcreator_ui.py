@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\depcreator.ui'
 #
-# Created: Tue Jan 13 14:50:07 2015
+# Created: Tue Jan 13 18:00:46 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,9 +17,9 @@ class Ui_depcreator_mwin(object):
         self.central_widget.setObjectName("central_widget")
         self.central_grid = QtGui.QGridLayout(self.central_widget)
         self.central_grid.setObjectName("central_grid")
-        self.plainTextEdit = QtGui.QPlainTextEdit(self.central_widget)
-        self.plainTextEdit.setObjectName("plainTextEdit")
-        self.central_grid.addWidget(self.plainTextEdit, 3, 1, 1, 1)
+        self.des_pte = QtGui.QPlainTextEdit(self.central_widget)
+        self.des_pte.setObjectName("des_pte")
+        self.central_grid.addWidget(self.des_pte, 3, 1, 1, 1)
         self.short_le = QtGui.QLineEdit(self.central_widget)
         self.short_le.setObjectName("short_le")
         self.central_grid.addWidget(self.short_le, 1, 1, 1, 1)
@@ -52,15 +52,16 @@ class Ui_depcreator_mwin(object):
         self.asset_rb.setObjectName("asset_rb")
         self.assetflag_hbox.addWidget(self.asset_rb)
         self.central_grid.addLayout(self.assetflag_hbox, 2, 1, 1, 1)
-        self.pushButton = QtGui.QPushButton(self.central_widget)
-        self.pushButton.setObjectName("pushButton")
-        self.central_grid.addWidget(self.pushButton, 5, 1, 1, 1)
+        self.create_pb = QtGui.QPushButton(self.central_widget)
+        self.create_pb.setObjectName("create_pb")
+        self.central_grid.addWidget(self.create_pb, 5, 1, 1, 1)
         depcreator_mwin.setCentralWidget(self.central_widget)
         self.statusbar = QtGui.QStatusBar(depcreator_mwin)
         self.statusbar.setObjectName("statusbar")
         depcreator_mwin.setStatusBar(self.statusbar)
 
         self.retranslateUi(depcreator_mwin)
+        QtCore.QObject.connect(self.create_pb, QtCore.SIGNAL("clicked()"), depcreator_mwin.close)
         QtCore.QMetaObject.connectSlotsByName(depcreator_mwin)
 
     def retranslateUi(self, depcreator_mwin):
@@ -71,5 +72,5 @@ class Ui_depcreator_mwin(object):
         self.name_lb.setText(QtGui.QApplication.translate("depcreator_mwin", "Name", None, QtGui.QApplication.UnicodeUTF8))
         self.shot_rb.setText(QtGui.QApplication.translate("depcreator_mwin", "Shot", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_rb.setText(QtGui.QApplication.translate("depcreator_mwin", "Asset", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("depcreator_mwin", "Create", None, QtGui.QApplication.UnicodeUTF8))
+        self.create_pb.setText(QtGui.QApplication.translate("depcreator_mwin", "Create", None, QtGui.QApplication.UnicodeUTF8))
 

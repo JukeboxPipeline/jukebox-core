@@ -1046,3 +1046,84 @@ class UserItemData(ItemData):
         :raises: None
         """
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+
+
+def Department_name_data(Department, role):
+    """Return the data for name
+
+    :param Department: the assettype that holds the data
+    :type Department: :class:`jukeboxcore.djadapter.models.Department`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the name
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        return Department.name
+
+
+def Department_description_data(Department, role):
+    """Return the data for description
+
+    :param Department: the assettype that holds the data
+    :type Department: :class:`jukeboxcore.djadapter.models.Department`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the description
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        return Department.description
+
+
+class DepartmentItemData(ItemData):
+    """Item Data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents an assettype
+    """
+
+    def __init__(self, Department):
+        """Constructs a new item data for the assettype
+
+        :param Department: the assettype to represent
+        :type Department: :class:`jukeboxcore.djadapter.models.Department`
+        :raises: None
+        """
+        super(DepartmentItemData, self).__init__()
+        self._Department = Department
+
+    columns = [Department_name_data,
+               Department_description_data]
+
+    def column_count(self, ):
+        """Return the number of columns that can be queried for data
+
+        :returns: the number of columns
+        :rtype: int
+        :raises: None
+        """
+        return len(self.columns)
+
+    def data(self, column, role):
+        """Return the data for the specified column and role
+
+        The column addresses one attribute of the data.
+
+        :param column: the data column
+        :type column: int
+        :param role: the data role
+        :type role: QtCore.Qt.ItemDataRole
+        :returns: data depending on the role
+        :rtype:
+        :raises: None
+        """
+        return self.columns[column](self._Department, role)
+
+    def internal_data(self, ):
+        """Return the assettype
+
+        :returns: the shot
+        :rtype: :class:`jukeboxcore.djadapter.models.Department`
+        :raises: None
+        """
+        return self._Department

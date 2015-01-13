@@ -16,7 +16,7 @@
   <widget class="QWidget" name="central_widget">
    <layout class="QGridLayout" name="central_grid">
     <item row="3" column="1">
-     <widget class="QPlainTextEdit" name="plainTextEdit"/>
+     <widget class="QPlainTextEdit" name="des_pte"/>
     </item>
     <item row="1" column="1">
      <widget class="QLineEdit" name="short_le"/>
@@ -80,7 +80,7 @@
      </layout>
     </item>
     <item row="5" column="1">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="create_pb">
       <property name="text">
        <string>Create</string>
       </property>
@@ -91,5 +91,22 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>create_pb</sender>
+   <signal>clicked()</signal>
+   <receiver>depcreator_mwin</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>429</x>
+     <y>559</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

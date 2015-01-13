@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\taskcreator.ui'
 #
-# Created: Tue Jan 13 14:50:07 2015
+# Created: Tue Jan 13 18:00:46 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -44,6 +44,7 @@ class Ui_taskcreator_mwin(object):
         taskcreator_mwin.setStatusBar(self.statusbar)
 
         self.retranslateUi(taskcreator_mwin)
+        QtCore.QObject.connect(self.create_pb, QtCore.SIGNAL("clicked()"), taskcreator_mwin.close)
         QtCore.QMetaObject.connectSlotsByName(taskcreator_mwin)
 
     def retranslateUi(self, taskcreator_mwin):

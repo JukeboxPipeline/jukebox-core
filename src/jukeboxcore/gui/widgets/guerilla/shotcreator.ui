@@ -50,5 +50,22 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>create_pb</sender>
+   <signal>clicked()</signal>
+   <receiver>shotcreator_mwin</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>429</x>
+     <y>340</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

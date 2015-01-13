@@ -67,5 +67,22 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>create_pb</sender>
+   <signal>clicked()</signal>
+   <receiver>usercreator_mwin</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>426</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>82</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

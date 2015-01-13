@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\assetcreator.ui'
 #
-# Created: Tue Jan 13 14:42:20 2015
+# Created: Tue Jan 13 18:00:46 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,6 +39,7 @@ class Ui_assetcreator_mwin(object):
         assetcreator_mwin.setStatusBar(self.statusbar)
 
         self.retranslateUi(assetcreator_mwin)
+        QtCore.QObject.connect(self.create_pb, QtCore.SIGNAL("clicked()"), assetcreator_mwin.close)
         QtCore.QMetaObject.connectSlotsByName(assetcreator_mwin)
 
     def retranslateUi(self, assetcreator_mwin):

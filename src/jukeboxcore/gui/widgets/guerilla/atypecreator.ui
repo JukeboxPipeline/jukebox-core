@@ -39,7 +39,7 @@
      <widget class="QLineEdit" name="name_le"/>
     </item>
     <item row="2" column="1">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="create_pb">
       <property name="text">
        <string>Create</string>
       </property>
@@ -50,5 +50,22 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>create_pb</sender>
+   <signal>clicked()</signal>
+   <receiver>atypecreator_mwin</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>429</x>
+     <y>559</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

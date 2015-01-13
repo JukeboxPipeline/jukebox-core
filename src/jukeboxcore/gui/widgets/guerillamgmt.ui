@@ -27,6 +27,9 @@
        <layout class="QVBoxLayout" name="prjs_vbox">
         <item>
          <widget class="QTableView" name="prjs_tablev">
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
@@ -35,14 +38,14 @@
         <item>
          <layout class="QHBoxLayout" name="prjs_btns_vbox">
           <item>
-           <widget class="QPushButton" name="prjs_view_prj_btn">
+           <widget class="QPushButton" name="prjs_prj_view_pb">
             <property name="text">
              <string>View</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="prjs_create_prj_btn">
+           <widget class="QPushButton" name="prjs_prj_create_pb">
             <property name="text">
              <string>Create</string>
             </property>
@@ -444,6 +447,12 @@
                 <height>300</height>
                </size>
               </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
              </widget>
             </item>
             <item row="13" column="1">
@@ -460,6 +469,12 @@
                 <height>250</height>
                </size>
               </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
              </widget>
             </item>
             <item row="6" column="1">
@@ -505,6 +520,12 @@
                 <height>250</height>
                </size>
               </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
              </widget>
             </item>
             <item row="17" column="1">
@@ -521,6 +542,12 @@
                 <height>300</height>
                </size>
               </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
              </widget>
             </item>
             <item row="0" column="1">
@@ -781,6 +808,9 @@
                 <verstretch>3</verstretch>
                </sizepolicy>
               </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
              </widget>
             </item>
             <item row="5" column="1">
@@ -900,6 +930,9 @@
                 <height>300</height>
                </size>
               </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
              </widget>
             </item>
             <item row="9" column="1">
@@ -932,22 +965,6 @@
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="10" column="1">
-             <widget class="QTableView" name="shot_asset_tablev">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>1</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>300</height>
-               </size>
               </property>
              </widget>
             </item>
@@ -1229,6 +1246,25 @@
               </item>
              </layout>
             </item>
+            <item row="10" column="1">
+             <widget class="QTreeView" name="shot_asset_treev">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>300</height>
+               </size>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -1309,6 +1345,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>5</verstretch>
                </sizepolicy>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
               </property>
              </widget>
             </item>
@@ -1533,16 +1572,6 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="1">
-             <widget class="QTableView" name="asset_asset_tablev">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>3</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
             <item row="8" column="1">
              <widget class="QTableView" name="asset_task_tablev">
               <property name="sizePolicy">
@@ -1550,6 +1579,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>3</verstretch>
                </sizepolicy>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
               </property>
              </widget>
             </item>
@@ -1588,6 +1620,19 @@
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QTreeView" name="asset_asset_treev">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>3</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
               </property>
              </widget>
             </item>
@@ -1819,7 +1864,11 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <widget class="QTableView" name="dep_prj_tablev"/>
+             <widget class="QTableView" name="dep_prj_tablev">
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1946,7 +1995,11 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <widget class="QTableWidget" name="task_user_tablev"/>
+             <widget class="QTableWidget" name="task_user_tablev">
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+             </widget>
             </item>
             <item row="4" column="1">
              <layout class="QHBoxLayout" name="task_link_hbox">
@@ -2031,19 +2084,23 @@
            </property>
            <layout class="QVBoxLayout" name="users_sa_widget_vbox">
             <item>
-             <widget class="QTableView" name="users_tablev"/>
+             <widget class="QTableView" name="users_tablev">
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+             </widget>
             </item>
             <item>
              <layout class="QHBoxLayout" name="users_btns_hbox">
               <item>
-               <widget class="QPushButton" name="users_view_pb">
+               <widget class="QPushButton" name="users_user_view_pb">
                 <property name="text">
                  <string>View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="users_create_pb">
+               <widget class="QPushButton" name="users_user_create_pb">
                 <property name="text">
                  <string>Create</string>
                 </property>
@@ -2191,9 +2248,6 @@
               </property>
              </widget>
             </item>
-            <item row="8" column="1">
-             <widget class="QTreeView" name="user_task_tablev"/>
-            </item>
             <item row="9" column="1">
              <layout class="QHBoxLayout" name="user_task_btns_hbox">
               <item>
@@ -2217,6 +2271,9 @@
                </spacer>
               </item>
              </layout>
+            </item>
+            <item row="8" column="1">
+             <widget class="QTreeView" name="user_task_treev"/>
             </item>
            </layout>
           </widget>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\usercreator.ui'
 #
-# Created: Tue Jan 13 14:50:07 2015
+# Created: Tue Jan 13 18:00:46 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -50,6 +50,7 @@ class Ui_usercreator_mwin(object):
         usercreator_mwin.setStatusBar(self.statusbar)
 
         self.retranslateUi(usercreator_mwin)
+        QtCore.QObject.connect(self.create_pb, QtCore.SIGNAL("clicked()"), usercreator_mwin.close)
         QtCore.QMetaObject.connectSlotsByName(usercreator_mwin)
 
     def retranslateUi(self, usercreator_mwin):

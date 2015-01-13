@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\seqcreator.ui'
 #
-# Created: Tue Jan 13 14:50:07 2015
+# Created: Tue Jan 13 18:00:46 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,6 +39,7 @@ class Ui_seqcreator_mwin(object):
         seqcreator_mwin.setStatusBar(self.statusbar)
 
         self.retranslateUi(seqcreator_mwin)
+        QtCore.QObject.connect(self.create_pb, QtCore.SIGNAL("clicked()"), seqcreator_mwin.close)
         QtCore.QMetaObject.connectSlotsByName(seqcreator_mwin)
 
     def retranslateUi(self, seqcreator_mwin):
