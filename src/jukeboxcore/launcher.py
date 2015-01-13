@@ -176,8 +176,10 @@ class Launcher(object):
         """
         parser.set_defaults(func=self.compile_ui)
         parser.add_argument('uifile',
+                        nargs="+",
                         help='the uifile that will be compiled.\
-The compiled file will be in the same directory but ends with _ui.py',
+The compiled file will be in the same directory but ends with _ui.py.\
+Optional a list of files.',
                         type=argparse.FileType('r'))
 
     def compile_ui(self, namespace, unknown):
@@ -191,8 +193,9 @@ The compiled file will be in the same directory but ends with _ui.py',
         :rtype: None
         :raises: None
         """
-        uifile = namespace.uifile.name
-        qtcompile.compile_ui(uifile)
+        uifiles = namespace.uifile
+        for f in uifiles:
+            qtcompile.compile_ui(f.name)
 
     def setup_compile_rcc_parser(self, parser):
         """Setup the given parser for the compile_rcc command
