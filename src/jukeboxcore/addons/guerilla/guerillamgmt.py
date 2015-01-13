@@ -11,6 +11,8 @@ from jukeboxcore.plugins import JB_CoreStandaloneGuiPlugin
 from jukeboxcore.gui.widgets.guerillamgmt_ui import Ui_guerillamgmt_mwin
 from jukeboxcore.gui.widgets.guerilla.projectcreator_ui import Ui_projectcreator_dialog
 from jukeboxcore.gui.widgets.guerilla.seqcreator_ui import Ui_seqcreator_dialog
+from jukeboxcore.gui.widgets.guerilla.atypecreator_ui import Ui_atypecreator_dialog
+from jukeboxcore.gui.widgets.guerilla.atypeadder_ui import Ui_atypeadder_dialog
 
 
 class ProjectCreatorDialog(JB_Dialog, Ui_projectcreator_dialog):
@@ -88,6 +90,91 @@ class SequenceCreatorDialog(JB_Dialog, Ui_seqcreator_dialog):
             self.accept()
         except:
             log.exception("Could not create new sequence")
+
+
+class AtypeCreatorDialog(JB_Dialog, Ui_atypecreator_dialog):
+    """A Dialog to create a atype
+    """
+
+    def __init__(self, projects=None, parent=None, flags=0):
+        """Initialize a new atype creator dialog
+
+        :param parent: the parent object
+        :type parent: :class:`QtCore.QObject`
+        :param flags: the window flags
+        :type flags: :data:`QtCore.Qt.WindowFlags`
+        :raises: None
+        """
+        super(AtypeCreatorDialog, self).__init__(parent, flags)
+        self.projects = projects or []
+        self.atype = None
+        self.setupUi(self)
+        self.create_pb.clicked.connect(self.create_atype)
+
+    def create_atype(self, ):
+        """Create a atype and store it in the self.atype
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        name = self.name_le.text()
+        desc = self.desc_pte.toPlainText()
+        try:
+            atype = djadapter.models.Atype(name=name, description=desc)
+            atype.save()
+            for prj in self.projects:
+                atype.projects.add(prj)
+            self.atype = atype
+            self.accept()
+        except:
+            log.exception("Could not create new assettype")
+
+
+class AtypeAdderDialog(JB_Dialog, Ui_atypeadder_dialog):
+    """A Dialog to add atype to a project
+    """
+
+    def __init__(self, project, parent=None, flags=0):
+        """Initialize a new atype creator dialog
+
+        :param project: The project for the atypes
+        :type project: :class:`jukeboxcore.djadapter.models.Project`
+        :param parent: the parent object
+        :type parent: :class:`QtCore.QObject`
+        :param flags: the window flags
+        :type flags: :data:`QtCore.Qt.WindowFlags`
+        :raises: None
+        """
+        super(AtypeAdderDialog, self).__init__(parent, flags)
+        self._project = project
+        self.atypes = []
+        self.setupUi(self)
+        self.add_pb.clicked.connect(self.add_atype)
+
+        rootdata = treemodel.ListItemData(["Name", "Description"])
+        rootitem = treemodel.TreeItem(rootdata)
+        atypes = djadapter.atypes.exclude(projects=project)
+        for atype in atypes:
+            atypedata = djitemdata.AtypeItemData(atype)
+            treemodel.TreeItem(atypedata, rootitem)
+        self.model = treemodel.TreeModel(rootitem)
+        self.atype_tablev.setModel(self.model)
+
+    def add_atype(self, ):
+        """Add a atype and store it in the self.atypes
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        i = self.atype_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            atype = item.internal_data()
+            atype.projects.add(self._project)
+            self.atypes.append(atype)
+            item.set_parent(None)
 
 
 class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
@@ -608,6 +695,89 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         dialog.exec_()
         seq = dialog.sequence
         return seq
+
+    def prj_view_atype(self, *args, **kwargs):
+        """View the, in the atype table view selected, assettype.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_prj:
+            return
+        i = self.prj_atype_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            atype = item.internal_data()
+            self.view_atype(atype)
+
+    def prj_add_atype(self, *args, **kwargs):
+        """Add more assettypes to the project.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_prj:
+            return
+        dialog = AtypeAdderDialog(project=self.cur_prj)
+        dialog.exec_()
+        atypes = dialog.atypes
+        for atype in atypes:
+            atypedata = djitemdata.AtypeItemData(atype)
+            treemodel.TreeItem(atypedata, self.prj_atype_model.root)
+
+    def prj_create_atype(self, *args, **kwargs):
+        """Create a new project
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_prj:
+            return
+        atype = self.create_atype(projects=[self.cur_prj])
+        if atype:
+            atypedata = djitemdata.AtypeItemData(atype)
+            treemodel.TreeItem(atypedata, self.prj_atype_model.root)
+
+    def create_atype(self, projects):
+        """Create and return a new atype
+
+        :param projects: the projects for the atype
+        :type projects: :class:`jukeboxcore.djadapter.models.Project`
+        :returns: The created atype or None
+        :rtype: None | :class:`jukeboxcore.djadapter.models.Atype`
+        :raises: None
+        """
+        dialog = AtypeCreatorDialog(projects=projects, parent=self)
+        dialog.exec_()
+        atype = dialog.atype
+        return atype
+
+    def view_atype(self, atype):
+        """View the given atype on the atype page
+
+        :param atype: the atype to view
+        :type atype: :class:`jukeboxcore.djadapter.models.Atype`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        log.debug('Viewing atype %s', atype.name)
+        self.cur_atype = atype
+        self.pages_tabw.setCurrentIndex(4)
+        self.atype_name_le.setText(atype.name)
+        self.atype_desc_pte.setPlainText(atype.description)
+
+        rootdata = treemodel.ListItemData(['Name', 'Short', 'Path', 'Created', 'Semester', 'Status', 'Resolution', 'FPS', 'Scale'])
+        rootitem = treemodel.TreeItem(rootdata)
+        prjs = atype.projects.all()
+        for prj in prjs:
+            prjdata = djitemdata.ProjectItemData(prj)
+            treemodel.TreeItem(prjdata, rootitem)
+        self.atype_prj_model = treemodel.TreeModel(rootitem)
+        self.atype_prj_tablev.setModel(self.atype_prj_model)
 
 
 class GuerillaMGMT(JB_CoreStandaloneGuiPlugin):
