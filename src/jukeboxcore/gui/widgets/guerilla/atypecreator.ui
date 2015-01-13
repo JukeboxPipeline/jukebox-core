@@ -1,71 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>atypecreator_mwin</class>
- <widget class="QMainWindow" name="atypecreator_mwin">
+ <class>atypecreator_dialog</class>
+ <widget class="QDialog" name="atypecreator_dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>793</width>
+    <height>598</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Create Assettype</string>
   </property>
-  <widget class="QWidget" name="central_widget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QLabel" name="name_lb">
-      <property name="text">
-       <string>Name</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="desc_lb">
-      <property name="text">
-       <string>Description</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QPlainTextEdit" name="desc_pte"/>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="name_le"/>
-    </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="create_pb">
-      <property name="text">
-       <string>Create</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="name_lb">
+     <property name="text">
+      <string>Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="name_le"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="desc_lb">
+     <property name="text">
+      <string>Description</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPlainTextEdit" name="desc_pte"/>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="create_pb">
+     <property name="text">
+      <string>Create</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>create_pb</sender>
-   <signal>clicked()</signal>
-   <receiver>atypecreator_mwin</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>429</x>
-     <y>559</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

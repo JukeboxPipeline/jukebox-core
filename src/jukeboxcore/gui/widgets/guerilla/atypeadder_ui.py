@@ -2,36 +2,30 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\atypeadder.ui'
 #
-# Created: Tue Jan 13 18:00:46 2015
+# Created: Tue Jan 13 18:54:57 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
 
 from PySide import QtCore, QtGui
 
-class Ui_atypeadder_mwin(object):
-    def setupUi(self, atypeadder_mwin):
-        atypeadder_mwin.setObjectName("atypeadder_mwin")
-        atypeadder_mwin.resize(800, 600)
-        self.central_widget = QtGui.QWidget(atypeadder_mwin)
-        self.central_widget.setObjectName("central_widget")
-        self.central_vbox = QtGui.QVBoxLayout(self.central_widget)
-        self.central_vbox.setObjectName("central_vbox")
-        self.atype_tablev = QtGui.QTableView(self.central_widget)
+class Ui_atypeadder_dialog(object):
+    def setupUi(self, atypeadder_dialog):
+        atypeadder_dialog.setObjectName("atypeadder_dialog")
+        atypeadder_dialog.resize(806, 598)
+        self.verticalLayout = QtGui.QVBoxLayout(atypeadder_dialog)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.atype_tablev = QtGui.QTableView(atypeadder_dialog)
         self.atype_tablev.setObjectName("atype_tablev")
-        self.central_vbox.addWidget(self.atype_tablev)
-        self.add_pb = QtGui.QPushButton(self.central_widget)
+        self.verticalLayout.addWidget(self.atype_tablev)
+        self.add_pb = QtGui.QPushButton(atypeadder_dialog)
         self.add_pb.setObjectName("add_pb")
-        self.central_vbox.addWidget(self.add_pb)
-        atypeadder_mwin.setCentralWidget(self.central_widget)
-        self.statusbar = QtGui.QStatusBar(atypeadder_mwin)
-        self.statusbar.setObjectName("statusbar")
-        atypeadder_mwin.setStatusBar(self.statusbar)
+        self.verticalLayout.addWidget(self.add_pb)
 
-        self.retranslateUi(atypeadder_mwin)
-        QtCore.QMetaObject.connectSlotsByName(atypeadder_mwin)
+        self.retranslateUi(atypeadder_dialog)
+        QtCore.QMetaObject.connectSlotsByName(atypeadder_dialog)
 
-    def retranslateUi(self, atypeadder_mwin):
-        atypeadder_mwin.setWindowTitle(QtGui.QApplication.translate("atypeadder_mwin", "Add Assettypes", None, QtGui.QApplication.UnicodeUTF8))
-        self.add_pb.setText(QtGui.QApplication.translate("atypeadder_mwin", "Add", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, atypeadder_dialog):
+        atypeadder_dialog.setWindowTitle(QtGui.QApplication.translate("atypeadder_dialog", "Add Assettypes", None, QtGui.QApplication.UnicodeUTF8))
+        self.add_pb.setText(QtGui.QApplication.translate("atypeadder_dialog", "Add", None, QtGui.QApplication.UnicodeUTF8))
 

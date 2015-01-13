@@ -2,36 +2,30 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\prjadder.ui'
 #
-# Created: Tue Jan 13 18:00:46 2015
+# Created: Tue Jan 13 18:54:57 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
 
 from PySide import QtCore, QtGui
 
-class Ui_prjadder_mwin(object):
-    def setupUi(self, prjadder_mwin):
-        prjadder_mwin.setObjectName("prjadder_mwin")
-        prjadder_mwin.resize(800, 600)
-        self.central_widget = QtGui.QWidget(prjadder_mwin)
-        self.central_widget.setObjectName("central_widget")
-        self.central_vbox = QtGui.QVBoxLayout(self.central_widget)
-        self.central_vbox.setObjectName("central_vbox")
-        self.prj_tablev = QtGui.QTableView(self.central_widget)
+class Ui_prjadder_dialog(object):
+    def setupUi(self, prjadder_dialog):
+        prjadder_dialog.setObjectName("prjadder_dialog")
+        prjadder_dialog.resize(987, 631)
+        self.verticalLayout = QtGui.QVBoxLayout(prjadder_dialog)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.prj_tablev = QtGui.QTableView(prjadder_dialog)
         self.prj_tablev.setObjectName("prj_tablev")
-        self.central_vbox.addWidget(self.prj_tablev)
-        self.add_pb = QtGui.QPushButton(self.central_widget)
+        self.verticalLayout.addWidget(self.prj_tablev)
+        self.add_pb = QtGui.QPushButton(prjadder_dialog)
         self.add_pb.setObjectName("add_pb")
-        self.central_vbox.addWidget(self.add_pb)
-        prjadder_mwin.setCentralWidget(self.central_widget)
-        self.statusbar = QtGui.QStatusBar(prjadder_mwin)
-        self.statusbar.setObjectName("statusbar")
-        prjadder_mwin.setStatusBar(self.statusbar)
+        self.verticalLayout.addWidget(self.add_pb)
 
-        self.retranslateUi(prjadder_mwin)
-        QtCore.QMetaObject.connectSlotsByName(prjadder_mwin)
+        self.retranslateUi(prjadder_dialog)
+        QtCore.QMetaObject.connectSlotsByName(prjadder_dialog)
 
-    def retranslateUi(self, prjadder_mwin):
-        prjadder_mwin.setWindowTitle(QtGui.QApplication.translate("prjadder_mwin", "Add Project", None, QtGui.QApplication.UnicodeUTF8))
-        self.add_pb.setText(QtGui.QApplication.translate("prjadder_mwin", "Add", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, prjadder_dialog):
+        prjadder_dialog.setWindowTitle(QtGui.QApplication.translate("prjadder_dialog", "Add Projects", None, QtGui.QApplication.UnicodeUTF8))
+        self.add_pb.setText(QtGui.QApplication.translate("prjadder_dialog", "Add", None, QtGui.QApplication.UnicodeUTF8))
 

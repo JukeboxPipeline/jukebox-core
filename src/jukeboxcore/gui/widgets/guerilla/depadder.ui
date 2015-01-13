@@ -1,33 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>depadder_mwin</class>
- <widget class="QMainWindow" name="depadder_mwin">
+ <class>depadder_dialog</class>
+ <widget class="QDialog" name="depadder_dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>798</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Add Department</string>
+   <string>Add Departments</string>
   </property>
-  <widget class="QWidget" name="central_widget">
-   <layout class="QVBoxLayout" name="central_vbox">
-    <item>
-     <widget class="QTableView" name="dep_tablev"/>
-    </item>
-    <item>
-     <widget class="QPushButton" name="add_pb">
-      <property name="text">
-       <string>Add</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableView" name="dep_tablev"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="add_pb">
+     <property name="text">
+      <string>Add</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

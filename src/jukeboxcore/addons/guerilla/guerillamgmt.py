@@ -4,11 +4,50 @@ from jukeboxcore.log import get_logger
 log = get_logger(__name__)
 
 from jukeboxcore import djadapter
-from jukeboxcore.gui.main import JB_MainWindow, dt_to_qdatetime
+from jukeboxcore.gui.main import JB_MainWindow, JB_Dialog, dt_to_qdatetime
 from jukeboxcore.gui import treemodel
 from jukeboxcore.gui import djitemdata
 from jukeboxcore.plugins import JB_CoreStandaloneGuiPlugin
 from jukeboxcore.gui.widgets.guerillamgmt_ui import Ui_guerillamgmt_mwin
+from jukeboxcore.gui.widgets.guerilla.projectcreator_ui import Ui_projectcreator_dialog
+
+
+class ProjectCreatorDialog(JB_Dialog, Ui_projectcreator_dialog):
+    """A Dialog to create a project
+    """
+
+    def __init__(self, parent=None, flags=0):
+        """Initialize a new project creator dialog
+
+        :param parent: the parent object
+        :type parent: :class:`QtCore.QObject`
+        :param flags: the window flags
+        :type flags: :data:`QtCore.Qt.WindowFlags`
+        :raises: None
+        """
+        super(ProjectCreatorDialog, self).__init__(parent, flags)
+        self.project = None
+        self.setupUi(self)
+        self.create_pb.clicked.connect(self.create_prj)
+
+    def create_prj(self, ):
+        """Create a project and store it in the self.project
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        name = self.name_le.text()
+        short = self.short_le.text()
+        path = self.path_le.text()
+        semester = self.semester_le.text()
+        try:
+            prj = djadapter.models.Project(name=name, short=short, path=path, semester=semester)
+            prj.save()
+            self.project = prj
+            self.accept()
+        except:
+            log.exception("Could not create new project")
 
 
 class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
@@ -24,7 +63,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         :type flags: :data:`QtCore.Qt.WindowFlags`
         :raises: None
         """
-        super(GuerillaMGMTWin, self).__init__(parent)
+        super(GuerillaMGMTWin, self).__init__(parent, flags)
         self.cur_prj = None
         self.cur_seq = None
         self.cur_shot = None
@@ -376,8 +415,9 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         :raises: None
         """
         prj = self.create_prj()
-        prjdata = djitemdata.ProjectItemData(prj)
-        treemodel.TreeItem(prjdata, self.prjs_model.root)
+        if prj:
+            prjdata = djitemdata.ProjectItemData(prj)
+            treemodel.TreeItem(prjdata, self.prjs_model.root)
 
     def view_project(self, prj):
         """View the given project on the project page
@@ -437,6 +477,30 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
             treemodel.TreeItem(userdata, userrootitem)
         self.prj_user_model = treemodel.TreeModel(userrootitem)
         self.prj_user_tablev.setModel(self.prj_user_model)
+
+    def create_prj(self, atypes=None, deps=None):
+        """Create and return a new project
+
+        :param atypes: add the given atypes to the project
+        :type atypes: list | None
+        :param deps: add the given departmetns to the project
+        :type deps: list | None
+        :returns: The created project or None
+        :rtype: None | :class:`jukeboxcore.djadapter.models.Project`
+        :raises: None
+        """
+        dialog = ProjectCreatorDialog()
+        dialog.exec_()
+        prj = dialog.project
+        if prj and atypes:
+            for at in atypes:
+                at.projects.add(prj)
+                at.save()
+        if prj and deps:
+            for dep in deps:
+                dep.projects.add(prj)
+                dep.save()
+        return prj
 
 
 class GuerillaMGMT(JB_CoreStandaloneGuiPlugin):
