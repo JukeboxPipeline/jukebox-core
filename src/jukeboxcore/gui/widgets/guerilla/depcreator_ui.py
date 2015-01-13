@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\depcreator.ui'
 #
-# Created: Tue Jan 13 18:54:57 2015
+# Created: Tue Jan 13 20:31:48 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -15,13 +15,14 @@ class Ui_depcreator_dialog(object):
         depcreator_dialog.resize(796, 599)
         self.gridLayout = QtGui.QGridLayout(depcreator_dialog)
         self.gridLayout.setObjectName("gridLayout")
-        self.des_pte = QtGui.QPlainTextEdit(depcreator_dialog)
-        self.des_pte.setObjectName("des_pte")
-        self.gridLayout.addWidget(self.des_pte, 4, 2, 1, 1)
+        self.desc_pte = QtGui.QPlainTextEdit(depcreator_dialog)
+        self.desc_pte.setObjectName("desc_pte")
+        self.gridLayout.addWidget(self.desc_pte, 4, 2, 1, 1)
         self.create_pb = QtGui.QPushButton(depcreator_dialog)
         self.create_pb.setObjectName("create_pb")
         self.gridLayout.addWidget(self.create_pb, 6, 2, 1, 1)
         self.ordervalue_sb = QtGui.QSpinBox(depcreator_dialog)
+        self.ordervalue_sb.setMaximum(99999)
         self.ordervalue_sb.setObjectName("ordervalue_sb")
         self.gridLayout.addWidget(self.ordervalue_sb, 5, 2, 1, 1)
         self.description_lb = QtGui.QLabel(depcreator_dialog)

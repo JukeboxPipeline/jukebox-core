@@ -13,6 +13,8 @@ from jukeboxcore.gui.widgets.guerilla.projectcreator_ui import Ui_projectcreator
 from jukeboxcore.gui.widgets.guerilla.seqcreator_ui import Ui_seqcreator_dialog
 from jukeboxcore.gui.widgets.guerilla.atypecreator_ui import Ui_atypecreator_dialog
 from jukeboxcore.gui.widgets.guerilla.atypeadder_ui import Ui_atypeadder_dialog
+from jukeboxcore.gui.widgets.guerilla.depcreator_ui import Ui_depcreator_dialog
+from jukeboxcore.gui.widgets.guerilla.depadder_ui import Ui_depadder_dialog
 
 
 class ProjectCreatorDialog(JB_Dialog, Ui_projectcreator_dialog):
@@ -174,6 +176,94 @@ class AtypeAdderDialog(JB_Dialog, Ui_atypeadder_dialog):
             atype = item.internal_data()
             atype.projects.add(self._project)
             self.atypes.append(atype)
+            item.set_parent(None)
+
+
+class DepCreatorDialog(JB_Dialog, Ui_depcreator_dialog):
+    """A Dialog to create a dep
+    """
+
+    def __init__(self, projects=None, parent=None, flags=0):
+        """Initialize a new dep creator dialog
+
+        :param parent: the parent object
+        :type parent: :class:`QtCore.QObject`
+        :param flags: the window flags
+        :type flags: :data:`QtCore.Qt.WindowFlags`
+        :raises: None
+        """
+        super(DepCreatorDialog, self).__init__(parent, flags)
+        self.projects = projects or []
+        self.dep = None
+        self.setupUi(self)
+        self.create_pb.clicked.connect(self.create_dep)
+
+    def create_dep(self, ):
+        """Create a dep and store it in the self.dep
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        name = self.name_le.text()
+        short = self.short_le.text()
+        assetflag = self.asset_rb.isChecked()
+        ordervalue = self.ordervalue_sb.value()
+        desc = self.desc_pte.toPlainText()
+        try:
+            dep = djadapter.models.Department(name=name, short=short, assetflag=assetflag, ordervalue=ordervalue, description=desc)
+            dep.save()
+            for prj in self.projects:
+                dep.projects.add(prj)
+            self.dep = dep
+            self.accept()
+        except:
+            log.exception("Could not create new department.")
+
+
+class DepAdderDialog(JB_Dialog, Ui_depadder_dialog):
+    """A Dialog to add departments to a project
+    """
+
+    def __init__(self, project, parent=None, flags=0):
+        """Initialize a new dep creator dialog
+
+        :param project: The project for the deps
+        :type project: :class:`jukeboxcore.djadapter.models.Project`
+        :param parent: the parent object
+        :type parent: :class:`QtCore.QObject`
+        :param flags: the window flags
+        :type flags: :data:`QtCore.Qt.WindowFlags`
+        :raises: None
+        """
+        super(DepAdderDialog, self).__init__(parent, flags)
+        self._project = project
+        self.deps = []
+        self.setupUi(self)
+        self.add_pb.clicked.connect(self.add_dep)
+
+        rootdata = treemodel.ListItemData(["Name", "Description", "Ordervalue"])
+        rootitem = treemodel.TreeItem(rootdata)
+        deps = djadapter.departments.exclude(projects=project)
+        for dep in deps:
+            depdata = djitemdata.DepartmentItemData(dep)
+            treemodel.TreeItem(depdata, rootitem)
+        self.model = treemodel.TreeModel(rootitem)
+        self.dep_tablev.setModel(self.model)
+
+    def add_dep(self, ):
+        """Add a dep and store it in the self.deps
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        i = self.dep_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            dep = item.internal_data()
+            dep.projects.add(self._project)
+            self.deps.append(dep)
             item.set_parent(None)
 
 
@@ -589,7 +679,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         self.prj_atype_model = treemodel.TreeModel(atyperootitem)
         self.prj_atype_tablev.setModel(self.prj_atype_model)
 
-        deprootdata = treemodel.ListItemData(['Name', "Description"])
+        deprootdata = treemodel.ListItemData(['Name', "Description", "Ordervalue"])
         deprootitem = treemodel.TreeItem(deprootdata)
         for dep in prj.department_set.all():
             depdata = djitemdata.DepartmentItemData(dep)
@@ -778,6 +868,93 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
             treemodel.TreeItem(prjdata, rootitem)
         self.atype_prj_model = treemodel.TreeModel(rootitem)
         self.atype_prj_tablev.setModel(self.atype_prj_model)
+
+    def prj_view_dep(self, *args, **kwargs):
+        """View the, in the dep table view selected, department.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_prj:
+            return
+        i = self.prj_dep_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            dep = item.internal_data()
+            self.view_dep(dep)
+
+    def prj_add_dep(self, *args, **kwargs):
+        """Add more departments to the project.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_prj:
+            return
+        dialog = DepAdderDialog(project=self.cur_prj)
+        dialog.exec_()
+        deps = dialog.deps
+        for dep in deps:
+            depdata = djitemdata.DepartmentItemData(dep)
+            treemodel.TreeItem(depdata, self.prj_dep_model.root)
+
+    def prj_create_dep(self, *args, **kwargs):
+        """Create a new project
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_prj:
+            return
+        dep = self.create_dep(projects=[self.cur_prj])
+        if dep:
+            depdata = djitemdata.DepartmentItemData(dep)
+            treemodel.TreeItem(depdata, self.prj_dep_model.root)
+
+    def create_dep(self, projects):
+        """Create and return a new dep
+
+        :param projects: the projects for the dep
+        :type projects: :class:`jukeboxcore.djadapter.models.Project`
+        :returns: The created dep or None
+        :rtype: None | :class:`jukeboxcore.djadapter.models.Dep`
+        :raises: None
+        """
+        dialog = DepCreatorDialog(projects=projects, parent=self)
+        dialog.exec_()
+        dep = dialog.dep
+        return dep
+
+    def view_dep(self, dep):
+        """View the given department on the department page
+
+        :param dep: the dep to view
+        :type dep: :class:`jukeboxcore.djadapter.models.Department`
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        log.debug('Viewing department %s', dep.name)
+        self.cur_dep = dep
+        self.pages_tabw.setCurrentIndex(6)
+        self.dep_name_le.setText(dep.name)
+        self.dep_short_le.setText(dep.short)
+        self.dep_shot_rb.setChecked(not dep.assetflag)
+        self.dep_asset_rb.setChecked(dep.assetflag)
+        self.dep_ordervalue_sb.setValue(dep.ordervalue)
+        self.dep_desc_pte.setPlainText(dep.description)
+
+        rootdata = treemodel.ListItemData(['Name', 'Short', 'Path', 'Created', 'Semester', 'Status', 'Resolution', 'FPS', 'Scale'])
+        rootitem = treemodel.TreeItem(rootdata)
+        prjs = dep.projects.all()
+        for prj in prjs:
+            prjdata = djitemdata.ProjectItemData(prj)
+            treemodel.TreeItem(prjdata, rootitem)
+        self.dep_prj_model = treemodel.TreeModel(rootitem)
+        self.dep_prj_tablev.setModel(self.dep_prj_model)
 
 
 class GuerillaMGMT(JB_CoreStandaloneGuiPlugin):

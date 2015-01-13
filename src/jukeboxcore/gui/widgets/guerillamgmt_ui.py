@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerillamgmt.ui'
 #
-# Created: Tue Jan 13 17:38:24 2015
+# Created: Tue Jan 13 20:38:18 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -905,6 +905,8 @@ class Ui_guerillamgmt_mwin(object):
         self.dep_assetflag_hbox.addItem(spacerItem13)
         self.dep_sa_widget_grid.addLayout(self.dep_assetflag_hbox, 4, 1, 1, 1)
         self.dep_ordervalue_sb = QtGui.QSpinBox(self.dep_sa_widget)
+        self.dep_ordervalue_sb.setMinimum(-9999)
+        self.dep_ordervalue_sb.setMaximum(999999)
         self.dep_ordervalue_sb.setObjectName("dep_ordervalue_sb")
         self.dep_sa_widget_grid.addWidget(self.dep_ordervalue_sb, 3, 1, 1, 1)
         self.dep_desc_pte = QtGui.QPlainTextEdit(self.dep_sa_widget)

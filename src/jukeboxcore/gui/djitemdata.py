@@ -1048,7 +1048,7 @@ class UserItemData(ItemData):
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
 
-def Department_name_data(Department, role):
+def department_name_data(Department, role):
     """Return the data for name
 
     :param Department: the assettype that holds the data
@@ -1063,7 +1063,7 @@ def Department_name_data(Department, role):
         return Department.name
 
 
-def Department_description_data(Department, role):
+def department_description_data(Department, role):
     """Return the data for description
 
     :param Department: the assettype that holds the data
@@ -1076,6 +1076,20 @@ def Department_description_data(Department, role):
     """
     if role == QtCore.Qt.DisplayRole:
         return Department.description
+
+def department_ordervalue_data(department, role):
+    """Return the data for description
+
+    :param department: the assettype that holds the data
+    :type department: :class:`jukeboxcore.djadapter.models.Department`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the description
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        return department.ordervalue
 
 
 class DepartmentItemData(ItemData):
@@ -1092,8 +1106,9 @@ class DepartmentItemData(ItemData):
         super(DepartmentItemData, self).__init__()
         self._Department = Department
 
-    columns = [Department_name_data,
-               Department_description_data]
+    columns = [department_name_data,
+               department_description_data,
+               department_ordervalue_data]
 
     def column_count(self, ):
         """Return the number of columns that can be queried for data
