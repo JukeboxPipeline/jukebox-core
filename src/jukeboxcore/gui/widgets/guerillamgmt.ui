@@ -867,7 +867,7 @@
              <height>1137</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="0">
+           <layout class="QGridLayout" name="shot_sa_widget_grid">
             <item row="4" column="1">
              <layout class="QHBoxLayout" name="shot_seq_hbox">
               <item>
@@ -1765,6 +1765,19 @@
                  <bool>true</bool>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_17">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>
