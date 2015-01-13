@@ -922,3 +922,127 @@ class NoteItemData(ItemData):
         :raises: None
         """
         return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+
+
+def user_username_data(user, role):
+    """Return the data for username
+
+    :param user: the user that holds the data
+    :type user: :class:`jukeboxcore.djadapter.models.User`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the updated date
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        return user.get_username()
+
+
+def user_first_data(user, role):
+    """Return the data for first name
+
+    :param user: the user that holds the data
+    :type user: :class:`jukeboxcore.djadapter.models.User`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the updated date
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        return user.first_name
+
+
+def user_last_data(user, role):
+    """Return the data for lastname
+
+    :param user: the user that holds the data
+    :type user: :class:`jukeboxcore.djadapter.models.User`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the updated date
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        return user.last_name
+
+
+def user_email_data(user, role):
+    """Return the data for email
+
+    :param user: the user that holds the data
+    :type user: :class:`jukeboxcore.djadapter.models.User`
+    :param role: item data role
+    :type role: QtCore.Qt.ItemDataRole
+    :returns: data for the updated date
+    :rtype: depending on role
+    :raises: None
+    """
+    if role == QtCore.Qt.DisplayRole:
+        return user.email
+
+
+class UserItemData(ItemData):
+    """Item data for :class:`jukeboxcore.gui.treemodel.TreeItem` that represents an user.
+    """
+
+    columns = [user_username_data,
+               user_first_data,
+               user_last_data,
+               user_email_data]
+
+    def __init__(self, user):
+        """Initialize a new item data for the user
+
+        :param user: the user to represent
+        :type user: :class:`jukeboxcore.djadapter.models.User`
+        :raises: None
+        """
+        super(UserItemData, self).__init__()
+        self._user = user
+
+    def column_count(self, ):
+        """Return the number of columns that can be queried for data
+
+        :returns: the number of columns
+        :rtype: int
+        :raises: None
+        """
+        return len(self.columns)
+
+    def data(self, column, role):
+        """Return the data for the specified column and role
+
+        The column addresses one attribute of the data.
+
+        :param column: the data column
+        :type column: int
+        :param role: the data role
+        :type role: QtCore.Qt.ItemDataRole
+        :returns: data depending on the role
+        :rtype:
+        :raises: None
+        """
+        return self.columns[column](self._user, role)
+
+    def internal_data(self, ):
+        """Return the user
+
+        :returns: the user
+        :rtype: :class:`jukeboxcore.djadapter.models.User`
+        :raises: None
+        """
+        return self._user
+
+    def flags(self, column):
+        """Return the item flags for the item
+
+        This returns editable True to enable custom editors.
+
+        :returns: the item flags
+        :rtype: QtCore.Qt.ItemFlags
+        :raises: None
+        """
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
