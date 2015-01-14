@@ -14,6 +14,16 @@
    <string>Create Asset</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="0">
+    <widget class="QLabel" name="desc_lb">
+     <property name="text">
+      <string>Description</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="name_lb">
      <property name="text">
@@ -24,25 +34,25 @@
    <item row="0" column="1">
     <widget class="QLineEdit" name="name_le"/>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="desc_lb">
-     <property name="text">
-      <string>Description</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QPlainTextEdit" name="desc_pte"/>
-   </item>
-   <item row="2" column="1">
+   <item row="3" column="1">
     <widget class="QPushButton" name="create_pb">
      <property name="text">
       <string>Create</string>
      </property>
     </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPlainTextEdit" name="desc_pte"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="atype_lb">
+     <property name="text">
+      <string>Assettype</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="atype_cb"/>
    </item>
   </layout>
  </widget>

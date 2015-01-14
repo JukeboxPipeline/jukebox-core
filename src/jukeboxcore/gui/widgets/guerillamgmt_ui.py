@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerillamgmt.ui'
 #
-# Created: Tue Jan 13 20:38:18 2015
+# Created: Wed Jan 14 17:51:32 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -977,12 +977,6 @@ class Ui_guerillamgmt_mwin(object):
         self.task_deadline_de.setDate(QtCore.QDate(2015, 1, 1))
         self.task_deadline_de.setObjectName("task_deadline_de")
         self.gridLayout_7.addWidget(self.task_deadline_de, 3, 1, 1, 1)
-        self.task_user_tablev = QtGui.QTableWidget(self.task_sa_widget)
-        self.task_user_tablev.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
-        self.task_user_tablev.setObjectName("task_user_tablev")
-        self.task_user_tablev.setColumnCount(0)
-        self.task_user_tablev.setRowCount(0)
-        self.gridLayout_7.addWidget(self.task_user_tablev, 6, 1, 1, 1)
         self.task_link_hbox = QtGui.QHBoxLayout()
         self.task_link_hbox.setObjectName("task_link_hbox")
         self.task_link_le = QtGui.QLineEdit(self.task_sa_widget)
@@ -1011,6 +1005,10 @@ class Ui_guerillamgmt_mwin(object):
         self.task_dep_lb.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.task_dep_lb.setObjectName("task_dep_lb")
         self.gridLayout_7.addWidget(self.task_dep_lb, 0, 0, 1, 1)
+        self.task_user_tablev = QtGui.QTableView(self.task_sa_widget)
+        self.task_user_tablev.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.task_user_tablev.setObjectName("task_user_tablev")
+        self.gridLayout_7.addWidget(self.task_user_tablev, 6, 1, 1, 1)
         self.task_sa.setWidget(self.task_sa_widget)
         self.task_vbox.addWidget(self.task_sa)
         self.pages_tabw.addTab(self.task_widget, "")
