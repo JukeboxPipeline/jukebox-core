@@ -2020,6 +2020,134 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         self.cur_atype.description = desc
         self.cur_atype.save()
 
+    def asset_view_asset(self, ):
+        """View the task that is currently selected on the asset page
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_asset:
+            return
+
+        i = self.asset_asset_treev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            asset = item.internal_data()
+            if isinstance(asset, djadapter.models.Asset):
+                self.view_asset(asset)
+
+    def asset_add_asset(self, *args, **kwargs):
+        """Add more assets to the asset.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_asset:
+            return
+        dialog = AssetAdderDialog(asset=self.cur_asset)
+        dialog.exec_()
+        assets = dialog.assets
+        atypes = {}
+        for c in self.asset_asset_model.root.childItems:
+            atypes[c.internal_data()] = c
+        for asset in assets:
+            atypeitem = atypes.get(asset.atype)
+            if not atypeitem:
+                atypedata = djitemdata.AtypeItemData(asset.atype)
+                atypeitem = treemodel.TreeItem(atypedata, self.asset_asset_model.root)
+                atypes[asset.atype] = atypeitem
+            assetdata = djitemdata.AssetItemData(asset)
+            treemodel.TreeItem(assetdata, atypeitem)
+        self.cur_asset.save()
+
+    def asset_remove_asset(self, *args, **kwargs):
+        """Remove the, in the asset table view selected, asset.
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_asset:
+            return
+        i = self.asset_asset_treev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            asset = item.internal_data()
+            if not isinstance(asset, djadapter.models.Asset):
+                return
+            log.debug("Removing asset %s.", asset.name)
+            item.set_parent(None)
+            self.cur_asset.assets.remove(asset)
+
+    def asset_create_asset(self, *args, **kwargs):
+        """Create a new asset
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_asset:
+            return
+        asset = self.create_asset(asset=self.cur_asset)
+        if not asset:
+            return
+        atypes = {}
+        for c in self.asset_asset_model.root.childItems:
+            atypes[c.internal_data()] = c
+        atypeitem = atypes.get(asset.atype)
+        if not atypeitem:
+            atypedata = djitemdata.AtypeItemData(asset.atype)
+            atypeitem = treemodel.TreeItem(atypedata, self.asset_asset_model.root)
+            atypes[asset.atype] = atypeitem
+        assetdata = djitemdata.AssetItemData(asset)
+        treemodel.TreeItem(assetdata, atypeitem)
+
+    def asset_view_task(self, ):
+        """View the task that is currently selected on the asset page
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_asset:
+            return
+
+        i = self.asset_task_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            task = item.internal_data()
+            self.view_task(task)
+
+    def asset_create_task(self, *args, **kwargs):
+        """Create a new task
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_asset:
+            return
+        task = self.create_task(element=self.cur_asset)
+        if task:
+            taskdata = djitemdata.TaskItemData(task)
+            treemodel.TreeItem(taskdata, self.asset_task_model.root)
+
+    def asset_save(self):
+        """Save the current asset
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_asset:
+            return
+
+        desc = self.asset_desc_pte.toPlainText()
+        self.cur_asset.description = desc
+        self.cur_asset.save()
+
 
 class GuerillaMGMT(JB_CoreStandaloneGuiPlugin):
     """A plugin that can run a GuerillaMGMT tool
