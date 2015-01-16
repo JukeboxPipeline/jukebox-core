@@ -87,9 +87,9 @@ class Test_TreeItem():
 
     def test_column_count(self):
         eq_(self.root.column_count(), 2)
-        eq_(self.c1.column_count(), 0)
+        eq_(self.c1.column_count(), 2)
         eq_(self.c2.column_count(), 1)
-        eq_(self.c3.column_count(), 0)
+        eq_(self.c3.column_count(), 1)
 
     def test_data(self):
         dr = QtCore.Qt.DisplayRole
@@ -152,9 +152,9 @@ class Test_TreeModel():
         c2i = self.m.index(1, 0)
         c3i = self.m.index(0, 0, c2i)
         eq_(self.m.columnCount(QtCore.QModelIndex()), 2)
-        eq_(self.m.columnCount(c1i), 0)
+        eq_(self.m.columnCount(c1i), 2)
         eq_(self.m.columnCount(c2i), 1)
-        eq_(self.m.columnCount(c3i), 0)
+        eq_(self.m.columnCount(c3i), 1)
 
     def test_data(self):
         c1i = self.m.index(0, 0)

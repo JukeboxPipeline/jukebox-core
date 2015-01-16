@@ -40,7 +40,7 @@ class TextPopupButton(QtGui.QPushButton):
         :rtype: None
         :raises: None
         """
-        self.mw = JB_MainWindow(flags=QtCore.Qt.Dialog)
+        self.mw = JB_MainWindow(parent=self, flags=QtCore.Qt.Dialog)
         self.mw.setWindowTitle(self.popuptitle)
         self.mw.setWindowModality(QtCore.Qt.ApplicationModal)
         w = QtGui.QWidget()

@@ -274,12 +274,12 @@ class Configer(JB_CoreStandaloneGuiPlugin):
         """
         pass
 
-    def run(self, ):
+    def run(self, parent=None):
         """Start the configeditor
 
         :returns: None
         :rtype: None
         :raises: None
         """
-        self.cw = ConfigerWin()
+        self.cw = ConfigerWin(parent=parent)
         self.cw.show()

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>usercreator_dialog</class>
+ <widget class="QDialog" name="usercreator_dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>661</width>
+    <height>145</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Create User</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="username_lb">
+     <property name="text">
+      <string>Username</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="username_le"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="first_lb">
+     <property name="text">
+      <string>First</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="first_le"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="last_lb">
+     <property name="text">
+      <string>Last</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="last_le"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="email_lb">
+     <property name="text">
+      <string>Email</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="email_le"/>
+   </item>
+   <item row="4" column="1">
+    <widget class="QPushButton" name="create_pb">
+     <property name="text">
+      <string>Create</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
