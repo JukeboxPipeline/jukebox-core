@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\assetcreator.ui'
+# Form implementation generated from reading ui file 'd:\Programmierung\Python\jukebox-core\src\jukeboxcore\gui\widgets\guerilla\assetcreator.ui'
 #
-# Created: Wed Jan 14 16:49:40 2015
+# Created: Fri Jan 16 20:55:33 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -15,36 +15,43 @@ class Ui_assetcreator_dialog(object):
         assetcreator_dialog.resize(720, 452)
         self.gridLayout = QtGui.QGridLayout(assetcreator_dialog)
         self.gridLayout.setObjectName("gridLayout")
-        self.desc_lb = QtGui.QLabel(assetcreator_dialog)
-        self.desc_lb.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.desc_lb.setObjectName("desc_lb")
-        self.gridLayout.addWidget(self.desc_lb, 2, 0, 1, 1)
-        self.name_lb = QtGui.QLabel(assetcreator_dialog)
-        self.name_lb.setObjectName("name_lb")
-        self.gridLayout.addWidget(self.name_lb, 0, 0, 1, 1)
+        self.atype_cb = QtGui.QComboBox(assetcreator_dialog)
+        self.atype_cb.setObjectName("atype_cb")
+        self.gridLayout.addWidget(self.atype_cb, 2, 1, 1, 1)
+        self.atype_lb = QtGui.QLabel(assetcreator_dialog)
+        self.atype_lb.setObjectName("atype_lb")
+        self.gridLayout.addWidget(self.atype_lb, 2, 0, 1, 1)
+        self.desc_pte = QtGui.QPlainTextEdit(assetcreator_dialog)
+        self.desc_pte.setObjectName("desc_pte")
+        self.gridLayout.addWidget(self.desc_pte, 3, 1, 1, 1)
+        self.create_pb = QtGui.QPushButton(assetcreator_dialog)
+        self.create_pb.setObjectName("create_pb")
+        self.gridLayout.addWidget(self.create_pb, 4, 1, 1, 1)
         self.name_le = QtGui.QLineEdit(assetcreator_dialog)
         self.name_le.setObjectName("name_le")
         self.gridLayout.addWidget(self.name_le, 0, 1, 1, 1)
-        self.create_pb = QtGui.QPushButton(assetcreator_dialog)
-        self.create_pb.setObjectName("create_pb")
-        self.gridLayout.addWidget(self.create_pb, 3, 1, 1, 1)
-        self.desc_pte = QtGui.QPlainTextEdit(assetcreator_dialog)
-        self.desc_pte.setObjectName("desc_pte")
-        self.gridLayout.addWidget(self.desc_pte, 2, 1, 1, 1)
-        self.atype_lb = QtGui.QLabel(assetcreator_dialog)
-        self.atype_lb.setObjectName("atype_lb")
-        self.gridLayout.addWidget(self.atype_lb, 1, 0, 1, 1)
-        self.atype_cb = QtGui.QComboBox(assetcreator_dialog)
-        self.atype_cb.setObjectName("atype_cb")
-        self.gridLayout.addWidget(self.atype_cb, 1, 1, 1, 1)
+        self.name_lb = QtGui.QLabel(assetcreator_dialog)
+        self.name_lb.setObjectName("name_lb")
+        self.gridLayout.addWidget(self.name_lb, 0, 0, 1, 1)
+        self.desc_lb = QtGui.QLabel(assetcreator_dialog)
+        self.desc_lb.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.desc_lb.setObjectName("desc_lb")
+        self.gridLayout.addWidget(self.desc_lb, 3, 0, 1, 1)
+        self.prj_cb = QtGui.QComboBox(assetcreator_dialog)
+        self.prj_cb.setObjectName("prj_cb")
+        self.gridLayout.addWidget(self.prj_cb, 1, 1, 1, 1)
+        self.prj_lb = QtGui.QLabel(assetcreator_dialog)
+        self.prj_lb.setObjectName("prj_lb")
+        self.gridLayout.addWidget(self.prj_lb, 1, 0, 1, 1)
 
         self.retranslateUi(assetcreator_dialog)
         QtCore.QMetaObject.connectSlotsByName(assetcreator_dialog)
 
     def retranslateUi(self, assetcreator_dialog):
         assetcreator_dialog.setWindowTitle(QtGui.QApplication.translate("assetcreator_dialog", "Create Asset", None, QtGui.QApplication.UnicodeUTF8))
-        self.desc_lb.setText(QtGui.QApplication.translate("assetcreator_dialog", "Description", None, QtGui.QApplication.UnicodeUTF8))
-        self.name_lb.setText(QtGui.QApplication.translate("assetcreator_dialog", "Name", None, QtGui.QApplication.UnicodeUTF8))
-        self.create_pb.setText(QtGui.QApplication.translate("assetcreator_dialog", "Create", None, QtGui.QApplication.UnicodeUTF8))
         self.atype_lb.setText(QtGui.QApplication.translate("assetcreator_dialog", "Assettype", None, QtGui.QApplication.UnicodeUTF8))
+        self.create_pb.setText(QtGui.QApplication.translate("assetcreator_dialog", "Create", None, QtGui.QApplication.UnicodeUTF8))
+        self.name_lb.setText(QtGui.QApplication.translate("assetcreator_dialog", "Name", None, QtGui.QApplication.UnicodeUTF8))
+        self.desc_lb.setText(QtGui.QApplication.translate("assetcreator_dialog", "Description", None, QtGui.QApplication.UnicodeUTF8))
+        self.prj_lb.setText(QtGui.QApplication.translate("assetcreator_dialog", "Project", None, QtGui.QApplication.UnicodeUTF8))
 

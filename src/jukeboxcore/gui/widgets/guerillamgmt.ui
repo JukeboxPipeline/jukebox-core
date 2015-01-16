@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1512</width>
-    <height>1221</height>
+    <width>1379</width>
+    <height>1024</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,7 +83,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1451</width>
+             <width>1318</width>
              <height>1552</height>
             </rect>
            </property>
@@ -748,8 +748,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1468</width>
-             <height>1137</height>
+             <width>1335</width>
+             <height>940</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="seq_grid">
@@ -893,8 +893,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1468</width>
-             <height>1137</height>
+             <width>1335</width>
+             <height>940</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="shot_sa_widget_grid">
@@ -1286,8 +1286,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1468</width>
-             <height>1137</height>
+             <width>1335</width>
+             <height>940</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="atype_sa_widget_grid">
@@ -1389,6 +1389,57 @@
               </item>
              </layout>
             </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="atype_asset_lb">
+              <property name="text">
+               <string>Assets</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QTreeView" name="atype_asset_treev">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>10</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <layout class="QHBoxLayout" name="atype_asset_btns_hbox">
+              <item>
+               <widget class="QPushButton" name="atype_asset_view_pb">
+                <property name="text">
+                 <string>View</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="atype_asset_create_pb">
+                <property name="text">
+                 <string>Create</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_18">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -1410,8 +1461,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1468</width>
-             <height>1137</height>
+             <width>1335</width>
+             <height>940</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="asset_sa_widget_grid">
@@ -1657,8 +1708,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1468</width>
-             <height>1137</height>
+             <width>1335</width>
+             <height>940</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="dep_sa_widget_grid">
@@ -1897,8 +1948,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1468</width>
-             <height>1137</height>
+             <width>1335</width>
+             <height>940</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
@@ -2084,8 +2135,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1468</width>
-             <height>1137</height>
+             <width>1335</width>
+             <height>940</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="users_sa_widget_vbox">
@@ -2148,8 +2199,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1468</width>
-             <height>1137</height>
+             <width>1335</width>
+             <height>940</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="user_sa_widget_grid">

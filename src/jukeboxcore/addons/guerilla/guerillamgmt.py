@@ -67,7 +67,7 @@ class ProjectAdderDialog(JB_Dialog, Ui_prjadder_dialog):
     """A Dialog to add project to a project
     """
 
-    def __init__(self, atype=None, department=None, parent=None, flags=0):
+    def __init__(self, atype=None, department=None, user=None, parent=None, flags=0):
         """Initialize a new project creator dialog
 
         :param atype: the atype to add the project to
@@ -75,6 +75,8 @@ class ProjectAdderDialog(JB_Dialog, Ui_prjadder_dialog):
         :param department: the department to add the project to
         :type department: :class:`djadapter.models.Department`
         :param parent: the parent object
+        :param user: the user to tadd the project to
+        :type user: :class:`djadapter.models.User`
         :type parent: :class:`QtCore.QObject`
         :param flags: the window flags
         :type flags: :data:`QtCore.Qt.WindowFlags`
@@ -83,6 +85,7 @@ class ProjectAdderDialog(JB_Dialog, Ui_prjadder_dialog):
         super(ProjectAdderDialog, self).__init__(parent, flags)
         self._atype = atype
         self._dep = department
+        self._user = user
         self.projects = []
         self.setupUi(self)
         self.add_pb.clicked.connect(self.add_project)
@@ -92,8 +95,10 @@ class ProjectAdderDialog(JB_Dialog, Ui_prjadder_dialog):
 
         if atype:
             projects = djadapter.projects.exclude(pk__in = atype.projects.all())
-        else:
+        elif department:
             projects = djadapter.projects.exclude(pk__in = department.projects.all())
+        else:
+            projects = djadapter.projects.exclude(users=user)
         for project in projects:
             projectdata = djitemdata.ProjectItemData(project)
             treemodel.TreeItem(projectdata, rootitem)
@@ -113,8 +118,10 @@ class ProjectAdderDialog(JB_Dialog, Ui_prjadder_dialog):
             project = item.internal_data()
             if self._atype:
                 self._atype.projects.add(project)
-            else:
+            elif self._dep:
                 self._dep.projects.add(project)
+            else:
+                project.users.add(self._user)
             self.projects.append(project)
             item.set_parent(None)
 
@@ -483,7 +490,7 @@ class AssetCreatorDialog(JB_Dialog, Ui_assetcreator_dialog):
     """A Dialog to create a asset
     """
 
-    def __init__(self, project, parent=None, flags=0):
+    def __init__(self, project=None, atype=None, parent=None, flags=0):
         """Initialize a new asset creator dialog
 
         :param project: the project of the asset
@@ -496,16 +503,32 @@ class AssetCreatorDialog(JB_Dialog, Ui_assetcreator_dialog):
         """
         super(AssetCreatorDialog, self).__init__(parent, flags)
         self.project = project
+        self.atype = atype
         self.asset = None
         self.setupUi(self)
-        self.atypes = list(project.atype_set.all())
-        atrootdata = treemodel.ListItemData(["Name"])
-        atrootitem = treemodel.TreeItem(atrootdata)
-        for at in self.atypes:
-            data = djitemdata.AtypeItemData(at)
-            treemodel.TreeItem(data, atrootitem)
-        self.model = treemodel.TreeModel(atrootitem)
-        self.atype_cb.setModel(self.model)
+
+        if not self.atype:
+            self.atypes = list(project.atype_set.all())
+            atrootdata = treemodel.ListItemData(["Name"])
+            atrootitem = treemodel.TreeItem(atrootdata)
+            for at in self.atypes:
+                data = djitemdata.AtypeItemData(at)
+                treemodel.TreeItem(data, atrootitem)
+            self.atypemodel = treemodel.TreeModel(atrootitem)
+            self.atype_cb.setModel(self.atypemodel)
+            self.prj_cb.setVisible(False)
+            self.prj_lb.setVisible(False)
+        else:
+            self.projects = list(self.atype.projects.all())
+            prjrootdata = treemodel.ListItemData(['Name', 'Short', 'Path', 'Created', 'Semester', 'Status', 'Resolution', 'FPS', 'Scale'])
+            prjrootitem = treemodel.TreeItem(prjrootdata)
+            for prj in self.projects:
+                prjdata = djitemdata.ProjectItemData(prj)
+                treemodel.TreeItem(prjdata, prjrootitem)
+            self.prjmodel = treemodel.TreeModel(prjrootitem)
+            self.prj_cb.setModel(self.prjmodel)
+            self.atype_cb.setVisible(False)
+            self.atype_lb.setVisible(False)
         self.create_pb.clicked.connect(self.create_asset)
 
     def create_asset(self, ):
@@ -520,11 +543,16 @@ class AssetCreatorDialog(JB_Dialog, Ui_assetcreator_dialog):
             self.name_le.setPlaceholderText("Please enter a name!")
             return
         desc = self.desc_pte.toPlainText()
-        atypei = self.atype_cb.currentIndex()
-        assert atypei >= 0
-        atype = self.atypes[atypei]
+        if self.project:
+            atypei = self.atype_cb.currentIndex()
+            assert atypei >= 0
+            self.atype = self.atypes[atypei]
+        else:
+            prji = self.prj_cb.currentIndex()
+            assert prji >= 0
+            self.project = self.projects[prji]
         try:
-            asset = djadapter.models.Asset(atype=atype, project=self.project, name=name, description=desc)
+            asset = djadapter.models.Asset(atype=self.atype, project=self.project, name=name, description=desc)
             asset.save()
             self.asset = asset
             self.accept()
@@ -918,6 +946,8 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         self.atype_prj_view_pb.clicked.connect(self.atype_view_prj)
         self.atype_prj_add_pb.clicked.connect(self.atype_add_prj)
         self.atype_prj_create_pb.clicked.connect(self.atype_create_prj)
+        self.atype_asset_view_pb.clicked.connect(self.atype_view_asset)
+        self.atype_asset_create_pb.clicked.connect(self.atype_create_asset)
         self.atype_desc_pte.textChanged.connect(self.atype_save)
 
     def setup_asset_signals(self, ):
@@ -975,7 +1005,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         """
         log.debug("Setting up users page signals.")
         self.users_user_view_pb.clicked.connect(self.users_view_user)
-        self.users_user_create_pb.clicked.connect(self.users_create_user)
+        self.users_user_create_pb.clicked.connect(self.create_user)
 
     def setup_user_signals(self, ):
         """Setup the signals for the user page
@@ -989,10 +1019,10 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         self.user_prj_view_pb.clicked.connect(self.user_view_prj)
         self.user_prj_add_pb.clicked.connect(self.user_add_prj)
         self.user_prj_remove_pb.clicked.connect(self.user_remove_prj)
-        self.user_username_le.editingFinished.connect(self.users_save)
-        self.user_first_le.editingFinished.connect(self.users_save)
-        self.user_last_le.editingFinished.connect(self.users_save)
-        self.user_email_le.editingFinished.connect(self.users_save)
+        self.user_username_le.editingFinished.connect(self.user_save)
+        self.user_first_le.editingFinished.connect(self.user_save)
+        self.user_last_le.editingFinished.connect(self.user_save)
+        self.user_email_le.editingFinished.connect(self.user_save)
 
     def prjs_view_prj(self, *args, **kwargs):
         """View the, in the projects table view selected, project.
@@ -1005,7 +1035,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         item = i.internalPointer()
         if item:
             prj = item.internal_data()
-            self.view_project(prj)
+            self.view_prj(prj)
 
     def prjs_create_prj(self, *args, **kwargs):
         """Create a new project
@@ -1016,7 +1046,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         """
         self.create_prj()
 
-    def view_project(self, prj):
+    def view_prj(self, prj):
         """View the given project on the project page
 
         :param prj: the project to view
@@ -1245,14 +1275,27 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         self.atype_name_le.setText(atype.name)
         self.atype_desc_pte.setPlainText(atype.description)
 
-        rootdata = treemodel.ListItemData(['Name', 'Short', 'Path', 'Created', 'Semester', 'Status', 'Resolution', 'FPS', 'Scale'])
-        rootitem = treemodel.TreeItem(rootdata)
+        prjrootdata = treemodel.ListItemData(['Name', 'Short', 'Path', 'Created', 'Semester', 'Status', 'Resolution', 'FPS', 'Scale'])
+        prjrootitem = treemodel.TreeItem(prjrootdata)
         prjs = atype.projects.all()
         for prj in prjs:
             prjdata = djitemdata.ProjectItemData(prj)
-            treemodel.TreeItem(prjdata, rootitem)
-        self.atype_prj_model = treemodel.TreeModel(rootitem)
+            treemodel.TreeItem(prjdata, prjrootitem)
+        self.atype_prj_model = treemodel.TreeModel(prjrootitem)
         self.atype_prj_tablev.setModel(self.atype_prj_model)
+
+        assetrootdata = treemodel.ListItemData(['Name', 'Description'])
+        assetrootitem = treemodel.TreeItem(assetrootdata)
+        self.atype_asset_model = treemodel.TreeModel(assetrootitem)
+        self.atype_asset_treev.setModel(self.atype_asset_model)
+        prjs = atype.projects.all()
+        for prj in prjs:
+            prjdata = djitemdata.ProjectItemData(prj)
+            prjitem = treemodel.TreeItem(prjdata, assetrootitem)
+            for a in djadapter.assets.filter(project=prj, atype=atype):
+                assetdata = djitemdata.AssetItemData(a)
+                treemodel.TreeItem(assetdata, prjitem)
+
         self.cur_atype = atype
 
     def prj_view_dep(self, *args, **kwargs):
@@ -1573,7 +1616,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         """
         if not self.cur_seq:
             return
-        self.view_project(self.cur_seq.project)
+        self.view_prj(self.cur_seq.project)
 
     def seq_view_shot(self, ):
         """View the shot that is selected in the table view of the sequence page
@@ -1675,7 +1718,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         if not self.cur_shot:
             return
 
-        self.view_project(self.cur_shot.project)
+        self.view_prj(self.cur_shot.project)
 
     def shot_view_seq(self, ):
         """View the sequence of the current shot
@@ -1772,7 +1815,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         self.asset_atype_le.setText(atype)
         self.asset_desc_pte.setPlainText(desc)
 
-        assetsrootdata = treemodel.ListItemData(["Name"])
+        assetsrootdata = treemodel.ListItemData(["Name", "Description"])
         assetsrootitem = treemodel.TreeItem(assetsrootdata)
         self.asset_asset_model = treemodel.TreeModel(assetsrootitem)
         self.asset_asset_treev.setModel(self.asset_asset_model)
@@ -1865,7 +1908,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         assetdata = djitemdata.AssetItemData(asset)
         treemodel.TreeItem(assetdata, atypeitem)
 
-    def create_asset(self, shot=None, asset=None):
+    def create_asset(self, atype=None, shot=None, asset=None):
         """Create and return a new asset
 
         :param project: the project for the asset
@@ -1874,12 +1917,16 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         :rtype: None | :class:`jukeboxcore.djadapter.models.Asset`
         :raises: None
         """
-        element = shot or asset
-        project = element.project
-        dialog = AssetCreatorDialog(project=project, parent=self)
+        if atype:
+            dialog = AssetCreatorDialog(atype=atype, parent=self)
+        else:
+            element = shot or asset
+            project = element.project
+            dialog = AssetCreatorDialog(project=project, parent=self)
         dialog.exec_()
         asset = dialog.asset
-        element.assets.add(asset)
+        if not atype:
+            element.assets.add(asset)
         return asset
 
     def view_task(self, task):
@@ -1944,7 +1991,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
             return
 
         prj = self.cur_asset.project
-        self.view_project(prj)
+        self.view_prj(prj)
 
     def asset_view_atype(self, ):
         """View the project of the current atype
@@ -1973,10 +2020,10 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         item = i.internalPointer()
         if item:
             prj = item.internal_data()
-            self.view_project(prj)
+            self.view_prj(prj)
 
     def atype_create_prj(self, *args, **kwargs):
-        """Create a new task
+        """Create a new project
 
         :returns: None
         :rtype: None
@@ -1990,7 +2037,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
             treemodel.TreeItem(prjdata, self.atype_prj_model.root)
 
     def atype_add_prj(self, *args, **kwargs):
-        """Create a new task
+        """Add project to assettype
 
         :returns: None
         :rtype: None
@@ -2005,6 +2052,48 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         for prj in prjs:
             prjdata = djitemdata.ProjectItemData(prj)
             treemodel.TreeItem(prjdata, self.atype_prj_model.root)
+
+    def atype_view_asset(self, ):
+        """View the project of the current assettype
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_atype:
+            return
+
+        i = self.atype_asset_treev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            asset = item.internal_data()
+            if isinstance(asset, djadapter.models.Asset):
+                self.view_asset(asset)
+
+    def atype_create_asset(self, ):
+        """Create a new asset
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_atype:
+            return
+
+        asset = self.create_asset(atype=self.cur_atype)
+
+        if not asset:
+            return
+        prjs = {}
+        for c in self.atype_asset_model.root.childItems:
+            prjs[c.internal_data()] = c
+        prjitem = prjs.get(asset.project)
+        if not prjitem:
+            prjdata = djitemdata.ProjectItemData(asset.project)
+            prjitem = treemodel.TreeItem(prjdata, self.atype_asset_model.root)
+            prjs[asset.project] = prjitem
+        assetdata = djitemdata.AssetItemData(asset)
+        treemodel.TreeItem(assetdata, prjitem)
 
     def atype_save(self):
         """Save the current atype
@@ -2147,6 +2236,253 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         desc = self.asset_desc_pte.toPlainText()
         self.cur_asset.description = desc
         self.cur_asset.save()
+
+    def dep_view_prj(self, ):
+        """View the project that is currently selected
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_dep:
+            return
+        i = self.dep_prj_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            prj = item.internal_data()
+            self.view_prj(prj)
+
+    def dep_add_prj(self, *args, **kwargs):
+        """Add projects to the current department
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_dep:
+            return
+
+        dialog = ProjectAdderDialog(department=self.cur_dep)
+        dialog.exec_()
+        prjs = dialog.projects
+        for prj in prjs:
+            prjdata = djitemdata.ProjectItemData(prj)
+            treemodel.TreeItem(prjdata, self.dep_prj_model.root)
+
+    def dep_remove_prj(self, *args, **kwargs):
+        """Remove the selected project from the department
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_dep:
+            return
+        i = self.dep_prj_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            prj = item.internal_data()
+            self.cur_dep.projects.remove(prj)
+            item.set_parent(None)
+
+    def dep_save(self, ):
+        """Save the current department
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_dep:
+            return
+        ordervalue = self.dep_ordervalue_sb.value()
+        desc = self.dep_desc_pte.toPlainText()
+        self.cur_dep.ordervalue = ordervalue
+        self.cur_dep.description = desc
+        self.cur_dep.save()
+
+    def task_view_user(self, ):
+        """View the user that is currently selected
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_task:
+            return
+        i = self.task_user_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            user = item.internal_data()
+            self.view_user(user)
+
+    def task_add_user(self, *args, **kwargs):
+        """Add users to the current task
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_task:
+            return
+
+        dialog = UserAdderDialog(task=self.cur_task)
+        dialog.exec_()
+        users = dialog.users
+        for user in users:
+            userdata = djitemdata.UserItemData(user)
+            treemodel.TreeItem(userdata, self.task_user_model.root)
+
+    def task_remove_user(self, *args, **kwargs):
+        """Remove the selected user from the task
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_task:
+            return
+        i = self.task_user_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            user = item.internal_data()
+            self.cur_task.users.remove(user)
+            item.set_parent(None)
+
+    def task_view_dep(self, ):
+        """View the departmetn of the current task
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_task:
+            return
+        self.view_dep(self.cur_task.department)
+
+    def task_view_link(self, ):
+        """View the link of the current task
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_task:
+            return
+        e = self.cur_task.element
+        if isinstance(e, djadapter.models.Asset):
+            self.view_asset(e)
+        else:
+            self.view_shot(e)
+
+    def task_save(self, ):
+        """Save the current task
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_task:
+            return
+        deadline = self.task_deadline_de.dateTime().toPython()
+        status = self.task_status_cb.currentText()
+        self.cur_task.deadline = deadline
+        self.cur_task.status = status
+        self.cur_task.save()
+
+    def users_view_user(self, ):
+        """View the user that is currently selected
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        i = self.users_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            user = item.internal_data()
+            self.view_user(user)
+
+    def user_view_task(self, ):
+        """View the task that is selected
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_user:
+            return
+        i = self.user_task_treev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            task = item.internal_data()
+            if isinstance(task, djadapter.models.Task):
+                self.view_task(task)
+
+    def user_view_prj(self, ):
+        """View the project that is currently selected
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        i = self.user_prj_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            prj = item.internal_data()
+            self.view_prj(prj)
+
+    def user_add_prj(self, *args, **kwargs):
+        """Add projects to the current user
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_user:
+            return
+
+        dialog = ProjectAdderDialog(user=self.cur_user)
+        dialog.exec_()
+        prjs = dialog.projects
+        for prj in prjs:
+            prjdata = djitemdata.ProjectItemData(prj)
+            treemodel.TreeItem(prjdata, self.user_prj_model.root)
+
+    def user_remove_prj(self, *args, **kwargs):
+        """Remove the selected project from the user
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_user:
+            return
+        i = self.user_prj_tablev.currentIndex()
+        item = i.internalPointer()
+        if item:
+            prj = item.internal_data()
+            prj.users.remove(self.cur_user)
+            item.set_parent(None)
+
+    def user_save(self):
+        """Save the current user
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        if not self.cur_user:
+            return
+
+        username = self.user_username_le.text()
+        first = self.user_first_le.text()
+        last = self.user_last_le.text()
+        email = self.user_email_le.text()
+        self.cur_user.username = username
+        self.cur_user.first_name = first
+        self.cur_user.last_name = last
+        self.cur_user.email_name = email
+        self.cur_user.save()
 
 
 class GuerillaMGMT(JB_CoreStandaloneGuiPlugin):
