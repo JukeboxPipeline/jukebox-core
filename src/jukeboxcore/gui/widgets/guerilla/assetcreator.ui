@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>assetcreator_dialog</class>
+ <widget class="QDialog" name="assetcreator_dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>720</width>
+    <height>452</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Create Asset</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="1">
+    <widget class="QComboBox" name="atype_cb"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="atype_lb">
+     <property name="text">
+      <string>Assettype</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPlainTextEdit" name="desc_pte"/>
+   </item>
+   <item row="4" column="1">
+    <widget class="QPushButton" name="create_pb">
+     <property name="text">
+      <string>Create</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="name_le"/>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="name_lb">
+     <property name="text">
+      <string>Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="desc_lb">
+     <property name="text">
+      <string>Description</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="prj_cb"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="prj_lb">
+     <property name="text">
+      <string>Project</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
