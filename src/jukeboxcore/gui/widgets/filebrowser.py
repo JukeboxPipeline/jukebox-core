@@ -27,7 +27,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
     """Signal when the selection changes. Returns a :class:`TaskFileInfo` or None"""
 
     lastfile = QtCore.Signal(TaskFileInfo)
-    """Signal when closing the filebrowser the last file that was selected"""
+    """Signal when the browser is destroyed to send the last file selected"""
 
     def __init__(self, filetype, releasetypes=None, get_current_file=None, parent=None):
         """Initialize a new file browser widget with the given parent
@@ -43,6 +43,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :raises: None
         """
         super(FileBrowser, self).__init__(parent)
+        self.lastfile = None
         self._filetype = filetype
         self._releasetypes = releasetypes
         # Map releasetypes to radiobuttons
@@ -149,7 +150,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
             rb.toggled.connect(self.releasetype_btn_toggled)
 
         shotdesclvl = self.shotbrws.get_level(3)
-        shotselcb = partial(self.selection_changed,
+        shotselcb = partial(self.selection_ochanged,
                             source=self.shotbrws,
                             update=self.shotverbrws,
                             commentbrowser=self.shotcommentbrws,
@@ -177,6 +178,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         self.current_pb.clicked.connect(self.set_to_current)
         self.asset_open_path_tb.clicked.connect(self.open_asset_path)
         self.shot_open_path_tb.clicked.connect(self.open_shot_path)
+        self.destroyed.connect(self.emit_last_file)
 
     def create_prj_browser(self, ):
         """Create the project browser
@@ -782,7 +784,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
                 taskfile = item.internal_data()
         return taskfile
 
-    def close(self, ):
+    def emit_last_file(self, ):
         """Close slow
 
         :returns: True if the widget is closing
@@ -791,4 +793,3 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         """
         lf = self.get_current_selection()
         self.lastfile.emit(lf)
-        return super(FileBrowser, self).close()
