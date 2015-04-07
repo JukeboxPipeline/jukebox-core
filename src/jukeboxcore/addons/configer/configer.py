@@ -5,7 +5,7 @@ from PySide import QtGui
 
 from jukeboxcore.log import get_logger
 log = get_logger(__name__)
-from jukeboxcore import iniconf
+from jukeboxcore import iniconf, constants
 from jukeboxcore.constants import PLUGIN_CONFIG_DIR
 from jukeboxcore.errors import ConfigError
 from jukeboxcore.plugins import JB_CoreStandaloneGuiPlugin
@@ -87,6 +87,7 @@ class ConfigerWin(JB_MainWindow, Ui_configer_mwin):
         specs = {}
         pathenv = os.environ.get('JUKEBOX_PLUGIN_PATH', '')
         paths = pathenv.split(';')
+        paths.append(constants.BUILTIN_PLUGIN_PATH)
         for p in reversed(paths):
             if p:
                 files = self.find_inifiles(p)

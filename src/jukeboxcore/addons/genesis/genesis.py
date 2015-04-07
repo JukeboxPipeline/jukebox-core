@@ -1,6 +1,6 @@
 import os
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 from django.core.exceptions import ValidationError
 
 from jukeboxcore.log import get_logger
@@ -31,6 +31,8 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
 
     _filetype = None
 
+    last_file = QtCore.Signal(TaskFileInfo)
+
     def __init__(self, parent=None, flags=0):
         """Constructs a new GenesisWin with the given parent
 
@@ -44,6 +46,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         self.setupUi(self)
         self.setup_ui()
         self.setup_signals()
+        self.browser.init_selection()
 
         if not self._filetype:
             log.warning('No Filetypes are allowed. Genesis will not show any files! Call set_filetype before instancing!')
@@ -417,6 +420,20 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         else:
             comment = self.shot_comment_pte.toPlainText()
         return tfi.create_db_entry(comment)
+
+    def closeEvent(self, event):
+        """Send last file signal on close event
+
+        :param event: The close event
+        :type event:
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        lf = self.browser.get_current_selection()
+        if lf:
+            self.last_file.emit(lf)
+        return super(GenesisWin, self).close()
 
 
 class Genesis(JB_CorePlugin):

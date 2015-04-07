@@ -270,9 +270,6 @@ class PluginManager(object):
     e.g. plugins that are meant for a specific software.
     """
 
-    builtinpluginpath = BUILTIN_PLUGIN_PATH
-    """String of Paths for builtin plugins, seperated by os.pathsep"""
-
     @classmethod
     def get(cls):
         """Return a PluginManager Instance.
@@ -337,8 +334,7 @@ class PluginManager(object):
     def gather_plugins(self):
         """Return all plugins that are found in the plugin paths
 
-        Looks in the .. :data:`PluginManager.builtinpluginpath`
-        Then in the envvar ``JUKEBOX_PLUGIN_PATH``.
+        Looks in the envvar ``JUKEBOX_PLUGIN_PATH``.
 
         :returns:
         :rtype:
@@ -346,9 +342,8 @@ class PluginManager(object):
         """
         plugins = []
         cfg = get_core_config()
-        pathenv =  os.environ.get("JUKEBOX_PLUGIN_PATHS", "")
-        pathenv = os.pathsep.join((pathenv, cfg['jukebox']['pluginpaths']))
-        pathenv = os.pathsep.join((pathenv, self.builtinpluginpath))
+        pathenv = cfg['jukebox']['pluginpaths']
+        pathenv = os.pathsep.join((pathenv, os.environ.get("JUKEBOX_PLUGIN_PATH", "")))
         paths = pathenv.split(os.pathsep)
         # first find built-ins then the ones in the config, then the one from the environment
         # so user plugins can override built-ins

@@ -2481,7 +2481,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         self.cur_user.username = username
         self.cur_user.first_name = first
         self.cur_user.last_name = last
-        self.cur_user.email_name = email
+        self.cur_user.email = email
         self.cur_user.save()
 
 
