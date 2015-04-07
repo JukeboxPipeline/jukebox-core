@@ -711,10 +711,11 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :rtype: None
         :raises: None
         """
-        if project is None:
-            self.prj_banner_lb.setText("No Project")
-        else:
-            self.prj_banner_lb.setText("%s banner placeholder" % project.name)
+        return
+        #if project is None:
+        #    self.prj_banner_lb.setText("No Project")
+        #else:
+        #    self.prj_banner_lb.setText("%s banner placeholder" % project.name)
 
     def update_model(self, tfi):
         """Update the model for the given tfi
