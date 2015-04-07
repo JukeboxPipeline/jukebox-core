@@ -26,6 +26,9 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
     asset_taskfile_sel_changed = QtCore.Signal(TaskFileInfo)
     """Signal when the selection changes. Returns a :class:`TaskFileInfo` or None"""
 
+    lastfile = QtCore.Signal(TaskFileInfo)
+    """Signal when closing the filebrowser the last file that was selected"""
+
     def __init__(self, filetype, releasetypes=None, get_current_file=None, parent=None):
         """Initialize a new file browser widget with the given parent
 
@@ -778,3 +781,14 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
                 item = indexes[0].internalPointer()
                 taskfile = item.internal_data()
         return taskfile
+
+    def close(self, ):
+        """Close slow
+
+        :returns: True if the widget is closing
+        :rtype: :class:`bool`
+        :raises: None
+        """
+        lf = self.get_current_selection()
+        self.lastfile.emit(lf)
+        return super(FileBrowser, self).close()
