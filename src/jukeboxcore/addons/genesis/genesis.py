@@ -421,9 +421,11 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
             comment = self.shot_comment_pte.toPlainText()
         return tfi.create_db_entry(comment)
 
-    def close(self, ):
-        """Close slot
+    def closeEvent(self, event):
+        """Send last file signal on close event
 
+        :param event: The close event
+        :type event:
         :returns: None
         :rtype: None
         :raises: None
