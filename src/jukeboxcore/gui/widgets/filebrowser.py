@@ -62,6 +62,20 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :returns: None
         :raises: None
         """
+        shotdesclvl = self.shotbrws.get_level(3)
+        sdis = shotdesclvl.selected_indexes()
+        if sdis:
+            sdi = sdis[0]
+            self.selection_changed(sdi, source=self.shotbrws, update=self.shotverbrws,
+                                   commentbrowser=self.shotcommentbrws, mapper=self.shot_info_mapper)
+
+        assetdesclvl = self.assetbrws.get_level(3)
+        adis = assetdesclvl.selected_indexes()
+        if adis:
+            adi = adis[0]
+            self.selection_changed(adi, source=self.assetbrws, update=self.assetverbrws,
+                                   commentbrowser=self.assetcommentbrws, mapper=self.asset_info_mapper)
+
         si = self.shotverbrws.selected_indexes(0)
         if si:
             self.shot_ver_sel_changed(si[0])
