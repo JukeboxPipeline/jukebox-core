@@ -43,7 +43,6 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :raises: None
         """
         super(FileBrowser, self).__init__(parent)
-        self.lastfile = None
         self._filetype = filetype
         self._releasetypes = releasetypes
         # Map releasetypes to radiobuttons
