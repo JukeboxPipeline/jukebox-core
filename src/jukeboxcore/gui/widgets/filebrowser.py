@@ -190,7 +190,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         :raises: None
         """
         prjbrws = ComboBoxBrowser(1, headers=['Project:'])
-        self.central_vbox.insertWidget(1, prjbrws)
+        self.central_vbox.insertWidget(0, prjbrws)
         return prjbrws
 
     def create_shot_browser(self, ):
