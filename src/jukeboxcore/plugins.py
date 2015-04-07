@@ -343,7 +343,7 @@ class PluginManager(object):
         plugins = []
         cfg = get_core_config()
         pathenv = cfg['jukebox']['pluginpaths']
-        pathenv = os.pathsep.join((pathenv, os.environ.get("JUKEBOX_PLUGIN_PATHS", "")))
+        pathenv = os.pathsep.join((pathenv, os.environ.get("JUKEBOX_PLUGIN_PATH", "")))
         paths = pathenv.split(os.pathsep)
         # first find built-ins then the ones in the config, then the one from the environment
         # so user plugins can override built-ins

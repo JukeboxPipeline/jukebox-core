@@ -19,7 +19,7 @@ def init_environment():
     """
     os.environ['DJANGO_SETTINGS_MODULE'] = 'jukeboxcore.djsettings'
     pluginpath = os.pathsep.join((os.environ.get('JUKEBOX_PLUGIN_PATH', ''), constants.BUILTIN_PLUGIN_PATH))
-    os.environ['JUKEBOX_PLUGIN_PATHS'] = pluginpath
+    os.environ['JUKEBOX_PLUGIN_PATH'] = pluginpath
 
 
 def init():
