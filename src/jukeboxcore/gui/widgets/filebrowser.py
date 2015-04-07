@@ -50,7 +50,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         self.setup_signals()
 
         self.prjbrws.set_model(self.create_prj_model())
-        if get_current_file:
+        if self.get_current_file():
             self.set_to_current()
         else:
             self.init_selection()
@@ -133,6 +133,9 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         current_icon = get_icon('glyphicons_181_download_alt.png', asicon=True)
         self.current_pb.setIcon(current_icon)
 
+        refresh_icon = get_icon('refresh.png', asicon=True)
+        self.refresh_tb.setIcon(refresh_icon)
+
     def setup_signals(self, ):
         """Connect the signals with the slots to make the ui functional
 
@@ -174,6 +177,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         self.current_pb.clicked.connect(self.set_to_current)
         self.asset_open_path_tb.clicked.connect(self.open_asset_path)
         self.shot_open_path_tb.clicked.connect(self.open_shot_path)
+        self.refresh_tb.clicked.connect(self.refresh)
 
     def create_prj_browser(self, ):
         """Create the project browser
@@ -778,3 +782,16 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
                 item = indexes[0].internalPointer()
                 taskfile = item.internal_data()
         return taskfile
+
+    def refresh(self, *args, **kwargs):
+        """Refresh the model
+
+        :returns: None
+        :rtype: None
+        :raises: None
+        """
+        self.prjbrws.set_model(self.create_prj_model())
+        if self.get_current_file():
+            self.set_to_current()
+        else:
+            self.init_selection()

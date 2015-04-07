@@ -18,25 +18,6 @@
   </property>
   <layout class="QVBoxLayout" name="central_vbox">
    <item>
-    <widget class="QLabel" name="prj_banner_lb">
-     <property name="minimumSize">
-      <size>
-       <width>350</width>
-       <height>100</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="textInteractionFlags">
-      <set>Qt::NoTextInteraction</set>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QWidget" name="releasetype_widget" native="true">
      <layout class="QHBoxLayout" name="releasetype_hbox">
       <property name="margin">
@@ -54,6 +35,16 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QToolButton" name="refresh_tb">
+        <property name="text">
+         <string>refresh</string>
+        </property>
+        <property name="autoRaise">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -101,10 +92,7 @@
                 </size>
                </property>
                <property name="frameShape">
-                <enum>QFrame::Box</enum>
-               </property>
-               <property name="text">
-                <string>File Snapshot</string>
+                <enum>QFrame::NoFrame</enum>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
