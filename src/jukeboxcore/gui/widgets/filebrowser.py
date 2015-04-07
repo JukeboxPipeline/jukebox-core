@@ -52,8 +52,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         self.prjbrws.set_model(self.create_prj_model())
         if get_current_file:
             self.set_to_current()
-        else:
-            self.init_selection()
+        self.init_selection()
 
     def init_selection(self):
         """Call selection changed in the beginning, so signals get emitted once
