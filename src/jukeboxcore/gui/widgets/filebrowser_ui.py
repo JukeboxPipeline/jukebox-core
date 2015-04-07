@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\filebrowser.ui'
+# Form implementation generated from reading ui file '/home/vagrant/projects/jukebox-core/src/jukeboxcore/gui/widgets/filebrowser.ui'
 #
-# Created: Fri Nov 07 12:10:21 2014
+# Created: Tue Apr  7 19:20:49 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -16,13 +16,6 @@ class Ui_FileBrowser(object):
         FileBrowser.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.central_vbox = QtGui.QVBoxLayout(FileBrowser)
         self.central_vbox.setObjectName("central_vbox")
-        self.prj_banner_lb = QtGui.QLabel(FileBrowser)
-        self.prj_banner_lb.setMinimumSize(QtCore.QSize(350, 100))
-        self.prj_banner_lb.setText("")
-        self.prj_banner_lb.setAlignment(QtCore.Qt.AlignCenter)
-        self.prj_banner_lb.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        self.prj_banner_lb.setObjectName("prj_banner_lb")
-        self.central_vbox.addWidget(self.prj_banner_lb)
         self.releasetype_widget = QtGui.QWidget(FileBrowser)
         self.releasetype_widget.setObjectName("releasetype_widget")
         self.releasetype_hbox = QtGui.QHBoxLayout(self.releasetype_widget)
@@ -31,6 +24,10 @@ class Ui_FileBrowser(object):
         self.releasetype_hbox.setObjectName("releasetype_hbox")
         spacerItem = QtGui.QSpacerItem(721, 13, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.releasetype_hbox.addItem(spacerItem)
+        self.refresh_tb = QtGui.QToolButton(self.releasetype_widget)
+        self.refresh_tb.setAutoRaise(False)
+        self.refresh_tb.setObjectName("refresh_tb")
+        self.releasetype_hbox.addWidget(self.refresh_tb)
         self.central_vbox.addWidget(self.releasetype_widget)
         self.selection_tabw = QtGui.QTabWidget(FileBrowser)
         self.selection_tabw.setObjectName("selection_tabw")
@@ -60,7 +57,7 @@ class Ui_FileBrowser(object):
         sizePolicy.setHeightForWidth(self.asset_thumb_lb.sizePolicy().hasHeightForWidth())
         self.asset_thumb_lb.setSizePolicy(sizePolicy)
         self.asset_thumb_lb.setMinimumSize(QtCore.QSize(160, 90))
-        self.asset_thumb_lb.setFrameShape(QtGui.QFrame.Box)
+        self.asset_thumb_lb.setFrameShape(QtGui.QFrame.NoFrame)
         self.asset_thumb_lb.setAlignment(QtCore.Qt.AlignCenter)
         self.asset_thumb_lb.setObjectName("asset_thumb_lb")
         self.asset_info_grid.addWidget(self.asset_thumb_lb, 0, 0, 4, 2)
@@ -195,8 +192,8 @@ class Ui_FileBrowser(object):
 
     def retranslateUi(self, FileBrowser):
         FileBrowser.setWindowTitle(QtGui.QApplication.translate("FileBrowser", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.refresh_tb.setText(QtGui.QApplication.translate("FileBrowser", "refresh", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_info_gb.setTitle(QtGui.QApplication.translate("FileBrowser", "Info", None, QtGui.QApplication.UnicodeUTF8))
-        self.asset_thumb_lb.setText(QtGui.QApplication.translate("FileBrowser", "File Snapshot", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_created_lb.setText(QtGui.QApplication.translate("FileBrowser", "Created:", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_updated_lb.setText(QtGui.QApplication.translate("FileBrowser", "Updated:", None, QtGui.QApplication.UnicodeUTF8))
         self.asset_created_by_lb.setText(QtGui.QApplication.translate("FileBrowser", "Created by:", None, QtGui.QApplication.UnicodeUTF8))
