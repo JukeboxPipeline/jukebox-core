@@ -150,7 +150,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
             rb.toggled.connect(self.releasetype_btn_toggled)
 
         shotdesclvl = self.shotbrws.get_level(3)
-        shotselcb = partial(self.selection_ochanged,
+        shotselcb = partial(self.selection_changed,
                             source=self.shotbrws,
                             update=self.shotverbrws,
                             commentbrowser=self.shotcommentbrws,
