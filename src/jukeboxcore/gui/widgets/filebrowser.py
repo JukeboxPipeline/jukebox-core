@@ -50,7 +50,7 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         self.setup_signals()
 
         self.prjbrws.set_model(self.create_prj_model())
-        if self.get_current_file():
+        if self.get_current_file:
             self.set_to_current()
         else:
             self.init_selection()
@@ -608,6 +608,8 @@ class FileBrowser(Ui_FileBrowser, QtGui.QWidget):
         cur = self.get_current_file()
         if cur is not None:
             self.set_selection(cur)
+        else:
+            self.init_selection()
 
     def set_selection(self, taskfile):
         """Set the selection to the given taskfile
