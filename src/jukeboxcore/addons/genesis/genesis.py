@@ -315,6 +315,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         tf, note = self.create_db_entry(tfi)
 
         try:
+            js = JukeboxSignals.get()
             if asset:
                 js.before_save_asset.emit(jbfile, tf)
                 self.save_asset(jbfile, tf)
@@ -360,7 +361,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """
         raise NotImplementedError
 
-    def save_shot(self, jbfile):
+    def save_shot(self, jbfile, taskfile):
         """Save the shot to the location of jbfile
 
         :data:`JukeboxSignals.before_save_shot` and 
@@ -370,6 +371,8 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
 
         :param jbfile: the jbfile that can be used to query the location
         :type jbfile: :class:`jukeboxcore.filesys.JB_File`
+        :param taskfile: the taskfile for the shot
+        :type taskfile: :class:`djadapter.models.TaskFile`
         :returns: None
         :rtype: None
         :raises: NotImplementedError
@@ -391,7 +394,7 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """
         raise NotImplementedError
 
-    def save_asset(self, taskfile):
+    def save_asset(self, jbfile, taskfile):
         """Save the shot to the location of jbfile
 
         :data:`JukeboxSignals.before_save_asset` and 
@@ -400,6 +403,8 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
 
         :param jbfile: the jbfile that can be used to query the location
         :type jbfile: :class:`jukeboxcore.filesys.JB_File`
+        :param taskfile: the taskfile for the asset
+        :type taskfile: :class:`djadapter.models.TaskFile`
         :returns: None
         :rtype: None
         :raises: NotImplementedError
