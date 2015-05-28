@@ -24,29 +24,29 @@ class JukeboxSignals(QtCore.QObject):
     _instance = None
     """The global instance"""
     
-    before_open_shot = QtCore.QSignal(TaskFileInfo)
+    before_open_shot = QtCore.Signal(TaskFileInfo)
     """Signal gets emitted right before a shot gets opened.
     Arguments: :class:`TaskFileInfo`"""
-    after_open_shot = QtCore.QSignal(TaskFileInfo)
+    after_open_shot = QtCore.Signal(TaskFileInfo)
     """Signal gets emitted right after a shot gets opened.
     Arguments: :class:`TaskFileInfo`"""
-    before_open_asset = QtCore.QSignal(TaskFileInfo)
+    before_open_asset = QtCore.Signal(TaskFileInfo)
     """Signal gets emitted right before a asset gets opened.
     Arguments: :class:`TaskFileInfo`"""
-    after_open_asset = QtCore.QSignal(TaskFileInfo)
+    after_open_asset = QtCore.Signal(TaskFileInfo)
     """Signal gets emitted right after a asset gets opened.
     Arguments: :class:`TaskFileInfo`"""
 
-    before_save_shot = QtCore.QSignal(JB_File, TaskFileInfo)
+    before_save_shot = QtCore.Signal(JB_File, TaskFileInfo)
     """Signal gets emitted right before a shot gets saved.
     Arguments: :class:`JB_File`, :class:`TaskFileInfo`"""
-    after_save_shot = QtCore.QSignal(JB_File, TaskFileInfo)
+    after_save_shot = QtCore.Signal(JB_File, TaskFileInfo)
     """Signal gets emitted right after a shot gets saved.
     Arguments: :class:`JB_File`, :class:`TaskFileInfo`"""
-    before_save_asset = QtCore.QSignal(JB_File, TaskFileInfo)
+    before_save_asset = QtCore.Signal(JB_File, TaskFileInfo)
     """Signal gets emitted right before a asset gets saved.
     Arguments: :class:`JB_File`, :class:`TaskFileInfo`"""
-    after_save_asset = QtCore.QSignal(JB_File, TaskFileInfo)
+    after_save_asset = QtCore.Signal(JB_File, TaskFileInfo)
     """Signal gets emitted right after a asset gets saved.
     Arguments: :class:`JB_File`, :class:`TaskFileInfo`"""
 
