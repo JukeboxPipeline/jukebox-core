@@ -83,8 +83,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1318</width>
-             <height>1552</height>
+             <width>1321</width>
+             <height>1628</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout">
@@ -748,8 +748,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1335</width>
-             <height>940</height>
+             <width>1337</width>
+             <height>931</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="seq_grid">
@@ -893,8 +893,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1335</width>
-             <height>940</height>
+             <width>1321</width>
+             <height>963</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="shot_sa_widget_grid">
@@ -1286,21 +1286,11 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1335</width>
-             <height>940</height>
+             <width>1337</width>
+             <height>931</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="atype_sa_widget_grid">
-            <item row="2" column="0">
-             <widget class="QLabel" name="atype_prj_lb">
-              <property name="text">
-               <string>Projects</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="atype_desc_lb">
               <property name="text">
@@ -1338,58 +1328,7 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QTableView" name="atype_prj_tablev">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>5</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <layout class="QHBoxLayout" name="atype_prj_btns_hbox">
-              <item>
-               <widget class="QPushButton" name="atype_prj_view_pb">
-                <property name="text">
-                 <string>View</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="atype_prj_add_pb">
-                <property name="text">
-                 <string>Add</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="atype_prj_create_pb">
-                <property name="text">
-                 <string>Create</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_9">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item row="4" column="0">
+            <item row="2" column="0">
              <widget class="QLabel" name="atype_asset_lb">
               <property name="text">
                <string>Assets</string>
@@ -1399,7 +1338,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
+            <item row="2" column="1">
              <widget class="QTreeView" name="atype_asset_treev">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1409,7 +1348,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="3" column="1">
              <layout class="QHBoxLayout" name="atype_asset_btns_hbox">
               <item>
                <widget class="QPushButton" name="atype_asset_view_pb">
@@ -1461,8 +1400,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1335</width>
-             <height>940</height>
+             <width>1337</width>
+             <height>931</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="asset_sa_widget_grid">
@@ -1708,8 +1647,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1335</width>
-             <height>940</height>
+             <width>1337</width>
+             <height>931</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="dep_sa_widget_grid">
@@ -1948,8 +1887,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1335</width>
-             <height>940</height>
+             <width>1337</width>
+             <height>931</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
@@ -2135,8 +2074,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1335</width>
-             <height>940</height>
+             <width>1337</width>
+             <height>931</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="users_sa_widget_vbox">
@@ -2199,8 +2138,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1335</width>
-             <height>940</height>
+             <width>1337</width>
+             <height>931</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="user_sa_widget_grid">
