@@ -490,7 +490,7 @@ class AssetCreatorDialog(JB_Dialog, Ui_assetcreator_dialog):
     """A Dialog to create a asset
     """
 
-    def __init__(self, project=None, atype=None, parent=None, flags=0):
+    def __init__(self, project, atype=None, parent=None, flags=0):
         """Initialize a new asset creator dialog
 
         :param project: the project of the asset
@@ -516,17 +516,7 @@ class AssetCreatorDialog(JB_Dialog, Ui_assetcreator_dialog):
                 treemodel.TreeItem(data, atrootitem)
             self.atypemodel = treemodel.TreeModel(atrootitem)
             self.atype_cb.setModel(self.atypemodel)
-            self.prj_cb.setVisible(False)
-            self.prj_lb.setVisible(False)
         else:
-            self.projects = list(self.atype.projects.all())
-            prjrootdata = treemodel.ListItemData(['Name', 'Short', 'Path', 'Created', 'Semester', 'Status', 'Resolution', 'FPS', 'Scale'])
-            prjrootitem = treemodel.TreeItem(prjrootdata)
-            for prj in self.projects:
-                prjdata = djitemdata.ProjectItemData(prj)
-                treemodel.TreeItem(prjdata, prjrootitem)
-            self.prjmodel = treemodel.TreeModel(prjrootitem)
-            self.prj_cb.setModel(self.prjmodel)
             self.atype_cb.setVisible(False)
             self.atype_lb.setVisible(False)
         self.create_pb.clicked.connect(self.create_asset)
@@ -543,14 +533,10 @@ class AssetCreatorDialog(JB_Dialog, Ui_assetcreator_dialog):
             self.name_le.setPlaceholderText("Please enter a name!")
             return
         desc = self.desc_pte.toPlainText()
-        if self.project:
+        if not self.atype:
             atypei = self.atype_cb.currentIndex()
             assert atypei >= 0
             self.atype = self.atypes[atypei]
-        else:
-            prji = self.prj_cb.currentIndex()
-            assert prji >= 0
-            self.project = self.projects[prji]
         try:
             asset = djadapter.models.Asset(atype=self.atype, project=self.project, name=name, description=desc)
             asset.save()
@@ -782,7 +768,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         :rtype: None
         :raises: None
         """
-        self.atype_prj_tablev.horizontalHeader().setResizeMode(QtGui.QHeaderView.ResizeToContents)
+        pass
 
     def setup_asset_page(self, ):
         """Create and set the model on the asset page
@@ -943,9 +929,6 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         log.debug("Setting up atype page signals.")
         self.asset_prj_view_pb.clicked.connect(self.asset_view_prj)
         self.asset_atype_view_pb.clicked.connect(self.asset_view_atype)
-        self.atype_prj_view_pb.clicked.connect(self.atype_view_prj)
-        self.atype_prj_add_pb.clicked.connect(self.atype_add_prj)
-        self.atype_prj_create_pb.clicked.connect(self.atype_create_prj)
         self.atype_asset_view_pb.clicked.connect(self.atype_view_asset)
         self.atype_asset_create_pb.clicked.connect(self.atype_create_asset)
         self.atype_desc_pte.textChanged.connect(self.atype_save)
@@ -1269,32 +1252,22 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         :rtype: None
         :raises: None
         """
+        if not self.cur_prj:
+            return
         log.debug('Viewing atype %s', atype.name)
         self.cur_atype = None
         self.pages_tabw.setCurrentIndex(4)
         self.atype_name_le.setText(atype.name)
         self.atype_desc_pte.setPlainText(atype.description)
 
-        prjrootdata = treemodel.ListItemData(['Name', 'Short', 'Path', 'Created', 'Semester', 'Status', 'Resolution', 'FPS', 'Scale'])
-        prjrootitem = treemodel.TreeItem(prjrootdata)
-        prjs = atype.projects.all()
-        for prj in prjs:
-            prjdata = djitemdata.ProjectItemData(prj)
-            treemodel.TreeItem(prjdata, prjrootitem)
-        self.atype_prj_model = treemodel.TreeModel(prjrootitem)
-        self.atype_prj_tablev.setModel(self.atype_prj_model)
-
         assetrootdata = treemodel.ListItemData(['Name', 'Description'])
         assetrootitem = treemodel.TreeItem(assetrootdata)
         self.atype_asset_model = treemodel.TreeModel(assetrootitem)
         self.atype_asset_treev.setModel(self.atype_asset_model)
-        prjs = atype.projects.all()
-        for prj in prjs:
-            prjdata = djitemdata.ProjectItemData(prj)
-            prjitem = treemodel.TreeItem(prjdata, assetrootitem)
-            for a in djadapter.assets.filter(project=prj, atype=atype):
-                assetdata = djitemdata.AssetItemData(a)
-                treemodel.TreeItem(assetdata, prjitem)
+
+        for a in djadapter.assets.filter(project=self.cur_prj, atype=atype):
+            assetdata = djitemdata.AssetItemData(a)
+            treemodel.TreeItem(assetdata, assetrootitem)
 
         self.cur_atype = atype
 
@@ -1827,6 +1800,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
             if not atypeitem:
                 atypedata = djitemdata.AtypeItemData(atype)
                 atypeitem = treemodel.TreeItem(atypedata, assetsrootitem)
+                atypes[atype] = atypeitem
             assetdata = djitemdata.AssetItemData(a)
             treemodel.TreeItem(assetdata, atypeitem)
 
@@ -1894,7 +1868,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         """
         if not self.cur_shot:
             return
-        asset = self.create_asset(shot=self.cur_shot)
+        asset = self.create_asset(project=self.cur_shot.project, shot=self.cur_shot)
         if not asset:
             return
         atypes = {}
@@ -1908,21 +1882,23 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         assetdata = djitemdata.AssetItemData(asset)
         treemodel.TreeItem(assetdata, atypeitem)
 
-    def create_asset(self, atype=None, shot=None, asset=None):
+    def create_asset(self, project, atype=None, shot=None, asset=None):
         """Create and return a new asset
 
         :param project: the project for the asset
         :type project: :class:`jukeboxcore.djadapter.models.Project`
+        :param atype: the assettype of the asset
+        :type atype: :class:`jukeboxcore.djadapter.models.Atype`
+        :param shot: the shot to add the asset to
+        :type shot: :class:`jukeboxcore.djadapter.models.Shot`
+        :param asset: the asset to add the new asset to
+        :type asset: :class:`jukeboxcore.djadapter.models.Asset`
         :returns: The created asset or None
         :rtype: None | :class:`jukeboxcore.djadapter.models.Asset`
         :raises: None
         """
-        if atype:
-            dialog = AssetCreatorDialog(atype=atype, parent=self)
-        else:
-            element = shot or asset
-            project = element.project
-            dialog = AssetCreatorDialog(project=project, parent=self)
+        element = shot or asset
+        dialog = AssetCreatorDialog(project=project, atype=atype, parent=self)
         dialog.exec_()
         asset = dialog.asset
         if not atype:
@@ -2006,53 +1982,6 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         atype = self.cur_asset.atype
         self.view_atype(atype)
 
-    def atype_view_prj(self, ):
-        """View the project of the current assettype
-
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        if not self.cur_atype:
-            return
-
-        i = self.atype_prj_tablev.currentIndex()
-        item = i.internalPointer()
-        if item:
-            prj = item.internal_data()
-            self.view_prj(prj)
-
-    def atype_create_prj(self, *args, **kwargs):
-        """Create a new project
-
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        if not self.cur_atype:
-            return
-        prj = self.create_prj()
-        if prj:
-            prjdata = djitemdata.ProjectItemData(prj)
-            treemodel.TreeItem(prjdata, self.atype_prj_model.root)
-
-    def atype_add_prj(self, *args, **kwargs):
-        """Add project to assettype
-
-        :returns: None
-        :rtype: None
-        :raises: None
-        """
-        if not self.cur_atype:
-            return
-
-        dialog = ProjectAdderDialog(atype=self.cur_atype)
-        dialog.exec_()
-        prjs = dialog.projects
-        for prj in prjs:
-            prjdata = djitemdata.ProjectItemData(prj)
-            treemodel.TreeItem(prjdata, self.atype_prj_model.root)
-
     def atype_view_asset(self, ):
         """View the project of the current assettype
 
@@ -2080,20 +2009,12 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         if not self.cur_atype:
             return
 
-        asset = self.create_asset(atype=self.cur_atype)
+        asset = self.create_asset(project=self.cur_prj, atype=self.cur_atype)
 
         if not asset:
             return
-        prjs = {}
-        for c in self.atype_asset_model.root.childItems:
-            prjs[c.internal_data()] = c
-        prjitem = prjs.get(asset.project)
-        if not prjitem:
-            prjdata = djitemdata.ProjectItemData(asset.project)
-            prjitem = treemodel.TreeItem(prjdata, self.atype_asset_model.root)
-            prjs[asset.project] = prjitem
         assetdata = djitemdata.AssetItemData(asset)
-        treemodel.TreeItem(assetdata, prjitem)
+        treemodel.TreeItem(assetdata, self.atype_asset_model.root)
 
     def atype_save(self):
         """Save the current atype
@@ -2179,7 +2100,7 @@ class GuerillaMGMTWin(JB_MainWindow, Ui_guerillamgmt_mwin):
         """
         if not self.cur_asset:
             return
-        asset = self.create_asset(asset=self.cur_asset)
+        asset = self.create_asset(project=self.cur_asset.project, asset=self.cur_asset)
         if not asset:
             return
         atypes = {}

@@ -13,6 +13,7 @@ from jukeboxcore.plugins import JB_CorePlugin
 from jukeboxcore.gui.main import JB_MainWindow, get_icon
 from jukeboxcore.gui.widgets.filebrowser import FileBrowser
 from jukeboxcore.gui.widgets.textedit import JB_PlainTextEdit
+from jukeboxcore.signals import JukeboxSignals
 import genesis_ui
 
 
@@ -228,7 +229,10 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
             log.error(msg)
             self.statusbar.showMessage(msg)
             return
+        js = JukeboxSignals.get()
+        js.before_open_shot.emit(tf)
         self.open_shot(tf)
+        js.after_open_shot.emit(tf)
 
     def asset_open_callback(self, *args, **kwargs):
         """Callback for the shot open button
@@ -245,7 +249,10 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
             log.error(msg)
             self.statusbar.showMessage(msg)
             return
+        js = JukeboxSignals.get()
+        js.before_open_asset.emit(tf)
         self.open_asset(tf)
+        js.after_open_asset.emit(tf)
 
     def shot_save_callback(self, *args, **kwargs):
         """Callback for the shot open button
@@ -291,9 +298,9 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
 
         tfi = TaskFileInfo.get_next(task=task, releasetype=rtype,
                                     typ=self._filetype, descriptor=descriptor)
-        self._save_tfi(tfi)
+        self._save_tfi(tfi, asset=True)
 
-    def _save_tfi(self, tfi):
+    def _save_tfi(self, tfi, asset=False):
         """Save currently open scene with the information in the given taskfile info
 
         :param tfi: taskfile info
@@ -308,7 +315,15 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         tf, note = self.create_db_entry(tfi)
 
         try:
-            self.save_shot(jbfile, tf)
+            js = JukeboxSignals.get()
+            if asset:
+                js.before_save_asset.emit(jbfile, tf)
+                self.save_asset(jbfile, tf)
+                js.after_save_asset.emit(jbfile, tf)
+            else:
+                js.before_save_shot.emit(jbfile, tf)
+                self.save_shot(jbfile, tf)
+                js.after_save_shot.emit(jbfile, tf)
         except:
             tf.delete()
             note.delete()
@@ -334,6 +349,10 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
     def open_shot(self, taskfile):
         """Open the given taskfile
 
+        :data:`JukeboxSignals.before_open_shot` and 
+        :data:`JukeboxSignals.after_open_shot` will get emitted before and after the
+        funktion call.
+
         :param taskfile: the taskfile for the shot
         :type taskfile: :class:`djadapter.models.TaskFile`
         :returns: True if opening was successful
@@ -342,11 +361,18 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """
         raise NotImplementedError
 
-    def save_shot(self, jbfile):
+    def save_shot(self, jbfile, taskfile):
         """Save the shot to the location of jbfile
+
+        :data:`JukeboxSignals.before_save_shot` and 
+        :data:`JukeboxSignals.after_save_shot` will get emitted before and after the
+        funktion call.
+
 
         :param jbfile: the jbfile that can be used to query the location
         :type jbfile: :class:`jukeboxcore.filesys.JB_File`
+        :param taskfile: the taskfile for the shot
+        :type taskfile: :class:`djadapter.models.TaskFile`
         :returns: None
         :rtype: None
         :raises: NotImplementedError
@@ -356,6 +382,10 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
     def open_asset(self, taskfile):
         """Open the given taskfile
 
+        :data:`JukeboxSignals.before_open_asset` and 
+        :data:`JukeboxSignals.after_open_asset` will get emitted before and after the
+        funktion call.
+
         :param taskfile: the taskfile for the asset
         :type taskfile: :class:`djadapter.models.TaskFile`
         :returns: True if opening was successful
@@ -364,11 +394,17 @@ class GenesisWin(JB_MainWindow, genesis_ui.Ui_genesis_mwin):
         """
         raise NotImplementedError
 
-    def save_asset(self, taskfile):
+    def save_asset(self, jbfile, taskfile):
         """Save the shot to the location of jbfile
+
+        :data:`JukeboxSignals.before_save_asset` and 
+        :data:`JukeboxSignals.after_save_asset` will get emitted before and after the
+        funktion call.
 
         :param jbfile: the jbfile that can be used to query the location
         :type jbfile: :class:`jukeboxcore.filesys.JB_File`
+        :param taskfile: the taskfile for the asset
+        :type taskfile: :class:`djadapter.models.TaskFile`
         :returns: None
         :rtype: None
         :raises: NotImplementedError

@@ -15,8 +15,10 @@ import abc
 import os
 import platform
 
+from jukeboxcore.log import get_logger
+log = get_logger(__name__)
 from jukeboxcore import errors
-from jukeboxcore.constants import MAYA_VERSION, MAYA_REG_KEY
+from jukeboxcore.constants import MAYA_VERSIONS, MAYA_REG_KEY
 
 
 def detect_sys():
@@ -138,13 +140,16 @@ class WindowsInterface(PlatformInterface):
         # query winreg entry
         # the last flag is needed, if we want to test with 32 bit python!
         # Because Maya is an 64 bit key!
-        try:
-            key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
-                                  MAYA_REG_KEY, 0,
-                                  _winreg.KEY_READ | _winreg.KEY_WOW64_64KEY)
-            value = _winreg.QueryValueEx(key, "MAYA_INSTALL_LOCATION")[0]
-        except WindowsError:
-            raise errors.SoftwareNotFoundError('Maya %s installation not found in registry!' % MAYA_VERSION)
+        for ver in MAYA_VERSIONS:
+            try:
+                key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
+                                      MAYA_REG_KEY.format(mayaversion=ver), 0,
+                                      _winreg.KEY_READ | _winreg.KEY_WOW64_64KEY)
+                value = _winreg.QueryValueEx(key, "MAYA_INSTALL_LOCATION")[0]
+            except WindowsError:
+                log.debug('Maya %s installation not found in registry!' % ver)
+        if not value:
+            raise errors.SoftwareNotFoundError('Maya %s installation not found in registry!' % MAYA_VERSIONS)
         return value
 
     def get_maya_sitepackage_dir(self, ):

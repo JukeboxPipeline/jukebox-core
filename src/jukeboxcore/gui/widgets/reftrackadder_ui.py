@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'h:\projects\jukebox-core\src\jukeboxcore\gui\widgets\reftrackadder.ui'
+# Form implementation generated from reading ui file '/home/vagrant/projects/jukebox-core/src/jukeboxcore/gui/widgets/reftrackadder.ui'
 #
-# Created: Fri Jan 09 14:02:42 2015
+# Created: Fri May 29 17:09:30 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,16 +19,16 @@ class Ui_reftrackadder_mwin(object):
         self.central_vbox.setObjectName("central_vbox")
         self.browser_tabw = QtGui.QTabWidget(self.central_widget)
         self.browser_tabw.setObjectName("browser_tabw")
-        self.shot_widget = QtGui.QWidget()
-        self.shot_widget.setObjectName("shot_widget")
-        self.shot_vbox = QtGui.QVBoxLayout(self.shot_widget)
-        self.shot_vbox.setObjectName("shot_vbox")
-        self.browser_tabw.addTab(self.shot_widget, "")
         self.asset_widget = QtGui.QWidget()
         self.asset_widget.setObjectName("asset_widget")
         self.asset_vbox = QtGui.QVBoxLayout(self.asset_widget)
         self.asset_vbox.setObjectName("asset_vbox")
         self.browser_tabw.addTab(self.asset_widget, "")
+        self.shot_widget = QtGui.QWidget()
+        self.shot_widget.setObjectName("shot_widget")
+        self.shot_vbox = QtGui.QVBoxLayout(self.shot_widget)
+        self.shot_vbox.setObjectName("shot_vbox")
+        self.browser_tabw.addTab(self.shot_widget, "")
         self.central_vbox.addWidget(self.browser_tabw)
         self.button_vbox = QtGui.QHBoxLayout()
         self.button_vbox.setObjectName("button_vbox")
@@ -53,8 +53,8 @@ class Ui_reftrackadder_mwin(object):
 
     def retranslateUi(self, reftrackadder_mwin):
         reftrackadder_mwin.setWindowTitle(QtGui.QApplication.translate("reftrackadder_mwin", "Add Reftracks", None, QtGui.QApplication.UnicodeUTF8))
-        self.browser_tabw.setTabText(self.browser_tabw.indexOf(self.shot_widget), QtGui.QApplication.translate("reftrackadder_mwin", "Shots", None, QtGui.QApplication.UnicodeUTF8))
         self.browser_tabw.setTabText(self.browser_tabw.indexOf(self.asset_widget), QtGui.QApplication.translate("reftrackadder_mwin", "Assets", None, QtGui.QApplication.UnicodeUTF8))
+        self.browser_tabw.setTabText(self.browser_tabw.indexOf(self.shot_widget), QtGui.QApplication.translate("reftrackadder_mwin", "Shots", None, QtGui.QApplication.UnicodeUTF8))
         self.add_tb.setToolTip(QtGui.QApplication.translate("reftrackadder_mwin", "Add a new reftrack of the selected element and type to your tool.", None, QtGui.QApplication.UnicodeUTF8))
         self.add_tb.setText(QtGui.QApplication.translate("reftrackadder_mwin", "Add", None, QtGui.QApplication.UnicodeUTF8))
 

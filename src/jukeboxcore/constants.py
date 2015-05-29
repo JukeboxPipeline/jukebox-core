@@ -73,8 +73,8 @@ MAIN_STYLESHEET = resource_filename('jukeboxcore', _main_stylesheet_data_path)
 """The default or main stylesheet that should be used by all our guis.
 Usually :func:`jukeboxcore.gui.main.set_main_style` will do that for standalone apps."""
 
-MAYA_VERSION = "2015"
-"""The supported maya version for jukebox."""
+MAYA_VERSIONS = ["2016", "2015"]
+"""The supported maya versions for jukebox."""
 
-MAYA_REG_KEY = "Software\\Autodesk\\Maya\\%s\\Setup\\InstallPath" % MAYA_VERSION
+MAYA_REG_KEY = "Software\\Autodesk\\Maya\\{mayaversion}\\Setup\\InstallPath"
 """Registry key on windows to access maya install path"""

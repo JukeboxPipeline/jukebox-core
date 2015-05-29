@@ -32,3 +32,8 @@ History
 
 * Reference workflow
 * Fixes for widgetdelegate
+
+3.3.0 (2015-05-29)
+++++++++++++++++++++++++++++++++++++++++
+
+* Better ui for project management

@@ -321,7 +321,8 @@ class PluginManager(object):
                 continue
             # get all classes in the imported file
             members = inspect.getmembers(mod, lambda x: inspect.isclass(x))
-            classes = [m[1] for m in members]  # get the classes
+            # only get classes which are defined, not imported, in mod
+            classes = [m[1] for m in members if m[1].__module__ == mod.__name__]
             for c in classes:
                 # if the class is derived from a supported type append it
                 # we test if it is a subclass of a supported type but not a supported type itself
@@ -424,10 +425,7 @@ class PluginManager(object):
 
         path = list(sys.path)
         sys.path.insert(0, directory)
-        try:
-            module = __import__(module_name)
-        finally:
-            sys.path[:] = path # restore
+        module = __import__(module_name)
         return module
 
     def get_plugin(self, plugin):

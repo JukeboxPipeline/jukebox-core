@@ -20,17 +20,17 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="shot_widget">
-       <attribute name="title">
-        <string>Shots</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="shot_vbox"/>
-      </widget>
       <widget class="QWidget" name="asset_widget">
        <attribute name="title">
         <string>Assets</string>
        </attribute>
        <layout class="QVBoxLayout" name="asset_vbox"/>
+      </widget>
+      <widget class="QWidget" name="shot_widget">
+       <attribute name="title">
+        <string>Shots</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="shot_vbox"/>
       </widget>
      </widget>
     </item>
