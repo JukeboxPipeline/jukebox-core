@@ -345,7 +345,7 @@ class ReftrackAdderWin(JB_MainWindow, Ui_reftrackadder_mwin):
         :rtype: None
         :raises: NotImplementedError
         """
-        browser = self.shot_browser if self.browser_tabw.currentIndex() == 0 else self.asset_browser
+        browser = self.shot_browser if self.browser_tabw.currentIndex() == 1 else self.asset_browser
         selelements = browser.selected_indexes(2)
         if not selelements:
             return
